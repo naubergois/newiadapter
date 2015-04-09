@@ -113,7 +113,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	@Override
 	public String getStaticLabel() {
-		return JMeterPluginsUtils.prefixLabel("Ultimate Thread Group");
+		return JMeterPluginsUtils.prefixLabel("WorkLoad Thread Group");
 	}
 
 	
