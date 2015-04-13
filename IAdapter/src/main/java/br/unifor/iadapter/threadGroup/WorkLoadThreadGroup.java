@@ -37,13 +37,16 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	public WorkLoadThreadGroup() {
 		super();
-		this.getThreadContext().getEngine().run();
+		//this.getThreadContext().getEngine().run();
 	}
 
 	public JMeterProperty getData() {
 		// log.info("getData: "+getProperty(DATA_PROPERTY));
 		return getProperty(DATA_PROPERTY);
 	}
+	
+	
+	
 
 	void setData(CollectionProperty rows) {
 		// log.info("setData");

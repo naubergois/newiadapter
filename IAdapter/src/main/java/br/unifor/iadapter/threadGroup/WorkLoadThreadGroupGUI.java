@@ -116,7 +116,6 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		return JMeterPluginsUtils.prefixLabel("WorkLoad Thread Group");
 	}
 
-	
 	public TestElement createTestElement() {
 		// log.info("Create test element");
 		WorkLoadThreadGroup tg = new WorkLoadThreadGroup();
@@ -128,6 +127,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	public void modifyTestElement(TestElement tg) {
 		// log.info("Modify test element");
+		if (grid==null){
+			createGrid();
+		}
+		
 		if (grid.isEditing()) {
 			grid.getCellEditor().stopCellEditing();
 		}
@@ -138,6 +141,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 					.tableModelRowsToCollectionProperty(tableModel,
 							WorkLoadThreadGroup.DATA_PROPERTY);
 			utg.setData(rows);
+			if (loopPanel==null){
+				createControllerPanel();
+			}
+			
 			utg.setSamplerController((LoopController) loopPanel
 					.createTestElement());
 		}
@@ -273,7 +280,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	@Override
 	public void clearGui() {
 		super.clearGui();
-		tableModel.clearData();
+
+		if (tableModel != null) {
+			tableModel.clearData();
+		}
 	}
 
 	public void editingCanceled(ChangeEvent arg0) {
