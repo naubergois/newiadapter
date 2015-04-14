@@ -4,12 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.CellEditorListener;
@@ -70,6 +74,16 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	protected JTable grid;
 	protected JPanel buttons;
 
+	JTabbedPane tabbedPane = new JTabbedPane();
+
+	public JTabbedPane getTabbedPane() {
+		return tabbedPane;
+	}
+
+	public void setTabbedPane(JTabbedPane tabbedPane) {
+		this.tabbedPane = tabbedPane;
+	}
+
 	protected final void init() {
 		JMeterPluginsUtils.addHelpLinkToPanel(this, WIKIPAGE);
 		JPanel containerPanel = new VerticalPanel();
@@ -77,7 +91,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		containerPanel.add(createParamsPanel(), BorderLayout.NORTH);
 		containerPanel.add(GuiBuilderHelper.getComponentWithMargin(
 				createChart(), 2, 2, 0, 2), BorderLayout.CENTER);
-		add(containerPanel, BorderLayout.CENTER);
+		tabbedPane.addTab("Main", containerPanel);
+		add(tabbedPane, BorderLayout.CENTER);
 
 		// this magic LoopPanel provides functionality for thread loops
 		createControllerPanel();
@@ -105,6 +120,13 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		JButton button1 = new JButton("Create Workloads");
 		buttons.add(button1);
+		button1.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+
+				WorkLoadThreadGroupGUI.createTabChart(tabbedPane);
+			}
+		});
 		panel.add(buttons, BorderLayout.SOUTH);
 
 		return panel;
@@ -185,6 +207,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	public void updateUI() {
 		super.updateUI();
 
+		if (tableModel == null) {
+			createTableModel();
+		}
 		WorkLoadThreadGroup utgForPreview = new WorkLoadThreadGroup();
 		utgForPreview.setData(JMeterPluginsUtils
 				.tableModelRowsToCollectionPropertyEval(tableModel,
@@ -195,6 +220,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	private void updateChart(WorkLoadThreadGroup tg) {
 		tg.testStarted();
+		if (model == null) {
+			createChart();
+		}
 
 		model.clear();
 		GraphRowSumValues row = new GraphRowSumValues();
@@ -252,6 +280,56 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		return loopPanel;
 	}
 
+	public static Component createTabChart(JTabbedPane tab1) {
+		JPanel panel = new JPanel();
+
+		GraphPanelChart chart1 = new GraphPanelChart(false, true);
+		ConcurrentHashMap<String, AbstractGraphRow> model1 = new ConcurrentHashMap<String, AbstractGraphRow>();
+		chart1.setRows(model1);
+		chart1.getChartSettings().setDrawFinalZeroingLines(true);
+		chart1.setxAxisLabel("Elapsed time");
+		chart1.setYAxisLabel("Number of active threads");
+		chart1.setBorder(javax.swing.BorderFactory
+				.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+		panel.add(chart1);
+		tab1.addTab("Test1", chart1);
+		
+		
+		GraphRowSumValues row = new GraphRowSumValues();
+		row.setColor(Color.RED);
+		row.setDrawLine(true);
+		row.setMarkerSize(AbstractGraphRow.MARKER_SIZE_NONE);
+		row.setDrawThickLines(true);
+		long now=System.currentTimeMillis();
+		row.add(now, 0);
+		
+
+		// users in
+		//int numThreads = tg.getNumThreads();
+		log.debug("Num Threads: " +50);
+		for (int n = 0; n < 50; n++) {
+			
+			row.add(now+n - 1, 0);
+			row.add(now+n, 1);
+		}
+
+		
+		// users out
+		for (int n = 0; n < 50; n++) {
+			row.add(now+n+50 - 1, 0);
+			row.add(now+n+50, -1);
+		}
+		
+
+		model1.put("Expected parallel users count", row);
+		chart1.invalidateCache();
+		chart1.repaint();
+
+		
+		return chart1;
+
+	}
+
 	private Component createChart() {
 		chart = new GraphPanelChart(false, true);
 		model = new ConcurrentHashMap<String, AbstractGraphRow>();
@@ -272,6 +350,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	private void createTableModel() {
 		tableModel = new PowerTableModel(columnIdentifiers, columnClasses);
 		tableModel.addTableModelListener(this);
+		if (grid == null) {
+			createGrid();
+		}
+
 		grid.setModel(tableModel);
 	}
 
