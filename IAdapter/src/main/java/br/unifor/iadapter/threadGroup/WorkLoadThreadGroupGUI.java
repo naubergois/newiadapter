@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -21,7 +22,6 @@ import kg.apc.charting.DateTimeRenderer;
 import kg.apc.charting.GraphPanelChart;
 import kg.apc.charting.rows.GraphRowSumValues;
 import kg.apc.jmeter.JMeterPluginsUtils;
-import kg.apc.jmeter.gui.ButtonPanelAddCopyRemove;
 import kg.apc.jmeter.gui.GuiBuilderHelper;
 import kg.apc.jmeter.threads.UltimateThreadGroup;
 
@@ -68,7 +68,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	private LoopControlPanel loopPanel;
 	protected PowerTableModel tableModel;
 	protected JTable grid;
-	protected ButtonPanelAddCopyRemove buttons;
+	protected JPanel buttons;
 
 	protected final void init() {
 		JMeterPluginsUtils.addHelpLinkToPanel(this, WIKIPAGE);
@@ -101,7 +101,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		JScrollPane scroll = new JScrollPane(createGrid());
 		scroll.setPreferredSize(scroll.getMinimumSize());
 		panel.add(scroll, BorderLayout.CENTER);
-		buttons = new ButtonPanelAddCopyRemove(grid, tableModel, defaultValues);
+		buttons = new JPanel();
+
+		JButton button1 = new JButton("Create Workloads");
+		buttons.add(button1);
 		panel.add(buttons, BorderLayout.SOUTH);
 
 		return panel;
@@ -127,10 +130,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	public void modifyTestElement(TestElement tg) {
 		// log.info("Modify test element");
-		if (grid==null){
+		if (grid == null) {
 			createGrid();
 		}
-		
+
 		if (grid.isEditing()) {
 			grid.getCellEditor().stopCellEditing();
 		}
@@ -141,10 +144,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 					.tableModelRowsToCollectionProperty(tableModel,
 							WorkLoadThreadGroup.DATA_PROPERTY);
 			utg.setData(rows);
-			if (loopPanel==null){
+			if (loopPanel == null) {
 				createControllerPanel();
 			}
-			
+
 			utg.setSamplerController((LoopController) loopPanel
 					.createTestElement());
 		}
@@ -155,7 +158,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	public void configure(TestElement tg) {
 		// log.info("Configure");
 		super.configure(tg);
-		UltimateThreadGroup utg = (UltimateThreadGroup) tg;
+		WorkLoadThreadGroup utg = (WorkLoadThreadGroup) tg;
 		// log.info("Configure "+utg.getName());
 		JMeterProperty threadValues = utg.getData();
 		if (!(threadValues instanceof NullProperty)) {
@@ -175,24 +178,24 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		if (te != null) {
 			loopPanel.configure(te);
 		}
-		buttons.checkDeleteButtonStatus();
+		// buttons.checkDeleteButtonStatus();
 	}
 
 	@Override
 	public void updateUI() {
 		super.updateUI();
 
-		if (tableModel != null) {
-			WorkLoadThreadGroup utgForPreview = new WorkLoadThreadGroup();
-			utgForPreview.setData(JMeterPluginsUtils
-					.tableModelRowsToCollectionPropertyEval(tableModel,
-							UltimateThreadGroup.DATA_PROPERTY));
-			updateChart(utgForPreview);
-		}
+		WorkLoadThreadGroup utgForPreview = new WorkLoadThreadGroup();
+		utgForPreview.setData(JMeterPluginsUtils
+				.tableModelRowsToCollectionPropertyEval(tableModel,
+						UltimateThreadGroup.DATA_PROPERTY));
+		updateChart(utgForPreview);
+
 	}
 
 	private void updateChart(WorkLoadThreadGroup tg) {
 		tg.testStarted();
+
 		model.clear();
 		GraphRowSumValues row = new GraphRowSumValues();
 		row.setColor(Color.RED);
@@ -289,6 +292,11 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	public void editingCanceled(ChangeEvent arg0) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public WorkLoadThreadGroupGUI() {
+		super();
+		init();
 	}
 
 }
