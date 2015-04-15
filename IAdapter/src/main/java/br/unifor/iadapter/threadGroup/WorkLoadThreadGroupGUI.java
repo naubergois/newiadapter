@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -73,6 +72,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	protected PowerTableModel tableModel;
 	protected JTable grid;
 	protected JPanel buttons;
+	
+	   
 
 	JTabbedPane tabbedPane = new JTabbedPane();
 
@@ -85,6 +86,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	}
 
 	protected final void init() {
+
 		JMeterPluginsUtils.addHelpLinkToPanel(this, WIKIPAGE);
 		JPanel containerPanel = new VerticalPanel();
 
@@ -125,6 +127,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			public void actionPerformed(ActionEvent e) {
 
 				WorkLoadThreadGroupGUI.createTabChart(tabbedPane);
+
 			}
 		});
 		panel.add(buttons, BorderLayout.SOUTH);
@@ -151,6 +154,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	}
 
 	public void modifyTestElement(TestElement tg) {
+		
+		
+		
 		// log.info("Modify test element");
 		if (grid == null) {
 			createGrid();
@@ -170,8 +176,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 				createControllerPanel();
 			}
 
-			utg.setSamplerController((LoopController) loopPanel
-					.createTestElement());
+			LoopController controler=(LoopController) loopPanel
+					.createTestElement();
+			controler.setLoops(2);
+			utg.setSamplerController(controler);
 		}
 		super.configureTestElement(tg);
 	}
@@ -180,6 +188,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	public void configure(TestElement tg) {
 		// log.info("Configure");
 		super.configure(tg);
+		
 		WorkLoadThreadGroup utg = (WorkLoadThreadGroup) tg;
 		// log.info("Configure "+utg.getName());
 		JMeterProperty threadValues = utg.getData();
@@ -198,7 +207,12 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		TestElement te = (TestElement) tg.getProperty(
 				AbstractThreadGroup.MAIN_CONTROLLER).getObjectValue();
 		if (te != null) {
+			if (te instanceof LoopController) {
+				((LoopController) te).setLoops(2);
+			}
+			
 			loopPanel.configure(te);
+			
 		}
 		// buttons.checkDeleteButtonStatus();
 	}
@@ -274,7 +288,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	private JPanel createControllerPanel() {
 		loopPanel = new LoopControlPanel(false);
 		LoopController looper = (LoopController) loopPanel.createTestElement();
-		looper.setLoops(-1);
+		looper.setLoops(2);
 		looper.setContinueForever(true);
 		loopPanel.configure(looper);
 		return loopPanel;
@@ -292,40 +306,32 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		chart1.setBorder(javax.swing.BorderFactory
 				.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 		panel.add(chart1);
+
 		tab1.addTab("Test1", chart1);
-		
-		
+
 		GraphRowSumValues row = new GraphRowSumValues();
 		row.setColor(Color.RED);
 		row.setDrawLine(true);
 		row.setMarkerSize(AbstractGraphRow.MARKER_SIZE_NONE);
 		row.setDrawThickLines(true);
-		long now=System.currentTimeMillis();
+		long now = System.currentTimeMillis();
 		row.add(now, 0);
-		
+
+		final HashTree hashTree = new HashTree();
+		hashTree.add(new LoopController());
 
 		// users in
-		//int numThreads = tg.getNumThreads();
-		log.debug("Num Threads: " +50);
-		for (int n = 0; n < 50; n++) {
-			
-			row.add(now+n - 1, 0);
-			row.add(now+n, 1);
-		}
-
-		
-		// users out
-		for (int n = 0; n < 50; n++) {
-			row.add(now+n+50 - 1, 0);
-			row.add(now+n+50, -1);
-		}
-		
+		// int numThreads = tg.getNumThreads();
+		log.debug("Num Threads: " + 50);
+		WorkLoad workload = new WorkLoad();
+		workload.setNumThreads(10);
+		workload.plotGraph(row);
+		workload.setTab(tab1);
 
 		model1.put("Expected parallel users count", row);
 		chart1.invalidateCache();
 		chart1.repaint();
-
-		
+		WorkLoadTests.getTests().add(workload);
 		return chart1;
 
 	}

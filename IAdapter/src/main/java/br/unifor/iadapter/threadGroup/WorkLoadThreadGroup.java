@@ -3,20 +3,36 @@ package br.unifor.iadapter.threadGroup;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JTable;
 
 import kg.apc.jmeter.gui.ButtonPanelAddCopyRemove;
 import kg.apc.jmeter.threads.AbstractSimpleThreadGroup;
 
+import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.control.gui.LoopControlPanel;
+import org.apache.jmeter.engine.JMeterEngineException;
+import org.apache.jmeter.engine.StandardJMeterEngine;
+import org.apache.jmeter.engine.TreeCloner;
+import org.apache.jmeter.engine.event.LoopIterationEvent;
+import org.apache.jmeter.engine.event.LoopIterationListener;
 import org.apache.jmeter.gui.util.PowerTableModel;
+import org.apache.jmeter.samplers.SampleEvent;
+import org.apache.jmeter.samplers.SampleListener;
+import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.testelement.property.JMeterProperty;
 import org.apache.jmeter.testelement.property.NullProperty;
 import org.apache.jmeter.testelement.property.PropertyIterator;
+import org.apache.jmeter.threads.AbstractThreadGroup;
+import org.apache.jmeter.threads.JMeterContext;
+import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterThread;
+import org.apache.jmeter.threads.ListenerNotifier;
+import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
 
@@ -27,7 +43,35 @@ import org.apache.log.Logger;
  *
  */
 public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
-		Serializable, TestStateListener {
+		Serializable, TestStateListener, SampleListener, LoopIterationListener {
+	
+	private WorkLoad workloadCurrent;
+
+	@Override
+	public void threadFinished(JMeterThread thread) {
+		// TODO Auto-generated method stub
+		super.threadFinished(thread);
+
+		WorkLoad.setThreadStopped(WorkLoad.getThreadStopped() + 1);
+		
+		if (workloadCurrent.getNumThreads()<=WorkLoad.getThreadStopped()){
+			System.out.print("teste terminou");
+			WorkLoad.setThreadStopped(0);
+			WorkLoadTests.setCurrentTest(WorkLoadTests.getCurrentTest()+1);
+			if (WorkLoadTests.getCurrentTest()<WorkLoadTests.getTests().size()){
+				final JMeterContext context = JMeterContextService.getContext();
+				
+				this.startNextLoop();
+				
+			}
+		}
+	}
+
+	@Override
+	public boolean verifyThreadsStopped() {
+		// TODO Auto-generated method stub
+		return super.verifyThreadsStopped();
+	}
 
 	private static final Logger log = LoggingManager.getLoggerForClass();
 	public static final String DATA_PROPERTY = "workloadthreadgroupdata";
@@ -35,18 +79,114 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	private int threadsToSchedule;
 	private CollectionProperty currentRecord;
 
+	private final Map<JMeterThread, Thread> allThreads = new ConcurrentHashMap<JMeterThread, Thread>();
+	/**
+	 * Is test (still) running?
+	 */
+	private volatile boolean running = false;
+
+	// JMeter 2.7 Compatibility
+	private long tgStartTime = -1;
+	private static final long TOLERANCE = 1000;
+
+	@Override
+	public void start(int groupCount, ListenerNotifier notifier,
+			ListedHashTree threadGroupTree, StandardJMeterEngine engine) {
+
+		if (WorkLoadTests.getTests().size() > 0) {
+			running = true;
+			
+			
+		
+			
+
+			WorkLoad workload = WorkLoadTests.getTests().get(
+					WorkLoadTests.getCurrentTest());
+			
+			this.workloadCurrent=workload;
+
+			int numThreads = workload.getNumThreads();
+
+			threadsToSchedule = numThreads;
+
+			log.info("Starting thread group number " + groupCount + " threads "
+					+ numThreads);
+
+			long now = System.currentTimeMillis(); // needs to be same time for
+													// all
+													// threads in the group
+
+			final JMeterContext context = JMeterContextService.getContext();
+			
+			context.setRestartNextLoop(true);
+			
+			for (int i = 0; running && i < numThreads; i++) {
+				JMeterThread jmThread = makeThread(groupCount, notifier,
+						threadGroupTree, engine, i, context);
+				workload.scheduleThread(log, numThreads, jmThread, i);
+				Thread newThread = new Thread(jmThread,
+						jmThread.getThreadName());
+
+				registerStartedThread(jmThread, newThread);
+
+				newThread.start();
+			}
+
+			log.info("Started thread group number " + groupCount);
+		}
+	}
+
+	@Override
+	public Sampler next() {
+		// TODO Auto-generated method stub
+		return super.next();
+	}
+
+	private ListedHashTree cloneTree(ListedHashTree tree) {
+		TreeCloner cloner = new TreeCloner(true);
+		tree.traverse(cloner);
+		return cloner.getClonedTree();
+	}
+
+	private JMeterThread makeThread(int groupCount, ListenerNotifier notifier,
+			ListedHashTree threadGroupTree, StandardJMeterEngine engine, int i,
+			JMeterContext context) { // N.B. Context needs to be fetched in the
+										// correct thread
+		boolean onErrorStopTest = getOnErrorStopTest();
+		boolean onErrorStopTestNow = getOnErrorStopTestNow();
+		boolean onErrorStopThread = getOnErrorStopThread();
+		boolean onErrorStartNextLoop = getOnErrorStartNextLoop();
+		String groupName = getName();
+		final JMeterThread jmeterThread = new JMeterThread(
+				cloneTree(threadGroupTree), this, notifier);
+		jmeterThread.setThreadNum(i);
+		jmeterThread.setThreadGroup(this);
+		jmeterThread.setInitialContext(context);
+		final String threadName = groupName + " " + (groupCount) + "-"
+				+ (i + 1);
+		jmeterThread.setThreadName(threadName);
+		jmeterThread.setEngine(engine);
+		jmeterThread.setOnErrorStopTest(onErrorStopTest);
+		jmeterThread.setOnErrorStopTestNow(onErrorStopTestNow);
+		jmeterThread.setOnErrorStopThread(onErrorStopThread);
+		jmeterThread.setOnErrorStartNextLoop(onErrorStartNextLoop);
+		return jmeterThread;
+	}
+
+	private void registerStartedThread(JMeterThread jMeterThread,
+			Thread newThread) {
+		allThreads.put(jMeterThread, newThread);
+	}
+
 	public WorkLoadThreadGroup() {
 		super();
-		//this.getThreadContext().getEngine().run();
+		// this.getThreadContext().getEngine().run();
 	}
 
 	public JMeterProperty getData() {
 		// log.info("getData: "+getProperty(DATA_PROPERTY));
 		return getProperty(DATA_PROPERTY);
 	}
-	
-	
-	
 
 	void setData(CollectionProperty rows) {
 		// log.info("setData");
@@ -58,39 +198,16 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	}
 
-	protected void scheduleThread(JMeterThread thread, long tgStartTime) {
-		log.debug("Scheduling thread: " + thread.getThreadName());
-		if (threadsToSchedule < 1) {
-			if (!scheduleIT.hasNext()) {
-				throw new RuntimeException(
-						"Not enough schedule records for thread #"
-								+ thread.getThreadName());
-			}
-
-			currentRecord = (CollectionProperty) scheduleIT.next();
-			threadsToSchedule = currentRecord.get(0).getIntValue();
+	@Override
+	public void stop() {
+		running = false;
+		for (JMeterThread item : allThreads.keySet()) {
+			item.stop();
 		}
+	}
 
-		int numThreads = currentRecord.get(0).getIntValue();
-		int initialDelay = currentRecord.get(1).getIntValue();
-		int startRampUp = currentRecord.get(2).getIntValue();
-		int flightTime = currentRecord.get(3).getIntValue();
-		int endRampUp = currentRecord.get(4).getIntValue();
+	protected void scheduleThread(JMeterThread thread, long tgStartTime) {
 
-		long ascentPoint = tgStartTime + 1000 * initialDelay;
-		final int rampUpDelayForThread = (int) Math.floor(1000 * startRampUp
-				* (double) threadsToSchedule / numThreads);
-		long startTime = ascentPoint + rampUpDelayForThread;
-		long descentPoint = startTime + 1000 * flightTime + 1000 * startRampUp
-				- rampUpDelayForThread;
-
-		thread.setStartTime(startTime);
-		thread.setEndTime(descentPoint
-				+ (int) Math.floor(1000 * endRampUp
-						* (double) threadsToSchedule / numThreads));
-
-		thread.setScheduled(true);
-		threadsToSchedule--;
 	}
 
 	@Override
@@ -114,19 +231,57 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	}
 
 	public void testStarted() {
+
 		JMeterProperty data = getData();
 		if (!(data instanceof NullProperty)) {
 			scheduleIT = ((CollectionProperty) data).iterator();
 		}
+
 		threadsToSchedule = 0;
 	}
 
+	@Override
+	public void triggerEndOfLoop() {
+		// TODO Auto-generated method stub
+		super.triggerEndOfLoop();
+		System.out.println("End of loop");
+	}
+
+	@Override
+	public boolean isDone() {
+		// TODO Auto-generated method stub
+		return super.isDone();
+	}
+
 	public void testEnded(String host) {
+		System.out.println(host);
 		testEnded();
+
 	}
 
 	public void testStarted(String host) {
 		testStarted();
+	}
+
+	public void sampleOccurred(SampleEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void sampleStarted(SampleEvent e) {
+		System.out.print(e);
+		// TODO Auto-generated method stub
+
+	}
+
+	public void sampleStopped(SampleEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void iterationStart(LoopIterationEvent iterEvent) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
