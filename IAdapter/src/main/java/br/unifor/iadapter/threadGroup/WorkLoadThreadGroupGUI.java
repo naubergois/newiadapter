@@ -178,7 +178,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 			LoopController controler=(LoopController) loopPanel
 					.createTestElement();
-			controler.setLoops(2);
+			controler.setLoops(1);
 			utg.setSamplerController(controler);
 		}
 		super.configureTestElement(tg);
@@ -208,7 +208,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 				AbstractThreadGroup.MAIN_CONTROLLER).getObjectValue();
 		if (te != null) {
 			if (te instanceof LoopController) {
-				((LoopController) te).setLoops(2);
+				((LoopController) te).setLoops(1);
 			}
 			
 			loopPanel.configure(te);
@@ -288,7 +288,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	private JPanel createControllerPanel() {
 		loopPanel = new LoopControlPanel(false);
 		LoopController looper = (LoopController) loopPanel.createTestElement();
-		looper.setLoops(2);
+		looper.setLoops(1);
 		looper.setContinueForever(true);
 		loopPanel.configure(looper);
 		return loopPanel;
