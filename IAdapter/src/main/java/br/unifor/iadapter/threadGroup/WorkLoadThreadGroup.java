@@ -60,8 +60,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			WorkLoadTests.setCurrentTest(WorkLoadTests.getCurrentTest()+1);
 			if (WorkLoadTests.getCurrentTest()<WorkLoadTests.getTests().size()){
 				final JMeterContext context = JMeterContextService.getContext();
-				
-				this.startNextLoop();
+				//context.g
+				new Thread(context.getEngine()).start();
 				
 			}
 		}
