@@ -1,7 +1,5 @@
 package br.unifor.iadapter.threadGroup;
 
-import javax.swing.JTabbedPane;
-
 import org.apache.jmeter.threads.JMeterThread;
 import org.apache.log.Logger;
 
@@ -27,15 +25,7 @@ public class WorkLoad {
 		this.worstResponseTime = worstResponseTime;
 	}
 
-	private JTabbedPane tab;
 
-	public JTabbedPane getTab() {
-		return tab;
-	}
-
-	public void setTab(JTabbedPane tab) {
-		this.tab = tab;
-	}
 
 	int initialDelay;
 
@@ -95,22 +85,6 @@ public class WorkLoad {
 		WorkLoad.threadStopped = threadStopped;
 	}
 
-	public void plotGraph(GraphRowSumValues row) {
-
-		for (int n = 0; n < this.getNumThreads(); n++) {
-
-			long initialTime = System.currentTimeMillis();
-
-			long now = getStartTimeStrategy(n);
-			row.add(now - initialTime, 0);
-			row.add(now - initialTime, 1);
-
-			long nowEnd = getEndTimeStrategy(n);
-			row.add(nowEnd - initialTime, 0);
-			row.add(nowEnd - initialTime, -1);
-		}
-
-	}
 
 	public long getStartTimeStrategy(long numberThread) {
 		return (long) (numberThread * 1000 + System.currentTimeMillis() + 1000);
@@ -131,9 +105,7 @@ public class WorkLoad {
 			thread.setEndTime(getEndTimeStrategy(number));
 
 			thread.setScheduled(true);
-			System.out.println(thread.getStartTime());
-			System.out.println(thread.getEndTime());
-
+			
 		}
 	}
 

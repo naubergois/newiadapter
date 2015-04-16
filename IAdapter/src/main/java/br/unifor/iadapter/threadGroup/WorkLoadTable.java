@@ -32,8 +32,6 @@ public class WorkLoadTable extends DefaultTableModel {
 	private static final Logger log = LoggingManager.getLoggerForClass();
 
 	private static final long serialVersionUID = 233L;
-	
-	
 
 	private Data model = new Data();
 
@@ -107,25 +105,25 @@ public class WorkLoadTable extends DefaultTableModel {
 
 	@Override
 	public void addRow(Object data[]) {
-	
+
 	}
 
 	public void addNewRow() {
-	
+
 	}
 
 	private Object[] createDefaultRow() {
-	   return  new Object[5];
+		return new Object[5];
 	}
 
 	public Object[] getRowData(int row) {
-		WorkLoad workload=WorkLoadTests.getTests().get(row);
-		Object[] rowObject=new Object[5];
-		rowObject[0]= workload.getName();
-		rowObject[1]=workload.getNumThreads();
-		rowObject[2]=workload.getWorstResponseTime();
-		rowObject[3]=workload.getStartRampUp();
-		rowObject[4]=workload.getEndRampUp();
+		WorkLoad workload = WorkLoadTests.getTests().get(row);
+		Object[] rowObject = new Object[5];
+		rowObject[0] = workload.getName();
+		rowObject[1] = workload.getNumThreads();
+		rowObject[2] = workload.getWorstResponseTime();
+		rowObject[3] = workload.getStartRampUp();
+		rowObject[4] = workload.getEndRampUp();
 		return rowObject;
 	}
 
@@ -249,7 +247,7 @@ public class WorkLoadTable extends DefaultTableModel {
 	 */
 	@Override
 	public String getColumnName(int column) {
-		String[] columns={"Name","Type","Response Time","Fit","Error"};
+		String[] columns = { "Name", "Type", "Response Time", "Fit", "Error" };
 		return columns[column];
 	}
 
@@ -269,12 +267,17 @@ public class WorkLoadTable extends DefaultTableModel {
 	 */
 	@Override
 	public Object getValueAt(int row, int column) {
-		WorkLoad workload=WorkLoadTests.getTests().get(row);
-		if (column==0) return workload.getName();
-		if (column==1) return workload.getNumThreads();
-		if (column==2) return workload.getWorstResponseTime();
-		if (column==3) return workload.getStartRampUp();
-		if (column==4) return workload.getEndRampUp();
+		WorkLoad workload = WorkLoadTests.getTests().get(row);
+		if (column == 0)
+			return workload.getName();
+		if (column == 1)
+			return workload.getNumThreads();
+		if (column == 2)
+			return workload.getWorstResponseTime();
+		if (column == 3)
+			return workload.getStartRampUp();
+		if (column == 4)
+			return workload.getEndRampUp();
 		return 0;
 	}
 
@@ -286,9 +289,5 @@ public class WorkLoadTable extends DefaultTableModel {
 	 */
 	@Override
 	public void setValueAt(Object value, int row, int column) {
-	/*	if (row < model.size()) {
-			model.setCurrentPos(row);
-			model.addColumnValue(model.getHeaders()[column], value);
-		}*/
 	}
 }

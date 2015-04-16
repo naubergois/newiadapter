@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;
@@ -22,10 +23,8 @@ import javax.swing.event.TableModelListener;
 
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.control.gui.LoopControlPanel;
-import org.apache.jmeter.gui.util.PowerTableModel;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.testelement.TestElement;
-import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.testelement.property.JMeterProperty;
 import org.apache.jmeter.testelement.property.NullProperty;
 import org.apache.jmeter.threads.AbstractThreadGroup;
@@ -79,7 +78,6 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		tabbedPane.addTab("Main", containerPanel);
 		add(tabbedPane, BorderLayout.CENTER);
 
-		// this magic LoopPanel provides functionality for thread loops
 		createControllerPanel();
 	}
 
@@ -109,7 +107,13 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 			public void actionPerformed(ActionEvent e) {
 
-				WorkLoadThreadGroupGUI.createTabChart(tabbedPane);
+				List<WorkLoad> workloadList = WorkLoadThreadGroup
+						.createWorkloads();
+				for (WorkLoad workLoad : workloadList) {
+					WorkLoadTests.getTests().add(workLoad);
+					WorkLoadThreadGroupGUI.createTabChart(tabbedPane, workLoad);
+				}
+
 				wtableModel.fireTableDataChanged();
 
 			}
@@ -129,17 +133,25 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	}
 
 	public TestElement createTestElement() {
-		// log.info("Create test element");
+
 		WorkLoadThreadGroup tg = new WorkLoadThreadGroup();
+
 		modifyTestElement(tg);
 		tg.setComment(JMeterPluginsUtils.getWikiLinkText(WIKIPAGE));
 
 		return tg;
 	}
 
+	public WorkLoadTable getWtableModel() {
+		return wtableModel;
+	}
+
+	public void setWtableModel(WorkLoadTable wtableModel) {
+		this.wtableModel = wtableModel;
+	}
+
 	public void modifyTestElement(TestElement tg) {
 
-		// log.info("Modify test element");
 		if (grid == null) {
 			createGrid();
 		}
@@ -150,10 +162,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		if (tg instanceof WorkLoadThreadGroup) {
 			WorkLoadThreadGroup utg = (WorkLoadThreadGroup) tg;
-			// CollectionProperty rows = JMeterPluginsUtils
-			// .tableModelRowsToCollectionProperty(tableModel,
-			// WorkLoadThreadGroup.DATA_PROPERTY);
-			// utg.setData(rows);
+
 			if (loopPanel == null) {
 				createControllerPanel();
 			}
@@ -172,7 +181,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		super.configure(tg);
 
 		WorkLoadThreadGroup utg = (WorkLoadThreadGroup) tg;
-		// log.info("Configure "+utg.getName());
+
 		JMeterProperty threadValues = utg.getData();
 		if (!(threadValues instanceof NullProperty)) {
 			wtableModel.removeTableModelListener(this);
@@ -192,7 +201,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			loopPanel.configure(te);
 
 		}
-		// buttons.checkDeleteButtonStatus();
+
 	}
 
 	@Override
@@ -203,9 +212,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			createTableModel();
 		}
 		WorkLoadThreadGroup utgForPreview = new WorkLoadThreadGroup();
-		// utgForPreview.setData(JMeterPluginsUtils
-		// .tableModelRowsToCollectionPropertyEval(tableModel,
-		// UltimateThreadGroup.DATA_PROPERTY));
+
 		updateChart(utgForPreview);
 
 	}
@@ -249,7 +256,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		}
 
 		tg.testStarted();
-		// users out
+
 		for (int n = 0; n < tg.getNumThreads(); n++) {
 			thread.setThreadNum(n);
 			thread.setThreadName(Integer.toString(n));
@@ -272,7 +279,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		return loopPanel;
 	}
 
-	public static Component createTabChart(JTabbedPane tab1) {
+	public static Component createTabChart(JTabbedPane tab1, WorkLoad workLoad) {
 		JPanel panel = new JPanel();
 
 		GraphPanelChart chart1 = new GraphPanelChart(false, true);
@@ -292,24 +299,18 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		row.setDrawLine(true);
 		row.setMarkerSize(AbstractGraphRow.MARKER_SIZE_NONE);
 		row.setDrawThickLines(true);
-		long now = System.currentTimeMillis();
-		row.add(now, 0);
+
+		WorkLoadThreadGroupGUI.plotGraph(row, workLoad);
 
 		final HashTree hashTree = new HashTree();
 		hashTree.add(new LoopController());
 
-		// users in
-		// int numThreads = tg.getNumThreads();
 		log.debug("Num Threads: " + 50);
-		WorkLoad workload = new WorkLoad();
-		workload.setNumThreads(10);
-		workload.plotGraph(row);
-		workload.setTab(tab1);
 
 		model1.put("Expected parallel users count", row);
 		chart1.invalidateCache();
 		chart1.repaint();
-		WorkLoadTests.getTests().add(workload);
+
 		return chart1;
 
 	}
@@ -327,7 +328,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	}
 
 	public void tableChanged(TableModelEvent e) {
-		// log.info("Model changed");
+
 		updateUI();
 	}
 
@@ -342,7 +343,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	}
 
 	public void editingStopped(ChangeEvent e) {
-		// log.info("Editing stopped");
+
 		updateUI();
 	}
 
@@ -356,13 +357,29 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	}
 
 	public void editingCanceled(ChangeEvent arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	public WorkLoadThreadGroupGUI() {
 		super();
 		init();
+	}
+
+	public static void plotGraph(GraphRowSumValues row, WorkLoad workLoad) {
+
+		for (int n = 0; n < workLoad.getNumThreads(); n++) {
+
+			long initialTime = System.currentTimeMillis();
+
+			long now = workLoad.getStartTimeStrategy(n);
+			row.add(now - initialTime, 0);
+			row.add(now - initialTime, 1);
+
+			long nowEnd = workLoad.getEndTimeStrategy(n);
+			row.add(nowEnd - initialTime, 0);
+			row.add(nowEnd - initialTime, -1);
+		}
+
 	}
 
 }
