@@ -1,9 +1,10 @@
 package br.unifor.iadapter.threadGroup;
 
 import java.awt.BorderLayout;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import kg.apc.jmeter.JMeterPluginsUtils;
+
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.visualizers.gui.AbstractListenerGui;
 

@@ -6,19 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.swing.JTable;
-
-import kg.apc.jmeter.gui.ButtonPanelAddCopyRemove;
-import kg.apc.jmeter.threads.AbstractSimpleThreadGroup;
-
-import org.apache.jmeter.control.LoopController;
-import org.apache.jmeter.control.gui.LoopControlPanel;
-import org.apache.jmeter.engine.JMeterEngineException;
+import org.apache.jmeter.engine.JMeterEngine;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.engine.TreeCloner;
 import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.event.LoopIterationListener;
-import org.apache.jmeter.gui.util.PowerTableModel;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.Sampler;
@@ -27,7 +19,6 @@ import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.testelement.property.JMeterProperty;
 import org.apache.jmeter.testelement.property.NullProperty;
 import org.apache.jmeter.testelement.property.PropertyIterator;
-import org.apache.jmeter.threads.AbstractThreadGroup;
 import org.apache.jmeter.threads.JMeterContext;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterThread;
@@ -44,7 +35,7 @@ import org.apache.log.Logger;
  */
 public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		Serializable, TestStateListener, SampleListener, LoopIterationListener {
-	
+
 	private WorkLoad workloadCurrent;
 
 	@Override
@@ -53,16 +44,38 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		super.threadFinished(thread);
 
 		WorkLoad.setThreadStopped(WorkLoad.getThreadStopped() + 1);
-		
-		if (workloadCurrent.getNumThreads()<=WorkLoad.getThreadStopped()){
+
+		if (workloadCurrent.getNumThreads() <= WorkLoad.getThreadStopped()) {
 			System.out.print("teste terminou");
 			WorkLoad.setThreadStopped(0);
-			WorkLoadTests.setCurrentTest(WorkLoadTests.getCurrentTest()+1);
-			if (WorkLoadTests.getCurrentTest()<WorkLoadTests.getTests().size()){
+			WorkLoadTests.setCurrentTest(WorkLoadTests.getCurrentTest() + 1);
+			if (WorkLoadTests.getCurrentTest() < WorkLoadTests.getTests()
+					.size()) {
 				final JMeterContext context = JMeterContextService.getContext();
-				//context.g
-				new Thread(context.getEngine()).start();
-				
+				// context.g
+				try {
+					
+					JMeterEngine engine=context.getEngine();
+					
+					//engine.configure((HashTree) SinglentonEngine.threadGroupTree.clone());
+					
+					new Thread((Runnable) engine).start();
+					
+					
+					
+					
+					
+					
+
+					// SinglentonEngine.getEngineThread(context);
+					//int groupCount = SinglentonEngine.groupCount++;
+					//this.start(groupCount, SinglentonEngine.notifier,
+							//SinglentonEngine.threadGroupTree,
+							//SinglentonEngine.engine1);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
 			}
 		}
 	}
@@ -93,17 +106,18 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	public void start(int groupCount, ListenerNotifier notifier,
 			ListedHashTree threadGroupTree, StandardJMeterEngine engine) {
 
+		SinglentonEngine.groupCount = groupCount;
+		SinglentonEngine.notifier = notifier;
+		SinglentonEngine.threadGroupTree = threadGroupTree;
+		SinglentonEngine.engine1 = engine;
+
 		if (WorkLoadTests.getTests().size() > 0) {
 			running = true;
-			
-			
-		
-			
 
 			WorkLoad workload = WorkLoadTests.getTests().get(
 					WorkLoadTests.getCurrentTest());
-			
-			this.workloadCurrent=workload;
+
+			this.workloadCurrent = workload;
 
 			int numThreads = workload.getNumThreads();
 
@@ -117,9 +131,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 													// threads in the group
 
 			final JMeterContext context = JMeterContextService.getContext();
-			
+
 			context.setRestartNextLoop(true);
-			
+
 			for (int i = 0; running && i < numThreads; i++) {
 				JMeterThread jmThread = makeThread(groupCount, notifier,
 						threadGroupTree, engine, i, context);
@@ -281,7 +295,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	public void iterationStart(LoopIterationEvent iterEvent) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

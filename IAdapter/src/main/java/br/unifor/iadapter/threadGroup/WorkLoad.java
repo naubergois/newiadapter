@@ -1,16 +1,31 @@
 package br.unifor.iadapter.threadGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.JTabbedPane;
-
-import kg.apc.charting.rows.GraphRowSumValues;
 
 import org.apache.jmeter.threads.JMeterThread;
 import org.apache.log.Logger;
 
 public class WorkLoad {
+
+	private String name;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	private long worstResponseTime;
+
+	public long getWorstResponseTime() {
+		return worstResponseTime;
+	}
+
+	public void setWorstResponseTime(long worstResponseTime) {
+		this.worstResponseTime = worstResponseTime;
+	}
 
 	private JTabbedPane tab;
 
@@ -70,15 +85,7 @@ public class WorkLoad {
 		this.numThreads = numThreads;
 	}
 
-	
 	private static int threadStopped;
-	
-	
-	
-	
-	
-
-	
 
 	public static int getThreadStopped() {
 		return threadStopped;
@@ -91,16 +98,16 @@ public class WorkLoad {
 	public void plotGraph(GraphRowSumValues row) {
 
 		for (int n = 0; n < this.getNumThreads(); n++) {
-			
-			long initialTime=System.currentTimeMillis();
+
+			long initialTime = System.currentTimeMillis();
 
 			long now = getStartTimeStrategy(n);
-			row.add(now-initialTime, 0);
-			row.add(now-initialTime, 1);
+			row.add(now - initialTime, 0);
+			row.add(now - initialTime, 1);
 
 			long nowEnd = getEndTimeStrategy(n);
-			row.add(nowEnd-initialTime, 0);
-			row.add(nowEnd-initialTime, -1);
+			row.add(nowEnd - initialTime, 0);
+			row.add(nowEnd - initialTime, -1);
 		}
 
 	}

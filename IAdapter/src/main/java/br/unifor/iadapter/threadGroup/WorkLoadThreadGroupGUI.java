@@ -20,14 +20,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import kg.apc.charting.AbstractGraphRow;
-import kg.apc.charting.DateTimeRenderer;
-import kg.apc.charting.GraphPanelChart;
-import kg.apc.charting.rows.GraphRowSumValues;
-import kg.apc.jmeter.JMeterPluginsUtils;
-import kg.apc.jmeter.gui.GuiBuilderHelper;
-import kg.apc.jmeter.threads.UltimateThreadGroup;
-
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.control.gui.LoopControlPanel;
 import org.apache.jmeter.gui.util.PowerTableModel;
@@ -60,20 +52,11 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	/**
      *
      */
-	public static final String[] columnIdentifiers = new String[] {
-			"Max Threads Count", "Max Delay, sec", "Max Time, sec",
-			"Max Hold Load For, sec", "Shutdown Time" };
 
-	public static final Class[] columnClasses = new Class[] { String.class,
-			String.class, String.class, String.class, String.class };
-	public static final Integer[] defaultValues = new Integer[] { 100, 0, 30,
-			60, 10 };
 	private LoopControlPanel loopPanel;
-	protected PowerTableModel tableModel;
+	protected WorkLoadTable wtableModel;
 	protected JTable grid;
 	protected JPanel buttons;
-	
-	   
 
 	JTabbedPane tabbedPane = new JTabbedPane();
 
@@ -127,6 +110,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			public void actionPerformed(ActionEvent e) {
 
 				WorkLoadThreadGroupGUI.createTabChart(tabbedPane);
+				wtableModel.fireTableDataChanged();
 
 			}
 		});
@@ -154,9 +138,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	}
 
 	public void modifyTestElement(TestElement tg) {
-		
-		
-		
+
 		// log.info("Modify test element");
 		if (grid == null) {
 			createGrid();
@@ -168,15 +150,15 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		if (tg instanceof WorkLoadThreadGroup) {
 			WorkLoadThreadGroup utg = (WorkLoadThreadGroup) tg;
-			CollectionProperty rows = JMeterPluginsUtils
-					.tableModelRowsToCollectionProperty(tableModel,
-							WorkLoadThreadGroup.DATA_PROPERTY);
-			utg.setData(rows);
+			// CollectionProperty rows = JMeterPluginsUtils
+			// .tableModelRowsToCollectionProperty(tableModel,
+			// WorkLoadThreadGroup.DATA_PROPERTY);
+			// utg.setData(rows);
 			if (loopPanel == null) {
 				createControllerPanel();
 			}
 
-			LoopController controler=(LoopController) loopPanel
+			LoopController controler = (LoopController) loopPanel
 					.createTestElement();
 			controler.setLoops(1);
 			utg.setSamplerController(controler);
@@ -188,17 +170,13 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	public void configure(TestElement tg) {
 		// log.info("Configure");
 		super.configure(tg);
-		
+
 		WorkLoadThreadGroup utg = (WorkLoadThreadGroup) tg;
 		// log.info("Configure "+utg.getName());
 		JMeterProperty threadValues = utg.getData();
 		if (!(threadValues instanceof NullProperty)) {
-			CollectionProperty columns = (CollectionProperty) threadValues;
-
-			tableModel.removeTableModelListener(this);
-			JMeterPluginsUtils.collectionPropertyToTableModelRows(columns,
-					tableModel);
-			tableModel.addTableModelListener(this);
+			wtableModel.removeTableModelListener(this);
+			wtableModel.addTableModelListener(this);
 			updateUI();
 		} else {
 			log.warn("Received null property instead of collection");
@@ -210,9 +188,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			if (te instanceof LoopController) {
 				((LoopController) te).setLoops(1);
 			}
-			
+
 			loopPanel.configure(te);
-			
+
 		}
 		// buttons.checkDeleteButtonStatus();
 	}
@@ -221,13 +199,13 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	public void updateUI() {
 		super.updateUI();
 
-		if (tableModel == null) {
+		if (wtableModel == null) {
 			createTableModel();
 		}
 		WorkLoadThreadGroup utgForPreview = new WorkLoadThreadGroup();
-		utgForPreview.setData(JMeterPluginsUtils
-				.tableModelRowsToCollectionPropertyEval(tableModel,
-						UltimateThreadGroup.DATA_PROPERTY));
+		// utgForPreview.setData(JMeterPluginsUtils
+		// .tableModelRowsToCollectionPropertyEval(tableModel,
+		// UltimateThreadGroup.DATA_PROPERTY));
 		updateChart(utgForPreview);
 
 	}
@@ -354,13 +332,13 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	}
 
 	private void createTableModel() {
-		tableModel = new PowerTableModel(columnIdentifiers, columnClasses);
-		tableModel.addTableModelListener(this);
+		wtableModel = new WorkLoadTable();
+		wtableModel.addTableModelListener(this);
 		if (grid == null) {
 			createGrid();
 		}
 
-		grid.setModel(tableModel);
+		grid.setModel(wtableModel);
 	}
 
 	public void editingStopped(ChangeEvent e) {
@@ -372,8 +350,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	public void clearGui() {
 		super.clearGui();
 
-		if (tableModel != null) {
-			tableModel.clearData();
+		if (wtableModel != null) {
+			wtableModel.clearData();
 		}
 	}
 
