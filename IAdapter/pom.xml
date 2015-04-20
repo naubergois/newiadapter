@@ -1,23 +1,29 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>iadapter</groupId>
-  <artifactId>IAdapter</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <dependencies>
-  	<dependency>
-  		<groupId>org.apache.jmeter</groupId>
-  		<artifactId>ApacheJMeter</artifactId>
-  		<version>2.11</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.apache.jmeter</groupId>
-  		<artifactId>ApacheJMeter_components</artifactId>
-  		<version>2.11</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>net.sf.jgap</groupId>
-  		<artifactId>jgap</artifactId>
-  		<version>3.4.4</version>
-  	</dependency>
-  </dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>iadapter</groupId>
+	<artifactId>IAdapter</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.jmeter</groupId>
+			<artifactId>ApacheJMeter</artifactId>
+			<version>2.11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jmeter</groupId>
+			<artifactId>ApacheJMeter_components</artifactId>
+			<version>2.11</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jgap</groupId>
+			<artifactId>jgap</artifactId>
+			<version>3.4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>10.11.1.1</version>
+		</dependency>
+	</dependencies>
 </project>

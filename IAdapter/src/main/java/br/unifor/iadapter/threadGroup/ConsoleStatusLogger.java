@@ -4,6 +4,9 @@ package br.unifor.iadapter.threadGroup;
 
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Set;
 
 import org.apache.jmeter.JMeter;
 import org.apache.jmeter.engine.util.NoThreadClone;
@@ -11,15 +14,19 @@ import org.apache.jmeter.reporters.AbstractListenerElement;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.SampleResult;
-import org.apache.jmeter.samplers.SampleSaveConfiguration;
 import org.apache.jmeter.testelement.TestStateListener;
-import org.apache.jmeter.testelement.property.ObjectProperty;
+import org.apache.jmeter.threads.AbstractThreadGroup;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
 
 public class ConsoleStatusLogger extends AbstractListenerElement implements
 		SampleListener, Serializable, NoThreadClone, TestStateListener {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public static long worstResponseTime;
 
@@ -47,19 +54,56 @@ public class ConsoleStatusLogger extends AbstractListenerElement implements
 		}
 	}
 
+	private String currentWorkload = "";
+
+	private static HashMap<String, String> reponseTimes = new HashMap<String, String>();
+
 	public synchronized void sampleOccurred(SampleEvent se) {
 
-		if (WorkLoadTests.getTests().size() > 0) {
-			if (WorkLoadTests.getCurrentTest() < WorkLoadTests.getTests()
-					.size()) {
-				WorkLoad currentWorkLoad = WorkLoadTests.getTests().get(
-						WorkLoadTests.getCurrentTest());
-				if (se.getResult().getTime() > currentWorkLoad
-						.getWorstResponseTime()) {
-					currentWorkLoad.setWorstResponseTime(se.getResult()
-							.getTime());
+		AbstractThreadGroup group = JMeterContextService.getContext()
+				.getThreadGroup();
+
+		if (group instanceof WorkLoadThreadGroup) {
+
+			String workLoad = JMeterContextService.getContext().getVariables()
+					.get("currentWorkload");
+
+			if (!(this.currentWorkload.equals(workLoad))) {
+				this.currentWorkload = workLoad;
+
+				if (!(reponseTimes.containsKey(this.currentWorkload))) {
+					reponseTimes.put(this.currentWorkload, "0");
+				}
+
+			}
+
+			String responseTime = reponseTimes.get(this.currentWorkload);
+
+			int worstResponseTime;
+
+			if (responseTime == null) {
+				worstResponseTime = 0;
+			} else {
+				worstResponseTime = Integer.valueOf(responseTime);
+			}
+
+			if (se.getResult().getTime() > worstResponseTime) {
+
+				reponseTimes.put(this.currentWorkload,
+						String.valueOf(se.getResult().getTime()));
+				try {
+					DerbyDatabase.updateResponseTime(
+							String.valueOf(se.getResult().getTime()),
+							this.currentWorkload);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
+
 		}
 
 		// TODO: make the interval configurable
@@ -82,11 +126,26 @@ public class ConsoleStatusLogger extends AbstractListenerElement implements
 		threads = res.getAllThreads();
 	}
 
+	public static HashMap<String, String> getReponseTimes() {
+		return reponseTimes;
+	}
+
+	public static void setReponseTimes(HashMap<String, String> reponseTimes) {
+		ConsoleStatusLogger.reponseTimes = reponseTimes;
+	}
+
 	public ConsoleStatusLogger() {
 		super();
-		setProperty(new ObjectProperty(SAVE_CONFIG,
-				new SampleSaveConfiguration()));
-		// TODO Auto-generated constructor stub
+
+		try {
+			DerbyDatabase.createDatabase();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void flush(long sec) {
@@ -125,6 +184,21 @@ public class ConsoleStatusLogger extends AbstractListenerElement implements
 	}
 
 	public void testEnded() {
+		
+		Set keys=this.getReponseTimes().keySet();
+		for (Object object : keys) {
+			String responseTime=this.getReponseTimes().get(object);
+			try {
+				DerbyDatabase.updateResponseTime(responseTime, object.toString());
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		System.out.println("Teste console terminou");
 	}
 
 	public void testEnded(String string) {

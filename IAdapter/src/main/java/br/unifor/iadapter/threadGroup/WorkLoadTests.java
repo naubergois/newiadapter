@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorkLoadTests {
-	
+	/*
 	private static int currentTest;
 	
 	public static int getCurrentTest() {
@@ -24,5 +24,5 @@ public class WorkLoadTests {
 	public static void setTests(List<WorkLoad> tests) {
 		WorkLoadTests.tests = tests;
 	}
-
+*/
 }

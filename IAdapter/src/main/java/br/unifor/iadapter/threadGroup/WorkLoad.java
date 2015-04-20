@@ -4,6 +4,36 @@ import org.apache.jmeter.threads.JMeterThread;
 import org.apache.log.Logger;
 
 public class WorkLoad {
+	
+	private double fit;
+	
+	public double getFit() {
+		return fit;
+	}
+
+	public void setFit(double fit) {
+		this.fit = fit;
+	}
+
+	private boolean error;
+	
+	public boolean isError() {
+		return error;
+	}
+
+	public void setError(boolean error) {
+		this.error = error;
+	}
+
+	private String type;
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 
 	private String name;
 

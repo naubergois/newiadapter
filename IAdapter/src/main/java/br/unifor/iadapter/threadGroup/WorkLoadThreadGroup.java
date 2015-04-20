@@ -1,16 +1,21 @@
 package br.unifor.iadapter.threadGroup;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.jmeter.JMeter;
 import org.apache.jmeter.engine.JMeterEngine;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.engine.TreeCloner;
 import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.event.LoopIterationListener;
+import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.Sampler;
@@ -18,9 +23,12 @@ import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.testelement.property.JMeterProperty;
 import org.apache.jmeter.testelement.property.NullProperty;
+import org.apache.jmeter.testelement.property.PropertyIterator;
+import org.apache.jmeter.testelement.property.StringProperty;
 import org.apache.jmeter.threads.JMeterContext;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterThread;
+import org.apache.jmeter.threads.JMeterVariables;
 import org.apache.jmeter.threads.ListenerNotifier;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.logging.LoggingManager;
@@ -35,7 +43,72 @@ import org.apache.log.Logger;
 public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		Serializable, TestStateListener, SampleListener, LoopIterationListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private int currentTest;
+
+	public int getCurrentTest() {
+		return currentTest;
+	}
+
+	public void setCurrentTest(int currentTest) {
+		this.currentTest = currentTest;
+	}
+
 	private WorkLoad workloadCurrent;
+
+	private List<WorkLoad> listWorkLoads;
+
+	public List<WorkLoad> getListWorkLoads() {
+		return listWorkLoads;
+	}
+
+	public void setListWorkLoads(List<WorkLoad> listWorkLoads) {
+		this.listWorkLoads = listWorkLoads;
+	}
+
+	public static List<JMeterTreeNode> findWorkLoadTransactions(
+			JMeterTreeNode rootNode, List<JMeterTreeNode> list) {
+
+		Enumeration<JMeterTreeNode> enumr = rootNode.children();
+
+		if (list == null) {
+			list = new ArrayList<JMeterTreeNode>();
+		}
+
+		while (enumr.hasMoreElements()) {
+			JMeterTreeNode child = enumr.nextElement();
+			if (child.getTestElement() instanceof WorkLoadTransactionController) {
+				list.add(child);
+			}
+			list.addAll(findWorkLoadTransactions(child, list));
+
+		}
+		return list;
+	}
+
+	public static List<JMeterTreeNode> findWorkLoadThreadGroup(
+			JMeterTreeNode rootNode, List<JMeterTreeNode> list) {
+
+		Enumeration<JMeterTreeNode> enumr = rootNode.children();
+
+		if (list == null) {
+			list = new ArrayList<JMeterTreeNode>();
+		}
+
+		while (enumr.hasMoreElements()) {
+			JMeterTreeNode child = enumr.nextElement();
+			if (child.getTestElement() instanceof WorkLoadThreadGroup) {
+				list.add(child);
+			}
+			list.addAll(findWorkLoadThreadGroup(child, list));
+
+		}
+		return list;
+	}
 
 	public static List<WorkLoad> createWorkloads() {
 		List<WorkLoad> lista = new ArrayList<WorkLoad>();
@@ -48,16 +121,48 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	@Override
 	public void threadFinished(JMeterThread thread) {
 
+		JMeterProperty data = getData();
+
+		if (!(data instanceof NullProperty)) {
+			scheduleIT = ((CollectionProperty) data).iterator();
+
+		}
+
+		CollectionProperty collection = ((CollectionProperty) data);
+		
+		int inc=0;
+		if(JMeter.isNonGUI()){
+			inc=1;
+		}
+		
+		int size = collection.size()+inc;
+
+		System.out.println(JMeterContextService.getContext().getEngine()
+				.isActive());
+
 		super.threadFinished(thread);
 		WorkLoad.setThreadStopped(WorkLoad.getThreadStopped() + 1);
-		if (workloadCurrent.getNumThreads() <= WorkLoad.getThreadStopped()) {
+		
+		
+		int threadStopped = WorkLoad.getThreadStopped();
+		
+		
+		
+
+		if (workloadCurrent.getNumThreads() <= threadStopped) {
 			System.out.print("teste terminou");
 			WorkLoad.setThreadStopped(0);
-			WorkLoadTests.setCurrentTest(WorkLoadTests.getCurrentTest() + 1);
-			if (WorkLoadTests.getCurrentTest() < WorkLoadTests.getTests()
-					.size()) {
+
+			System.out.println(ConsoleStatusLogger.getReponseTimes());
+
+			this.setCurrentTest(this.getCurrentTest() + 1);
+			
+			
+
+			
+			if (this.getCurrentTest() < size) {
 				final JMeterContext context = JMeterContextService.getContext();
-				// context.g
+
 				try {
 
 					JMeterEngine engine = context.getEngine();
@@ -66,6 +171,18 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				} catch (Exception e) {
 					e.printStackTrace();
+				}
+
+			} else {
+				while (!(verifyThreadsStopped()))
+					;
+				this.currentTest = 0;
+
+				for (int i = 0; i < collection.size(); i++) {
+					CollectionProperty property = (CollectionProperty) collection
+							.get(i);
+
+					
 				}
 
 			}
@@ -90,50 +207,80 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	// JMeter 2.7 Compatibility
 	private long tgStartTime = -1;
+
+	private PropertyIterator scheduleIT;
 	private static final long TOLERANCE = 1000;
 
 	@Override
 	public void start(int groupCount, ListenerNotifier notifier,
 			ListedHashTree threadGroupTree, StandardJMeterEngine engine) {
 
+		JMeterProperty data = getData();
+
+		if (!(data instanceof NullProperty)) {
+			scheduleIT = ((CollectionProperty) data).iterator();
+
+		}
+
 		SinglentonEngine.groupCount = groupCount;
 		SinglentonEngine.notifier = notifier;
 		SinglentonEngine.threadGroupTree = threadGroupTree;
 		SinglentonEngine.engine1 = engine;
+		CollectionProperty collection = ((CollectionProperty) data);
+		int size = collection.size();
 
-		if (WorkLoadTests.getTests().size() > 0) {
-			running = true;
+		if (scheduleIT.hasNext()) {
 
-			WorkLoad workload = WorkLoadTests.getTests().get(
-					WorkLoadTests.getCurrentTest());
+			if (size > 0) {
+				running = true;
 
-			this.workloadCurrent = workload;
+				ArrayList object = (ArrayList) collection.get(currentTest)
+						.getObjectValue();
 
-			int numThreads = workload.getNumThreads();
+				WorkLoad workload = JMeterPluginsUtils.getWorkLoad(object);
 
-			threadsToSchedule = numThreads;
+				try {
+					DerbyDatabase.createWorkLoadIfNotExist(object);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
-			log.info("Starting thread group number " + groupCount + " threads "
-					+ numThreads);
+				JMeterContextService.getContext().getVariables()
+						.put("currentWorkload", workload.getName());
 
-			final JMeterContext context = JMeterContextService.getContext();
+				this.workloadCurrent = workload;
 
-			context.setRestartNextLoop(true);
+				int numThreads = workload.getNumThreads();
 
-			for (int i = 0; running && i < numThreads; i++) {
-				JMeterThread jmThread = makeThread(groupCount, notifier,
-						threadGroupTree, engine, i, context, workload);
-				workload.scheduleThread(log, numThreads, jmThread, i);
-				Thread newThread = new Thread(jmThread,
-						jmThread.getThreadName());
+				threadsToSchedule = numThreads;
 
-				registerStartedThread(jmThread, newThread);
+				log.info("Starting thread group number " + groupCount
+						+ " threads " + numThreads);
 
-				newThread.start();
+				final JMeterContext context = JMeterContextService.getContext();
+
+				context.setRestartNextLoop(true);
+
+				for (int i = 0; i < numThreads; i++) {
+					JMeterThread jmThread = makeThread(groupCount, notifier,
+							threadGroupTree, engine, i, context, workload);
+					workload.scheduleThread(log, numThreads, jmThread, i);
+					Thread newThread = new Thread(jmThread,
+							jmThread.getThreadName());
+
+					registerStartedThread(jmThread, newThread);
+
+					newThread.start();
+				}
+
+				log.info("Started thread group number " + groupCount);
 			}
-
-			log.info("Started thread group number " + groupCount);
 		}
+
 	}
 
 	@Override
@@ -166,6 +313,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		final String threadName = groupName + " " + (groupCount) + "-"
 				+ workLoad.getName() + "-" + (i + 1);
 		jmeterThread.setThreadName(threadName);
+		System.out.println("Active:" + engine.isActive());
 		jmeterThread.setEngine(engine);
 		jmeterThread.setOnErrorStopTest(onErrorStopTest);
 		jmeterThread.setOnErrorStopTestNow(onErrorStopTestNow);
@@ -181,6 +329,18 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	public WorkLoadThreadGroup() {
 		super();
+		if (this.listWorkLoads == null) {
+			listWorkLoads = new ArrayList<WorkLoad>();
+		}
+		try {
+			DerbyDatabase.createDatabase();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
@@ -192,10 +352,11 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	void setData(CollectionProperty rows) {
 		// log.info("setData");
 		setProperty(rows);
+
 	}
 
 	public void testEnded() {
-		// TODO Auto-generated method stub
+		System.out.println("Teste terminou");
 
 	}
 
@@ -218,13 +379,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	}
 
 	public void testStarted() {
-
-		JMeterProperty data = getData();
-		if (!(data instanceof NullProperty)) {
-
-		}
-
-		threadsToSchedule = 0;
 	}
 
 	@Override

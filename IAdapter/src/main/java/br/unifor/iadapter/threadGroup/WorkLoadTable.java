@@ -22,13 +22,23 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import javax.swing.table.DefaultTableModel;
-
+import org.apache.jmeter.gui.util.PowerTableModel;
 import org.apache.jorphan.collections.Data;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
 
-public class WorkLoadTable extends DefaultTableModel {
+public class WorkLoadTable extends PowerTableModel {
+
+	private WorkLoadThreadGroup workLoadThreadGroup;
+
+	public WorkLoadThreadGroup getWorkLoadThreadGroup() {
+		return workLoadThreadGroup;
+	}
+
+	public void setWorkLoadThreadGroup(WorkLoadThreadGroup workLoadThreadGroup) {
+		this.workLoadThreadGroup = workLoadThreadGroup;
+	}
+
 	private static final Logger log = LoggingManager.getLoggerForClass();
 
 	private static final long serialVersionUID = 233L;
@@ -46,7 +56,9 @@ public class WorkLoadTable extends DefaultTableModel {
 		columnClasses = classes;
 	}
 
-	public WorkLoadTable() {
+	public WorkLoadTable(WorkLoadThreadGroup workLoadThreadGroup) {
+
+		this.workLoadThreadGroup = workLoadThreadGroup;
 	}
 
 	public void setRowValues(int row, Object[] values) {
@@ -105,6 +117,13 @@ public class WorkLoadTable extends DefaultTableModel {
 
 	@Override
 	public void addRow(Object data[]) {
+		if (data.length != model.getHeaderCount()) {
+			throw new IllegalArgumentException("Incorrect number of data items");
+		}
+		model.setCurrentPos(model.size());
+		for (int i = 0; i < data.length; i++) {
+			model.addColumnValue(model.getHeaders()[i], data[i]);
+		}
 
 	}
 
@@ -117,7 +136,8 @@ public class WorkLoadTable extends DefaultTableModel {
 	}
 
 	public Object[] getRowData(int row) {
-		WorkLoad workload = WorkLoadTests.getTests().get(row);
+		WorkLoad workload = this.workLoadThreadGroup.getListWorkLoads()
+				.get(row);
 		Object[] rowObject = new Object[5];
 		rowObject[0] = workload.getName();
 		rowObject[1] = workload.getNumThreads();
@@ -227,7 +247,11 @@ public class WorkLoadTable extends DefaultTableModel {
 	 */
 	@Override
 	public int getRowCount() {
-		return WorkLoadTests.getTests().size();
+		if (this.getWorkLoadThreadGroup() != null) {
+			return this.getWorkLoadThreadGroup().getListWorkLoads().size();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -267,7 +291,8 @@ public class WorkLoadTable extends DefaultTableModel {
 	 */
 	@Override
 	public Object getValueAt(int row, int column) {
-		WorkLoad workload = WorkLoadTests.getTests().get(row);
+		WorkLoad workload = this.getWorkLoadThreadGroup().getListWorkLoads()
+				.get(row);
 		if (column == 0)
 			return workload.getName();
 		if (column == 1)
