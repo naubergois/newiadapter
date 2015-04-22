@@ -9,18 +9,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.swing.JOptionPane;
-
 import org.apache.jmeter.JMeter;
+import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.engine.JMeterEngine;
-import org.apache.jmeter.engine.JMeterEngineException;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.engine.TreeCloner;
 import org.apache.jmeter.engine.TreeClonerNoTimer;
 import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.event.LoopIterationListener;
-import org.apache.jmeter.gui.action.Start;
-import org.apache.jmeter.gui.tree.JMeterTreeModel;
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
@@ -148,6 +144,71 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	@Override
 	public void threadFinished(JMeterThread thread) {
+		JMeterProperty data = getData();
+
+		if (!(data instanceof NullProperty)) {
+			scheduleIT = ((CollectionProperty) data).iterator();
+
+		}
+
+		CollectionProperty collection = ((CollectionProperty) data);
+
+		int inc = 0;
+		if (JMeter.isNonGUI()) {
+			inc = 1;
+		}
+
+		int size = collection.size() + inc;
+
+		WorkLoad.setThreadStopped(WorkLoad.getThreadStopped() + 1);
+
+		int threadStopped = WorkLoad.getThreadStopped();
+
+		if (workloadCurrent.getNumThreads() <= threadStopped) {
+			System.out.print("teste terminou");
+			WorkLoad.setThreadStopped(0);
+
+			System.out.println(ConsoleStatusLogger.getReponseTimes());
+
+			this.setCurrentTest(this.getCurrentTest() + 1);
+			if (this.getCurrentTest() < size) {
+				final JMeterContext context = JMeterContextService.getContext();
+				// context.g
+				try {
+
+					JMeterEngine engine = context.getEngine();
+
+					new Thread((Runnable) engine).start();
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			} else {
+				/*while (!(verifyThreadsStopped()))
+					;
+				this.currentTest = 0;
+
+				for (int i = 0; i < collection.size(); i++) {
+					CollectionProperty property = (CollectionProperty) collection
+							.get(i);
+
+					ArrayList arrayList = (ArrayList) property.getObjectValue();
+
+					try {
+						DerbyDatabase.insertWorkLoads(arrayList);
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}*/
+
+			}
+		}
 
 	}
 
@@ -479,6 +540,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	public void testEnded() {
 
+		while (JMeterContextService.getContext().getEngine() != null)
+			;
+
 		JMeterProperty data = getData();
 
 		if (!(data instanceof NullProperty)) {
@@ -495,54 +559,85 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		int size = collection.size() + inc;
 
+		while (WorkLoad.getThreadStopped() < this.workloadCurrent
+				.getNumThreads())
+			;
+
+		WorkLoad.setThreadStopped(0);
+
 		while (JMeterContextService.getContext().getEngine() != null)
 			;
 
 		this.setCurrentTest(this.getCurrentTest() + 1);
 
 		if (this.getCurrentTest() < size) {
-			/*
-			final JMeterContext context = JMeterContextService.getContext();
-			if (treeComplete == null) {
-				try {
-					TestPlan plan = new TestPlan();
 
-					// boolean teste = TestPlan.class.isAssignableFrom(plan
-					// .getClass());
+			StandardJMeterEngine jmeter = new StandardJMeterEngine();
 
-					JMeterTreeModel model = new JMeterTreeModel(new Object());
-					JMeterTreeNode root = new JMeterTreeNode(plan, model);
+			// JMeter initialization (properties, log levels, locale, etc)
+			// JMeterUtils
+			// .loadJMeterProperties("/path/to/your/jmeter/bin/jmeter.properties");
+			// JMeterUtils.initLogging();// you can comment this line out to see
+			// extra log messages of i.e. DEBUG
+			// level
+			// JMeterUtils.initLocale();
 
-					// model.addComponent(plan, null);
-					// model.addComponent(plan, root);
-					HashTree tree = model.addSubTree(this.tree, root);
+			// JMeter Test Plan, basic all u JOrphan HashTree
+			HashTree testPlanTree = new HashTree();
 
-					model.setRoot(root);
-					this.treeComplete = tree;
+			// Test Plan
+			TestPlan testPlan = new TestPlan(
+					"Create JMeter Script From Java Code");
 
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			// Construct Test Plan from previously initialized elements
+			testPlanTree.add("testPlan", testPlan);
+			for (Object key : this.tree.keySet()) {
+				testPlanTree.add(key, this.tree.get(key));
+
 			}
-			try {
-				// model.addComponent(plan, root);
+			// Run Test Plan
+			// jmeter.configure(testPlanTree);
 
-				TreeCloner cloner = cloneTree(this.treeComplete, false);
-				JMeterEngine engine = new WorkLoadJMeterEngine();
-				engine.configure(cloner.getClonedTree());
-				JMeterContextService.getContext().setEngine((StandardJMeterEngine) engine);
-				
+			Thread thread = new Thread(SinglentonEngine.engine1);
 
-				
-				try {
-					engine.runTest();
-				} catch (JMeterEngineException e) {
-					e.printStackTrace();
-				}
+			thread.start();
 
-			} catch (Exception e) {
-				e.printStackTrace();
-			}*/
+			// JMeterContextService.getContext().setEngine(jmeter);
+			// jmeter.run();
+
+			System.out.println("Engine" + SinglentonEngine.engine1);
+
+			/*
+			 * final JMeterContext context = JMeterContextService.getContext();
+			 * if (treeComplete == null) { try { TestPlan plan = new TestPlan();
+			 * 
+			 * // boolean teste = TestPlan.class.isAssignableFrom(plan //
+			 * .getClass());
+			 * 
+			 * JMeterTreeModel model = new JMeterTreeModel(new Object());
+			 * JMeterTreeNode root = new JMeterTreeNode(plan, model);
+			 * 
+			 * // model.addComponent(plan, null); // model.addComponent(plan,
+			 * root); HashTree tree = model.addSubTree(this.tree, root);
+			 * 
+			 * model.setRoot(root); this.treeComplete = tree;
+			 * 
+			 * } catch (Exception e) { e.printStackTrace(); } } try { //
+			 * model.addComponent(plan, root);
+			 * 
+			 * TreeCloner cloner = cloneTree(this.treeComplete, false);
+			 * JMeterEngine engine = new WorkLoadJMeterEngine();
+			 * engine.configure(cloner.getClonedTree());
+			 * JMeterContextService.getContext
+			 * ().setEngine((StandardJMeterEngine) engine);
+			 * 
+			 * 
+			 * 
+			 * try { engine.runTest(); } catch (JMeterEngineException e) {
+			 * e.printStackTrace(); }
+			 * 
+			 * } catch (Exception e) { e.printStackTrace(); }
+			 */
 
 		} else {
 
