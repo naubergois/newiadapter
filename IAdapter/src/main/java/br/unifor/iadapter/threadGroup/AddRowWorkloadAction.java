@@ -11,6 +11,7 @@ import javax.swing.table.TableCellEditor;
 import org.apache.jmeter.gui.GuiPackage;
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.gui.util.PowerTableModel;
+import org.jgap.InvalidConfigurationException;
 
 public class AddRowWorkloadAction implements ActionListener {
 
@@ -38,25 +39,30 @@ public class AddRowWorkloadAction implements ActionListener {
 			cellEditor.stopCellEditing();
 		}
 
-		List<WorkLoad> workloadList = WorkLoadThreadGroup.createWorkloads();
+		List<WorkLoad> workloadList=null;
+		try {
+			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(10);
+		} catch (InvalidConfigurationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		GuiPackage gp = GuiPackage.getInstance();
 		if (gp != null) {
 
-			JMeterTreeNode root = (JMeterTreeNode) gp.getTreeModel().getRoot();
-			List<JMeterTreeNode> lista = WorkLoadThreadGroup
-					.findWorkLoadTransactions(root, null);
+			//JMeterTreeNode root = (JMeterTreeNode) gp.getTreeModel().getRoot();
+			
+			List<JMeterTreeNode> lista = FindService.searchWorkLoadControllerWithGui();
+					
+			//List<JMeterTreeNode> lista = WorkLoadThreadGroup
+			//		.findWorkLoadTransactions(root, null);
 			System.out.println(lista);
 		}
 
 		for (WorkLoad workLoad : workloadList) {
+			
+			
 
-			Object[] rowObject = new Object[6];
-			rowObject[0] = workLoad.getName();
-			rowObject[1] = workLoad.getType();
-			rowObject[2] = String.valueOf(workLoad.getNumThreads());
-			rowObject[3] = String.valueOf(workLoad.getWorstResponseTime());
-			rowObject[4] = String.valueOf(workLoad.isError());
-			rowObject[5] = String.valueOf(workLoad.getFit());
+			Object[] rowObject = JMeterPluginsUtils.getObjectList(workLoad);
 			tableModel.addRow(rowObject);
 
 			WorkLoadThreadGroupGUI.createTabChart(sender.getTabbedPane(),

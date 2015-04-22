@@ -50,6 +50,28 @@ public abstract class JMeterPluginsUtils {
 		return prefixPlugins ? PLUGINS_PREFIX + label : label;
 	}
 
+	public static Object[] getObjectList(WorkLoad workLoad) {
+
+		Object[] rowObject = new Object[16];
+		rowObject[0] = workLoad.getName();
+		rowObject[1] = workLoad.getType();
+		rowObject[2] = String.valueOf(workLoad.getNumThreads());
+		rowObject[3] = String.valueOf(workLoad.getWorstResponseTime());
+		rowObject[4] = String.valueOf(workLoad.isError());
+		rowObject[5] = String.valueOf(workLoad.getFit());
+		rowObject[6] = String.valueOf(workLoad.getFunction1());
+		rowObject[7] = String.valueOf(workLoad.getFunction2());
+		rowObject[8] = String.valueOf(workLoad.getFunction3());
+		rowObject[9] = String.valueOf(workLoad.getFunction4());
+		rowObject[10] = String.valueOf(workLoad.getFunction5());
+		rowObject[11] = String.valueOf(workLoad.getFunction6());
+		rowObject[12] = String.valueOf(workLoad.getFunction7());
+		rowObject[13] = String.valueOf(workLoad.getFunction8());
+		rowObject[14] = String.valueOf(workLoad.getFunction9());
+		rowObject[15] = String.valueOf(workLoad.getFunction10());
+		return rowObject;
+	}
+
 	public static WorkLoad getWorkLoad(ArrayList object) {
 
 		WorkLoad workload = new WorkLoad();
@@ -59,6 +81,16 @@ public abstract class JMeterPluginsUtils {
 		workload.setWorstResponseTime(Long.valueOf(object.get(3).toString()));
 		workload.setError(Boolean.valueOf(object.get(4).toString()));
 		workload.setFit(Double.valueOf(object.get(5).toString()));
+		workload.setFunction1(object.get(6).toString());
+		workload.setFunction2(object.get(7).toString());
+		workload.setFunction3(object.get(8).toString());
+		workload.setFunction4(object.get(9).toString());
+		workload.setFunction5(object.get(10).toString());
+		workload.setFunction6(object.get(11).toString());
+		workload.setFunction7(object.get(12).toString());
+		workload.setFunction8(object.get(13).toString());
+		workload.setFunction9(object.get(14).toString());
+		workload.setFunction10(object.get(15).toString());
 		return workload;
 	}
 
@@ -167,6 +199,16 @@ public abstract class JMeterPluginsUtils {
 			rowObject.add(String.valueOf(workload.getWorstResponseTime()));
 			rowObject.add(String.valueOf(workload.isError()));
 			rowObject.add(String.valueOf(workload.getFit()));
+			rowObject.add(workload.getFunction1());
+			rowObject.add(workload.getFunction2());
+			rowObject.add(workload.getFunction3());
+			rowObject.add(workload.getFunction4());
+			rowObject.add(workload.getFunction5());
+			rowObject.add(workload.getFunction6());
+			rowObject.add(workload.getFunction7());
+			rowObject.add(workload.getFunction8());
+			rowObject.add(workload.getFunction9());
+			rowObject.add(workload.getFunction10());
 			model.addRow(rowObject.toArray());
 		}
 		model.fireTableDataChanged();

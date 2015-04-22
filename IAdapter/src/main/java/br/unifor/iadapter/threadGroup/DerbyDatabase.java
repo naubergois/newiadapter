@@ -13,6 +13,61 @@ public class DerbyDatabase {
 
 	private static Connection conn = null;
 
+	private final static String CREATEDATABASE = "create table workload("
+			+ "NAME VARCHAR(130),RESPONSETIME VARCHAR(30),"
+			+ "TYPE VARCHAR(30),USERS VARCHAR(30),ERROR VARCHAR(30),"
+			+ "FIT VARCHAR(30),FUNCTION1 VARCHAR(30),FUNCTION2 VARCHAR(30),"
+			+ "FUNCTION3 VARCHAR(30),FUNCTION4 VARCHAR(30),"
+			+ "FUNCTION5 VARCHAR(30),FUNCTION6 VARCHAR(30),"
+			+ "FUNCTION7 VARCHAR(30),FUNCTION8 VARCHAR(30),"
+			+ "FUNCTION9 VARCHAR(30),FUNCTION10 VARCHAR(30))";
+
+	private final static String COLUMNS = "NAME,TYPE,"
+			+ "USERS,RESPONSETIME,ERROR,FIT,"
+			+ "FUNCTION1,FUNCTION2,FUNCTION3,FUNCTION4,"
+			+ "FUNCTION5,FUNCTION6,FUNCTION7,FUNCTION8,"
+			+ "FUNCTION9,FUNCTION10";
+
+	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+
+	private final static String SET = "NAME=?,TYPE=?,"
+			+ "USERS=?,RESPONSETIME=?,ERROR=?,FIT=?,FUNCTION1=?,"
+			+ "FUNCTION2=?,FUNCTION3=?,FUNCTION4=?,FUNCTION5=?,"
+			+ "FUNCTION6=?,FUNCTION7=?,FUNCTION8=?,FUNCTION9=?,"
+			+ "FUNCTION10=?";
+
+	private final static String INSERTSQL = "insert into  workload("
+			+ DerbyDatabase.COLUMNS + ") values (" + DerbyDatabase.PARAMETERS
+			+ ")";
+
+	public static PreparedStatement setParametersWhere(PreparedStatement ps,
+			List objetos, String where) throws SQLException {
+		ps = setParameters(ps, objetos);
+		ps.setString(17, where);
+		return ps;
+	}
+
+	public static PreparedStatement setParameters(PreparedStatement ps,
+			List objetos) throws SQLException {
+		ps.setString(1, String.valueOf(objetos.get(0)));
+		ps.setString(2, String.valueOf(objetos.get(1)));
+		ps.setString(3, String.valueOf(objetos.get(2)));
+		ps.setString(4, String.valueOf(objetos.get(3)));
+		ps.setString(5, String.valueOf(objetos.get(4)));
+		ps.setString(6, String.valueOf(objetos.get(5)));
+		ps.setString(7, String.valueOf(objetos.get(6)));
+		ps.setString(8, String.valueOf(objetos.get(7)));
+		ps.setString(9, String.valueOf(objetos.get(8)));
+		ps.setString(10, String.valueOf(objetos.get(9)));
+		ps.setString(11, String.valueOf(objetos.get(10)));
+		ps.setString(12, String.valueOf(objetos.get(11)));
+		ps.setString(13, String.valueOf(objetos.get(12)));
+		ps.setString(14, String.valueOf(objetos.get(13)));
+		ps.setString(15, String.valueOf(objetos.get(14)));
+		ps.setString(16, String.valueOf(objetos.get(15)));
+		return ps;
+	}
+
 	public static Connection singleton() throws ClassNotFoundException,
 			SQLException {
 		if (DerbyDatabase.conn == null) {
@@ -30,10 +85,7 @@ public class DerbyDatabase {
 			} else {
 
 				PreparedStatement ps = conn
-						.prepareStatement(""
-								+ "create table workload("
-								+ "NAME VARCHAR(30),RESPONSETIME VARCHAR(30),"
-								+ "TYPE VARCHAR(30),USERS VARCHAR(30),ERROR VARCHAR(30),FIT VARCHAR(30))");
+						.prepareStatement(DerbyDatabase.CREATEDATABASE);
 				ps.executeUpdate();
 
 			}
@@ -48,10 +100,7 @@ public class DerbyDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "create table workload("
-						+ "NAME VARCHAR(30),RESPONSETIME VARCHAR(30),"
-						+ "TYPE VARCHAR(30),USERS VARCHAR(30),ERROR VARCHAR(30),FIT VARCHAR(30))");
+				.prepareStatement(DerbyDatabase.CREATEDATABASE);
 
 		try {
 			ps.executeUpdate();
@@ -112,25 +161,14 @@ public class DerbyDatabase {
 			count = rs.getInt(1);
 		}
 		if (count <= 0) {
-			ps = con.prepareStatement("insert into  workload(" + "NAME,TYPE,"
-					+ "USERS,RESPONSETIME,ERROR,FIT) values (?,?,?,?,?,?)");
-			ps.setString(1, String.valueOf(objetos.get(0)));
-			ps.setString(2, String.valueOf(objetos.get(1)));
-			ps.setString(3, String.valueOf(objetos.get(2)));
-			ps.setString(4, String.valueOf(objetos.get(3)));
-			ps.setString(5, String.valueOf(objetos.get(4)));
-			ps.setString(6, String.valueOf(objetos.get(5)));
+			ps = con.prepareStatement(DerbyDatabase.INSERTSQL);
+			DerbyDatabase.setParameters(ps, objetos);
 		} else {
+
 			ps = con.prepareStatement("" + "update workload set "
-					+ "NAME=?,TYPE=?,"
-					+ "USERS=?,RESPONSETIME=?,ERROR=?,FIT=? WHERE NAME=?");
-			ps.setString(1, String.valueOf(objetos.get(0)));
-			ps.setString(2, String.valueOf(objetos.get(1)));
-			ps.setString(3, String.valueOf(objetos.get(2)));
-			ps.setString(4, String.valueOf(objetos.get(3)));
-			ps.setString(5, String.valueOf(objetos.get(4)));
-			ps.setString(6, String.valueOf(objetos.get(5)));
-			ps.setString(7, String.valueOf(objetos.get(0)));
+					+ DerbyDatabase.SET + " WHERE NAME=?");
+			DerbyDatabase.setParametersWhere(ps, objetos,
+					String.valueOf(objetos.get(0)));
 		}
 
 		ps.executeUpdate();
@@ -153,14 +191,8 @@ public class DerbyDatabase {
 			count = rs.getInt(1);
 		}
 		if (count <= 0) {
-			ps = con.prepareStatement("insert into  workload(" + "NAME,TYPE,"
-					+ "USERS,RESPONSETIME,ERROR,FIT) values (?,?,?,?,?,?)");
-			ps.setString(1, String.valueOf(objetos.get(0)));
-			ps.setString(2, String.valueOf(objetos.get(1)));
-			ps.setString(3, String.valueOf(objetos.get(2)));
-			ps.setString(4, String.valueOf(objetos.get(3)));
-			ps.setString(5, String.valueOf(objetos.get(4)));
-			ps.setString(6, String.valueOf(objetos.get(5)));
+			ps = con.prepareStatement(DerbyDatabase.INSERTSQL);
+			DerbyDatabase.setParameters(ps, objetos);
 			ps.executeUpdate();
 		}
 
@@ -180,19 +212,34 @@ public class DerbyDatabase {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		while (rs.next()) {
-			WorkLoad workload = new WorkLoad();
-			workload.setName(rs.getString(1));
-			workload.setType(rs.getString(2));
-			workload.setNumThreads(Integer.valueOf(rs.getString(3)));
-			workload.setWorstResponseTime(Long.valueOf(rs.getString(4)));
-			workload.setError(Boolean.valueOf(rs.getString(5)));
-			workload.setFit(Double.valueOf(rs.getString(6)));
-
+			WorkLoad workload = DerbyDatabase.resultSetToWorkLoad(rs);
 			list.add(workload);
 		}
 
 		return list;
 
+	}
+
+	public static WorkLoad resultSetToWorkLoad(ResultSet rs)
+			throws SQLException {
+		WorkLoad workload = new WorkLoad();
+		workload.setName(rs.getString(1));
+		workload.setType(rs.getString(2));
+		workload.setNumThreads(Integer.valueOf(rs.getString(3)));
+		workload.setWorstResponseTime(Long.valueOf(rs.getString(4)));
+		workload.setError(Boolean.valueOf(rs.getString(5)));
+		workload.setFit(Double.valueOf(rs.getString(6)));
+		workload.setFunction1(rs.getString(7));
+		workload.setFunction2(rs.getString(8));
+		workload.setFunction3(rs.getString(9));
+		workload.setFunction4(rs.getString(10));
+		workload.setFunction5(rs.getString(11));
+		workload.setFunction6(rs.getString(12));
+		workload.setFunction7(rs.getString(13));
+		workload.setFunction8(rs.getString(14));
+		workload.setFunction9(rs.getString(15));
+		workload.setFunction10(rs.getString(16));
+		return workload;
 	}
 
 	public static long getResponseTime(String workLoad)

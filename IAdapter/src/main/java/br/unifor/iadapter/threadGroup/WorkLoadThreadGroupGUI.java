@@ -57,16 +57,21 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
      */
 
 	public static final String[] columnIdentifiers = new String[] { "Name",
-			"Kind", "Users", "Response Time", "Error", "Fit" };
+			"Kind", "Users", "Response Time", "Error", "Fit", "Function1",
+			"Function2", "Function3", "Function4", "Function5", "Function6",
+			"Function7", "Function8", "Function9", "Function10" };
 	/**
      *
      */
 	@SuppressWarnings("rawtypes")
 	public static final Class[] columnClasses = new Class[] { String.class,
 			String.class, String.class, String.class, String.class,
-			String.class };
+			String.class, String.class, String.class, String.class,
+			String.class, String.class, String.class, String.class,
+			String.class, String.class, String.class };
 	public static final String[] defaultValues = new String[] { "1", "1", "1",
-			"1", "1", "1" };
+			"1", "1", "1", "None", "None", "None", "None", "None", "None",
+			"None", "None", "None", "None" };
 
 	private LoopControlPanel loopPanel;
 	protected PowerTableModel wtableModel;
@@ -124,9 +129,22 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		JButton button2 = new JButton("Refresh");
 		buttons.add(button2);
+
+		JButton button3 = new JButton("Clear");
+		buttons.add(button3);
+
+		JButton button4 = new JButton("Clear");
+		buttons.add(button4);
+
 		button1.addActionListener(new AddRowWorkloadAction(this, grid,
 				wtableModel, null, null));
 		button2.addActionListener(new RefreshRowWorkloadAction(this));
+
+		button3.addActionListener(new ClearRowWorkloadAction(this, grid,
+				wtableModel, null, null));
+
+		button4.addActionListener(new DeleteRowAction(this, grid, wtableModel,
+				null));
 		panel.add(buttons, BorderLayout.SOUTH);
 
 		return panel;
@@ -173,11 +191,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			CollectionProperty rows = JMeterPluginsUtils
 					.tableModelRowsToCollectionProperty(wtableModel,
 							WorkLoadThreadGroup.DATA_PROPERTY);
-			/*try {
-				JMeterPluginsUtils.tableModelRowsToDerby(wtableModel);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}*/
+			/*
+			 * try { JMeterPluginsUtils.tableModelRowsToDerby(wtableModel); }
+			 * catch (Exception e) { e.printStackTrace(); }
+			 */
 			utg.setData(rows);
 
 			LoopController controler = (LoopController) loopPanel
@@ -227,11 +244,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			wtableModel.removeTableModelListener(this);
 			JMeterPluginsUtils.collectionPropertyToTableModelRows(columns,
 					wtableModel);
-			/*try {
-				JMeterPluginsUtils.collectionPropertyToDerby(columns);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}*/
+			/*
+			 * try { JMeterPluginsUtils.collectionPropertyToDerby(columns); }
+			 * catch (Exception e) { e.printStackTrace(); }
+			 */
 			wtableModel.addTableModelListener(this);
 			updateUI();
 		} else {

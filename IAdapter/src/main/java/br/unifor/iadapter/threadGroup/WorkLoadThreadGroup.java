@@ -4,32 +4,40 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.swing.JOptionPane;
 
 import org.apache.jmeter.JMeter;
 import org.apache.jmeter.engine.JMeterEngine;
+import org.apache.jmeter.engine.JMeterEngineException;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.engine.TreeCloner;
+import org.apache.jmeter.engine.TreeClonerNoTimer;
 import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.event.LoopIterationListener;
+import org.apache.jmeter.gui.action.Start;
+import org.apache.jmeter.gui.tree.JMeterTreeModel;
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.Sampler;
+import org.apache.jmeter.testelement.TestElement;
+import org.apache.jmeter.testelement.TestPlan;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.testelement.property.JMeterProperty;
 import org.apache.jmeter.testelement.property.NullProperty;
 import org.apache.jmeter.testelement.property.PropertyIterator;
-import org.apache.jmeter.testelement.property.StringProperty;
 import org.apache.jmeter.threads.JMeterContext;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterThread;
-import org.apache.jmeter.threads.JMeterVariables;
 import org.apache.jmeter.threads.ListenerNotifier;
+import org.apache.jmeter.util.JMeterUtils;
+import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
@@ -49,6 +57,16 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	private static final long serialVersionUID = 1L;
 
 	private int currentTest;
+
+	ListedHashTree tree;
+
+	public ListedHashTree getTree() {
+		return tree;
+	}
+
+	public void setTree(ListedHashTree tree) {
+		this.tree = tree;
+	}
 
 	public int getCurrentTest() {
 		return currentTest;
@@ -114,6 +132,16 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		List<WorkLoad> lista = new ArrayList<WorkLoad>();
 		WorkLoad workload = new WorkLoad();
 		workload.setNumThreads(10);
+		workload.setFunction1("None");
+		workload.setFunction2("None");
+		workload.setFunction3("None");
+		workload.setFunction4("None");
+		workload.setFunction5("None");
+		workload.setFunction6("None");
+		workload.setFunction7("None");
+		workload.setFunction8("None");
+		workload.setFunction9("None");
+		workload.setFunction10("None");
 		lista.add(workload);
 		return lista;
 	}
@@ -121,72 +149,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	@Override
 	public void threadFinished(JMeterThread thread) {
 
-		JMeterProperty data = getData();
-
-		if (!(data instanceof NullProperty)) {
-			scheduleIT = ((CollectionProperty) data).iterator();
-
-		}
-
-		CollectionProperty collection = ((CollectionProperty) data);
-		
-		int inc=0;
-		if(JMeter.isNonGUI()){
-			inc=1;
-		}
-		
-		int size = collection.size()+inc;
-
-		System.out.println(JMeterContextService.getContext().getEngine()
-				.isActive());
-
-		super.threadFinished(thread);
-		WorkLoad.setThreadStopped(WorkLoad.getThreadStopped() + 1);
-		
-		
-		int threadStopped = WorkLoad.getThreadStopped();
-		
-		
-		
-
-		if (workloadCurrent.getNumThreads() <= threadStopped) {
-			System.out.print("teste terminou");
-			WorkLoad.setThreadStopped(0);
-
-			System.out.println(ConsoleStatusLogger.getReponseTimes());
-
-			this.setCurrentTest(this.getCurrentTest() + 1);
-			
-			
-
-			
-			if (this.getCurrentTest() < size) {
-				final JMeterContext context = JMeterContextService.getContext();
-
-				try {
-
-					JMeterEngine engine = context.getEngine();
-
-					new Thread((Runnable) engine).start();
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-			} else {
-				while (!(verifyThreadsStopped()))
-					;
-				this.currentTest = 0;
-
-				for (int i = 0; i < collection.size(); i++) {
-					CollectionProperty property = (CollectionProperty) collection
-							.get(i);
-
-					
-				}
-
-			}
-		}
 	}
 
 	@Override
@@ -217,10 +179,16 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		JMeterProperty data = getData();
 
+		this.setTree(threadGroupTree);
+
 		if (!(data instanceof NullProperty)) {
 			scheduleIT = ((CollectionProperty) data).iterator();
 
 		}
+
+		List<TestElement> lista = FindService
+				.searchWorkLoadControllerWithNoGui(threadGroupTree);
+		System.out.println(lista);
 
 		SinglentonEngine.groupCount = groupCount;
 		SinglentonEngine.notifier = notifier;
@@ -254,7 +222,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				this.workloadCurrent = workload;
 
-				int numThreads = workload.getNumThreads();
+				int numThreads = getThreadNumberCounter(workload,
+						workload.getNumThreads());
 
 				threadsToSchedule = numThreads;
 
@@ -265,16 +234,37 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				context.setRestartNextLoop(true);
 
+				int count = 0;
+
 				for (int i = 0; i < numThreads; i++) {
-					JMeterThread jmThread = makeThread(groupCount, notifier,
-							threadGroupTree, engine, i, context, workload);
-					workload.scheduleThread(log, numThreads, jmThread, i);
-					Thread newThread = new Thread(jmThread,
-							jmThread.getThreadName());
 
-					registerStartedThread(jmThread, newThread);
+					if (count > workload.getNumThreads())
+						break;
 
-					newThread.start();
+					for (int j = 0; j < 10; j = j + 1) {
+
+						count++;
+
+						if (count > workload.getNumThreads())
+							break;
+
+						String nameWorkloadController = getFunctionNameByID(
+								workload, j);
+
+						TestElement node = getNodesByName(
+								nameWorkloadController, lista);
+
+						JMeterThread jmThread = makeThread(groupCount,
+								notifier, threadGroupTree, engine, count,
+								context, workload, node);
+						workload.scheduleThread(log, numThreads, jmThread, i);
+						Thread newThread = new Thread(jmThread,
+								jmThread.getThreadName());
+
+						registerStartedThread(jmThread, newThread);
+
+						newThread.start();
+					}
 				}
 
 				log.info("Started thread group number " + groupCount);
@@ -295,31 +285,142 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		return cloner.getClonedTree();
 	}
 
+	public static int getThreadNumberCounter(WorkLoad workLoad, int length) {
+
+		int counter = 0;
+		for (int i = 0; i < 10; i++) {
+			String name = getFunctionNameByID(workLoad, i);
+			if (!(name.equals("None"))) {
+				counter++;
+			}
+		}
+		if (counter != 0) {
+			int fracLength = length / counter;
+			return fracLength;
+		} else {
+			return 0;
+		}
+	}
+
+	public static String getFunctionNameByID(WorkLoad workLoad, int id) {
+		if (id == 0) {
+			return workLoad.getFunction1();
+		}
+		if (id == 1) {
+			return workLoad.getFunction2();
+		}
+		if (id == 2) {
+			return workLoad.getFunction3();
+		}
+		if (id == 3) {
+			return workLoad.getFunction4();
+		}
+		if (id == 4) {
+			return workLoad.getFunction5();
+		}
+		if (id == 5) {
+			return workLoad.getFunction6();
+		}
+		if (id == 6) {
+			return workLoad.getFunction7();
+		}
+		if (id == 7) {
+			return workLoad.getFunction8();
+		}
+		if (id == 8) {
+			return workLoad.getFunction9();
+		}
+		if (id == 9) {
+			return workLoad.getFunction10();
+		}
+		return "None";
+
+	}
+
+	public TestElement getNodesByName(String name, List<TestElement> listNodes) {
+
+		TestElement selectNode = null;
+
+		if (!(name.equals("None"))) {
+
+			for (TestElement jMeterTreeNode : listNodes) {
+
+				if (jMeterTreeNode.getName().equals(name)) {
+					selectNode = jMeterTreeNode;
+				}
+
+			}
+		}
+
+		return selectNode;
+
+	}
+
 	private JMeterThread makeThread(int groupCount, ListenerNotifier notifier,
-			ListedHashTree threadGroupTree, StandardJMeterEngine engine, int i,
-			JMeterContext context, WorkLoad workLoad) { // N.B. Context needs to
-														// be fetched in the
+			ListedHashTree threadGroupTree, JMeterEngine engine, int i,
+			JMeterContext context, WorkLoad workLoad, TestElement node) { // N.B.
+																			// Context
+																			// needs
+																			// to
+		// be fetched in the
 		// correct thread
-		boolean onErrorStopTest = getOnErrorStopTest();
-		boolean onErrorStopTestNow = getOnErrorStopTestNow();
-		boolean onErrorStopThread = getOnErrorStopThread();
-		boolean onErrorStartNextLoop = getOnErrorStartNextLoop();
-		String groupName = getName();
-		final JMeterThread jmeterThread = new JMeterThread(
-				cloneTree(threadGroupTree), this, notifier);
-		jmeterThread.setThreadNum(i);
-		jmeterThread.setThreadGroup(this);
-		jmeterThread.setInitialContext(context);
-		final String threadName = groupName + " " + (groupCount) + "-"
-				+ workLoad.getName() + "-" + (i + 1);
-		jmeterThread.setThreadName(threadName);
-		System.out.println("Active:" + engine.isActive());
-		jmeterThread.setEngine(engine);
-		jmeterThread.setOnErrorStopTest(onErrorStopTest);
-		jmeterThread.setOnErrorStopTestNow(onErrorStopTestNow);
-		jmeterThread.setOnErrorStopThread(onErrorStopThread);
-		jmeterThread.setOnErrorStartNextLoop(onErrorStartNextLoop);
-		return jmeterThread;
+
+		ListedHashTree clone = cloneTree(threadGroupTree);
+
+		synchronized (clone) {
+
+			Set keys = clone.keySet();
+
+			for (Object object : keys) {
+				HashTree tree = clone.get(object);
+				Object[] object1 = tree.getArray();
+				for (Object object2 : object1) {
+
+					if (object2 instanceof WorkLoadController) {
+
+						if (object2.equals(node)) {
+
+							WorkLoadController controler = (WorkLoadController) node;
+							controler.setCondition("TRUE");
+						} else {
+							WorkLoadController controler = (WorkLoadController) node;
+							if (controler != null) {
+								controler.setCondition("FALSE");
+							}
+						}
+
+					}
+
+				}
+
+			}
+
+			// node.setEnabled(true);
+
+			boolean onErrorStopTest = getOnErrorStopTest();
+			boolean onErrorStopTestNow = getOnErrorStopTestNow();
+			boolean onErrorStopThread = getOnErrorStopThread();
+			boolean onErrorStartNextLoop = getOnErrorStartNextLoop();
+			String groupName = getName();
+
+			JMeterThread jmeterThread = null;
+
+			jmeterThread = new JMeterThread(clone, this, notifier);
+			jmeterThread.setThreadNum(i);
+			jmeterThread.setThreadGroup(this);
+			jmeterThread.setInitialContext(context);
+			final String threadName = groupName + " " + (groupCount) + "-"
+					+ workLoad.getName() + "-" + (i + 1);
+			jmeterThread.setThreadName(threadName);
+			System.out.println("Active:" + engine.isActive());
+			jmeterThread.setEngine((StandardJMeterEngine) engine);
+			jmeterThread.setOnErrorStopTest(onErrorStopTest);
+			jmeterThread.setOnErrorStopTestNow(onErrorStopTestNow);
+			jmeterThread.setOnErrorStopThread(onErrorStopThread);
+			jmeterThread.setOnErrorStartNextLoop(onErrorStartNextLoop);
+
+			return jmeterThread;
+		}
 	}
 
 	private void registerStartedThread(JMeterThread jMeterThread,
@@ -355,8 +456,108 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	}
 
+	private TreeCloner cloneTree(HashTree testTree, boolean removeTimers) {
+		TreeCloner cloner = null;
+		if (removeTimers) {
+			cloner = new TreeClonerNoTimer(false);
+		} else {
+			cloner = new TreeCloner(false);
+		}
+		testTree.traverse(cloner);
+		return cloner;
+	}
+
+	private HashTree treeComplete;
+
+	public HashTree getTreeComplete() {
+		return treeComplete;
+	}
+
+	public void setTreeComplete(HashTree treeComplete) {
+		this.treeComplete = treeComplete;
+	}
+
 	public void testEnded() {
-		System.out.println("Teste terminou");
+
+		JMeterProperty data = getData();
+
+		if (!(data instanceof NullProperty)) {
+			scheduleIT = ((CollectionProperty) data).iterator();
+
+		}
+
+		CollectionProperty collection = ((CollectionProperty) data);
+
+		int inc = 0;
+		if (JMeter.isNonGUI()) {
+			inc = 1;
+		}
+
+		int size = collection.size() + inc;
+
+		while (JMeterContextService.getContext().getEngine() != null)
+			;
+
+		this.setCurrentTest(this.getCurrentTest() + 1);
+
+		if (this.getCurrentTest() < size) {
+			/*
+			final JMeterContext context = JMeterContextService.getContext();
+			if (treeComplete == null) {
+				try {
+					TestPlan plan = new TestPlan();
+
+					// boolean teste = TestPlan.class.isAssignableFrom(plan
+					// .getClass());
+
+					JMeterTreeModel model = new JMeterTreeModel(new Object());
+					JMeterTreeNode root = new JMeterTreeNode(plan, model);
+
+					// model.addComponent(plan, null);
+					// model.addComponent(plan, root);
+					HashTree tree = model.addSubTree(this.tree, root);
+
+					model.setRoot(root);
+					this.treeComplete = tree;
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			try {
+				// model.addComponent(plan, root);
+
+				TreeCloner cloner = cloneTree(this.treeComplete, false);
+				JMeterEngine engine = new WorkLoadJMeterEngine();
+				engine.configure(cloner.getClonedTree());
+				JMeterContextService.getContext().setEngine((StandardJMeterEngine) engine);
+				
+
+				
+				try {
+					engine.runTest();
+				} catch (JMeterEngineException e) {
+					e.printStackTrace();
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}*/
+
+		} else {
+
+			while (!(verifyThreadsStopped()))
+				;
+
+			while (JMeterContextService.getTotalThreads() > 0)
+				;
+			// this.currentTest = 0;
+
+			CSVReadStats.run();
+
+			System.out.println(CSVReadStats.getWorkloads());
+
+		}
 
 	}
 
