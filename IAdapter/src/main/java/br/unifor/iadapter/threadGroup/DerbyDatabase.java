@@ -205,7 +205,7 @@ public class DerbyDatabase {
 
 		PreparedStatement ps = con
 				.prepareStatement(""
-						+ "SELECT NAME,TYPE,USERS,RESPONSETIME,ERROR,FIT FROM  workload ");
+						+ "SELECT "+COLUMNS+"  FROM  workload ");
 
 		ResultSet rs = ps.executeQuery();
 
