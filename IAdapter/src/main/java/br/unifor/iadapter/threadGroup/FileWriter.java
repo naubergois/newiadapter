@@ -260,11 +260,15 @@ public class FileWriter {
 	}
 
 	private synchronized void syncWrite(ByteBuffer buf) throws IOException {
-		FileLock lock = fileChannel.lock();
 		try {
-			fileChannel.write(buf);
-		} finally {
-			lock.release();
+			FileLock lock = fileChannel.lock();
+			try {
+				fileChannel.write(buf);
+			} finally {
+				lock.release();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -427,12 +431,11 @@ public class FileWriter {
 			buf.put(workLoadName.getBytes());
 			buf.put(",".getBytes());
 			break;
-			
+
 		case 22:
 			buf.put(",\n".getBytes());
-			
-			break;
 
+			break;
 
 		default:
 			return false;

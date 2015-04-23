@@ -153,7 +153,7 @@ public class WorkLoadSaver extends AbstractTestElement implements Serializable,
 			String workLoad = JMeterContextService.getContext().getVariables()
 					.get("currentWorkload");
 			file.setWriteBufferSize(10000024);
-			System.out.println(file.getWriteBufferSize());
+
 			file.setColumns("workLoadName|isSuccsessful|startTime|endTime|sentBytes|receivedBytes|responseTime|latency|responseCode|responseMessage|isFailed|threadName|sampleLabel|startTimeMillis|endTimeMillis|responseTimeMicros|latencyMicros|threadsCount|enter");
 			file.compileColumns();
 			file.openFile();

@@ -39,9 +39,10 @@ public class AddRowWorkloadAction implements ActionListener {
 			cellEditor.stopCellEditing();
 		}
 
-		List<WorkLoad> workloadList=null;
+		List<WorkLoad> workloadList = null;
 		try {
-			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(10);
+			workloadList = GeneWorkLoad
+					.createWorkLoadsFromChromossomeWithGui(10);
 		} catch (InvalidConfigurationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -49,18 +50,15 @@ public class AddRowWorkloadAction implements ActionListener {
 		GuiPackage gp = GuiPackage.getInstance();
 		if (gp != null) {
 
-			//JMeterTreeNode root = (JMeterTreeNode) gp.getTreeModel().getRoot();
-			
-			List<JMeterTreeNode> lista = FindService.searchWorkLoadControllerWithGui();
-					
-			//List<JMeterTreeNode> lista = WorkLoadThreadGroup
-			//		.findWorkLoadTransactions(root, null);
-			System.out.println(lista);
+			// JMeterTreeNode root = (JMeterTreeNode)
+			// gp.getTreeModel().getRoot();
+
+			List<JMeterTreeNode> lista = FindService
+					.searchWorkLoadControllerWithGui();
+
 		}
 
 		for (WorkLoad workLoad : workloadList) {
-			
-			
 
 			Object[] rowObject = JMeterPluginsUtils.getObjectList(workLoad);
 			tableModel.addRow(rowObject);
@@ -71,7 +69,6 @@ public class AddRowWorkloadAction implements ActionListener {
 		}
 
 		tableModel.fireTableDataChanged();
-
 
 		int rowToSelect = tableModel.getRowCount() - 1;
 		if (rowToSelect < grid.getRowCount()) {

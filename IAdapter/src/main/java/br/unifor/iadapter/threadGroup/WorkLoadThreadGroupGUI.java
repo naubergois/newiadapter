@@ -133,7 +133,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		JButton button3 = new JButton("Clear");
 		buttons.add(button3);
 
-		JButton button4 = new JButton("Clear");
+		JButton button4 = new JButton("Deletar");
 		buttons.add(button4);
 
 		button1.addActionListener(new AddRowWorkloadAction(this, grid,

@@ -63,6 +63,12 @@ import org.mozilla.javascript.Scriptable;
 public class WorkLoadController extends GenericController implements
 		Serializable {
 
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "[" + this.getName() + "]";
+	}
+
 	private static final Logger logger = LoggingManager.getLoggerForClass();
 
 	private static final long serialVersionUID = 240L;
@@ -117,7 +123,7 @@ public class WorkLoadController extends GenericController implements
 
 		if (cond.equals("TRUE")) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}

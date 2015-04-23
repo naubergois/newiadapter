@@ -78,7 +78,6 @@ public class CSVReadStats {
 			}
 		}
 
-		System.out.println("Done");
 	}
 
 	public static HashMap getWorkloads() {
