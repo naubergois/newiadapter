@@ -18,6 +18,8 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -32,11 +34,19 @@ import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.gui.AbstractJMeterGuiComponent;
 import org.apache.jmeter.gui.util.PowerTableModel;
 import org.apache.jmeter.samplers.SampleSaveConfiguration;
+import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.testelement.property.CollectionProperty;
+import org.apache.jmeter.testelement.property.JMeterProperty;
+import org.apache.jmeter.testelement.property.NullProperty;
 import org.apache.jmeter.testelement.property.StringProperty;
 import org.apache.jmeter.util.JMeterUtils;
+import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
+import org.jgap.Chromosome;
+import org.jgap.Gene;
+import org.jgap.Population;
+import org.jgap.impl.IntegerGene;
 
 public abstract class JMeterPluginsUtils {
 	private static final Logger log = LoggingManager.getLoggerForClass();
@@ -91,6 +101,50 @@ public abstract class JMeterPluginsUtils {
 		workload.setFunction8(object.get(13).toString());
 		workload.setFunction9(object.get(14).toString());
 		workload.setFunction10(object.get(15).toString());
+		return workload;
+	}
+
+	public static List<WorkLoad> getListWorkLoadFromPopulation(
+			Population population, ListedHashTree tree) {
+		List<TestElement> listElement = FindService
+				.searchWorkLoadControllerWithNoGui(tree);
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+		List<Chromosome> listC = population.getChromosomes();
+		for (Chromosome chromosome : listC) {
+			list.add(getWorkLoadFromChromosome(chromosome, listElement));
+		}
+
+		return list;
+	}
+
+	public static WorkLoad getWorkLoadFromChromosome(Chromosome chromosome,
+			List<TestElement> list) {
+
+		Gene[] gene = chromosome.getGenes();
+		WorkLoad workload = new WorkLoad();
+		workload.setNumThreads(((IntegerGene) gene[1]).intValue());
+		workload.setType(WorkLoad.getTypes()[((IntegerGene) gene[0]).intValue()]);
+		workload.setFit(chromosome.getFitnessValueDirectly());
+		workload.setFunction1(list.get(((IntegerGene) gene[2]).intValue())
+				.getName());
+		workload.setFunction2(list.get(((IntegerGene) gene[3]).intValue())
+				.getName());
+		workload.setFunction3(list.get(((IntegerGene) gene[4]).intValue())
+				.getName());
+		workload.setFunction4(list.get(((IntegerGene) gene[5]).intValue())
+				.getName());
+		workload.setFunction5(list.get(((IntegerGene) gene[6]).intValue())
+				.getName());
+		workload.setFunction6(list.get(((IntegerGene) gene[7]).intValue())
+				.getName());
+		workload.setFunction7(list.get(((IntegerGene) gene[8]).intValue())
+				.getName());
+		workload.setFunction8(list.get(((IntegerGene) gene[9]).intValue())
+				.getName());
+		workload.setFunction9(list.get(((IntegerGene) gene[10]).intValue())
+				.getName());
+		workload.setFunction10(list.get(((IntegerGene) gene[11]).intValue())
+				.getName());
 		return workload;
 	}
 
@@ -152,6 +206,33 @@ public abstract class JMeterPluginsUtils {
 		}
 		return rows;
 	}
+	
+	
+	public static CollectionProperty listWorkLoadToCollectionProperty(
+			List<WorkLoad> model, String propname) {
+		CollectionProperty rows = new CollectionProperty(propname,
+				new ArrayList<Object>());
+		for (int row = 0; row < model.size(); row++) {
+			Object[] item = getObjectList(model.get(row));
+			if (item != null) {
+				for (int i = 0; i < item.length; i++) {
+					String object = String.valueOf(item[i]);
+					if (object == null) {
+						item[i]="0";
+					} else {
+						item[i]=String.valueOf(object);
+					}
+
+				}
+
+				rows.addItem(item);
+			} else {
+				System.out.println("Objeto nulo");
+			}
+		}
+		return rows;
+	}
+
 
 	public static CollectionProperty tableModelRowsToCollectionPropertyEval(
 			PowerTableModel model, String propname) {
@@ -184,6 +265,37 @@ public abstract class JMeterPluginsUtils {
 			model.addRow(rowObject.toArray());
 		}
 		model.fireTableDataChanged();
+	}
+
+	public static void updateFitnessValue(
+			HashMap<String, String> responseTimes, List<WorkLoad> list) {
+		for (WorkLoad workLoad : list) {
+			String responseTime = responseTimes.get(workLoad.getName());
+			long responseTimeLong = Long.valueOf(responseTime);
+			workLoad.setFit(responseTimeLong);
+		}
+
+	}
+
+	public static List<WorkLoad> collectionPropertyToWorkLoad(
+			WorkLoadThreadGroup utg) {
+
+		List<WorkLoad> workLoadList = new ArrayList<WorkLoad>();
+		JMeterProperty threadValues = utg.getData();
+		if (!(threadValues instanceof NullProperty)) {
+			CollectionProperty prop = (CollectionProperty) threadValues;
+
+			for (int rowN = 0; rowN < prop.size(); rowN++) {
+				ArrayList<String> rowObject = (ArrayList<String>) prop
+						.get(rowN).getObjectValue();
+				WorkLoad workload = JMeterPluginsUtils.getWorkLoad(rowObject);
+				workLoadList.add(workload);
+
+			}
+		}
+
+		return workLoadList;
+
 	}
 
 	public static void modelFromDerby(PowerTableModel model)

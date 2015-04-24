@@ -9,9 +9,13 @@ import java.util.HashMap;
 public class CSVReadStats {
 
 	private static HashMap workloads = new HashMap<String, String>();
+	private static HashMap errors = new HashMap<String, String>();
+	
+	
 
 	public static void run() {
 
+		boolean error=false;
 		String csvFile = "tempResults.csv";
 		BufferedReader br = null;
 		String line = "";
@@ -41,6 +45,13 @@ public class CSVReadStats {
 				}
 				String responseMessage = result[9];
 				Boolean isFailed = Boolean.valueOf(result[10]);
+				if (isFailed){
+					errors.put(workLoadName, String.valueOf(isFailed));
+				}else{
+					if (!(errors.containsKey(workLoadName))) {
+						errors.put(workLoadName, String.valueOf(isFailed));
+					} 
+				}
 				String threadName = result[11];
 				String sampleLabel = result[12];
 				double startTimeMillis = Double.valueOf(result[13]);

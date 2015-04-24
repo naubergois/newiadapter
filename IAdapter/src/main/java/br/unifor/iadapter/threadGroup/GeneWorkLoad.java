@@ -1,22 +1,111 @@
 package br.unifor.iadapter.threadGroup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
+import org.apache.jmeter.testelement.TestElement;
+import org.apache.jorphan.collections.ListedHashTree;
 import org.jgap.Chromosome;
 import org.jgap.Configuration;
-import org.jgap.FitnessFunction;
 import org.jgap.Gene;
 import org.jgap.Genotype;
 import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
+import org.jgap.Population;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.IntegerGene;
 
 public class GeneWorkLoad {
 
 	private static Configuration conf;
+
+	public static int indexOf(List<TestElement> list, String name) {
+		int index = 0;
+		for (int i = 0; i < list.size(); i++) {
+			TestElement element = list.get(i);
+			if (element.getName().equals(name)) {
+				index = i;
+			}
+		}
+		return index;
+	}
+
+	public static Gene[] geneFromWorkLoad(WorkLoad workload,
+			ListedHashTree threadGroupTree)
+			throws InvalidConfigurationException {
+		List<TestElement> list = FindService
+				.searchWorkLoadControllerWithNoGui(threadGroupTree);
+		Gene[] wgenes = new Gene[12];
+
+		wgenes[0] = new IntegerGene(getConfiguration());
+		wgenes[0].setAllele(Arrays.asList(WorkLoad.getTypes()).indexOf(
+				workload.getType()));
+		wgenes[1] = new IntegerGene(getConfiguration());
+		wgenes[1].setAllele(workload.getNumThreads());
+		wgenes[2] = new IntegerGene(getConfiguration());
+		wgenes[2].setAllele(indexOf(list, workload.getFunction1()));
+		wgenes[3] = new IntegerGene(getConfiguration());
+		wgenes[3].setAllele(indexOf(list, workload.getFunction2()));
+		wgenes[4] = new IntegerGene(getConfiguration());
+		wgenes[4].setAllele(indexOf(list, workload.getFunction3()));
+		wgenes[5] = new IntegerGene(getConfiguration());
+		wgenes[5].setAllele(indexOf(list, workload.getFunction4()));
+		wgenes[6] = new IntegerGene(getConfiguration());
+		wgenes[6].setAllele(indexOf(list, workload.getFunction5()));
+		wgenes[7] = new IntegerGene(getConfiguration());
+		wgenes[7].setAllele(indexOf(list, workload.getFunction6()));
+		wgenes[8] = new IntegerGene(getConfiguration());
+		wgenes[8].setAllele(indexOf(list, workload.getFunction7()));
+		wgenes[9] = new IntegerGene(getConfiguration());
+		wgenes[9].setAllele(indexOf(list, workload.getFunction8()));
+		wgenes[10] = new IntegerGene(getConfiguration());
+		wgenes[10].setAllele(indexOf(list, workload.getFunction9()));
+		wgenes[11] = new IntegerGene(getConfiguration());
+		wgenes[11].setAllele(indexOf(list, workload.getFunction10()));
+
+		return wgenes;
+
+	}
+
+	public static Population selectBestIndividuals(Population population,
+			int index) throws InvalidConfigurationException {
+		Population population2 = new Population(getConfiguration());
+		population.sortByFitness();
+		List<Chromosome> list = population.getChromosomes();
+		for (Chromosome chromosome : list) {
+			population2.addChromosome(chromosome);
+		}
+		return population2;
+	}
+
+	public static Population population(List<WorkLoad> list,
+			ListedHashTree threadGroupTree)
+			throws InvalidConfigurationException {
+		Population population = new Population(getConfiguration());
+		List<Chromosome> listC = getChromossomes(list, threadGroupTree);
+
+		for (Chromosome chromosome : listC) {
+			population.addChromosome(chromosome);
+		}
+		return population;
+	}
+
+	public static List<Chromosome> getChromossomes(List<WorkLoad> list,
+			ListedHashTree threadGroupTree)
+			throws InvalidConfigurationException {
+		List<Chromosome> listC = new ArrayList<Chromosome>();
+		for (WorkLoad workload : list) {
+			Gene[] genes = geneFromWorkLoad(workload, threadGroupTree);
+			Chromosome chromossome = new Chromosome(getConfiguration());
+			chromossome.setGenes(genes);
+			chromossome.setFitnessValueDirectly(workload.getFit());
+			listC.add(chromossome);
+		}
+
+		return listC;
+	}
 
 	public static Configuration getConfiguration()
 			throws InvalidConfigurationException {
@@ -38,6 +127,7 @@ public class GeneWorkLoad {
 			WorkLoad workload = FactoryWorkLoad.createWorkLoadWithGui(gene);
 			workLoads.add(workload);
 		}
+		conf = null;
 		return workLoads;
 	}
 

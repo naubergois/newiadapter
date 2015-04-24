@@ -34,6 +34,7 @@ import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
+import org.jgap.Population;
 
 /***
  * Class for define workload model
@@ -195,7 +196,42 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				CSVReadStats.run();
 
-				System.out.println(CSVReadStats.getWorkloads());
+				List<WorkLoad> list = JMeterPluginsUtils
+						.collectionPropertyToWorkLoad(this);
+
+				JMeterPluginsUtils.updateFitnessValue(
+						CSVReadStats.getWorkloads(), list);
+
+				try {
+
+					Population population = GeneWorkLoad.population(list,
+							this.tree);
+
+					Population populationBest = GeneWorkLoad
+							.selectBestIndividuals(population, 10);
+
+					List<WorkLoad> listBest = JMeterPluginsUtils
+							.getListWorkLoadFromPopulation(populationBest,
+									this.tree);
+
+					try {
+						for (WorkLoad workLoad : listBest) {
+							DerbyDatabase.insertWorkLoads(JMeterPluginsUtils
+									.getObjectList(workLoad));
+						}
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					JMeterPluginsUtils.listWorkLoadToCollectionProperty(
+							listBest, WorkLoadThreadGroup.DATA_PROPERTY);
+
+					System.out.println(CSVReadStats.getWorkloads());
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 

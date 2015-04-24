@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DerbyDatabase {
@@ -143,6 +144,10 @@ public class DerbyDatabase {
 			ps.executeUpdate();
 		}
 
+	}
+	
+	public static void insertWorkLoads(Object[] objetos) throws ClassNotFoundException, SQLException{
+		insertWorkLoads(Arrays.asList(objetos));
 	}
 
 	public static void insertWorkLoads(List objetos)
