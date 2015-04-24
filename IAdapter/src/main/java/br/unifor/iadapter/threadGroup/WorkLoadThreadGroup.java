@@ -283,22 +283,21 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				context.setRestartNextLoop(true);
 
-				int count = 0;
+				int count = 1;
+				int count2 = 1;
 
-				for (int i = 0; i < numThreads; i++) {
+				while (count <= workload.getNumThreads()) {
 
-					if (count > workload.getNumThreads() )
+					if (count > workload.getNumThreads())
 						break;
 
-					for (int j = 0; j < 10; j = j + 1) {
+					String nameWorkloadController = getFunctionNameByID(
+							workload, count2 % 10);
+
+					if ((nameWorkloadController != null)
+							&& (!(nameWorkloadController.equals("None")))) {
 
 						count++;
-
-						if (count > workload.getNumThreads() )
-							break;
-
-						String nameWorkloadController = getFunctionNameByID(
-								workload, j);
 
 						TestElement node = getNodesByName(
 								nameWorkloadController, lista);
@@ -306,7 +305,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 						JMeterThread jmThread = makeThread(groupCount,
 								notifier, threadGroupTree, engine, count,
 								context, workload, node);
-						workload.scheduleThread(log, numThreads, jmThread, i);
+						workload.scheduleThread(log, numThreads, jmThread,
+								count);
 						Thread newThread = new Thread(jmThread,
 								jmThread.getThreadName());
 
@@ -314,6 +314,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 						newThread.start();
 					}
+
+					count2++;
+
 				}
 
 				log.info("Started thread group number " + groupCount);
