@@ -1,5 +1,8 @@
 package br.unifor.iadapter.threadGroup;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -9,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 public class DerbyDatabase {
 
@@ -21,35 +25,36 @@ public class DerbyDatabase {
 			+ "FUNCTION3 VARCHAR(30),FUNCTION4 VARCHAR(30),"
 			+ "FUNCTION5 VARCHAR(30),FUNCTION6 VARCHAR(30),"
 			+ "FUNCTION7 VARCHAR(30),FUNCTION8 VARCHAR(30),"
-			+ "FUNCTION9 VARCHAR(30),FUNCTION10 VARCHAR(30))";
+			+ "FUNCTION9 VARCHAR(30),FUNCTION10 VARCHAR(30),TESTPLAN VARCHAR(30))";
 
 	private final static String COLUMNS = "NAME,TYPE,"
 			+ "USERS,RESPONSETIME,ERROR,FIT,"
 			+ "FUNCTION1,FUNCTION2,FUNCTION3,FUNCTION4,"
 			+ "FUNCTION5,FUNCTION6,FUNCTION7,FUNCTION8,"
-			+ "FUNCTION9,FUNCTION10";
+			+ "FUNCTION9,FUNCTION10,TESTPLAN";
 
-	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
 
 	private final static String SET = "NAME=?,TYPE=?,"
 			+ "USERS=?,RESPONSETIME=?,ERROR=?,FIT=?,FUNCTION1=?,"
 			+ "FUNCTION2=?,FUNCTION3=?,FUNCTION4=?,FUNCTION5=?,"
 			+ "FUNCTION6=?,FUNCTION7=?,FUNCTION8=?,FUNCTION9=?,"
-			+ "FUNCTION10=?";
+			+ "FUNCTION10=?,TESTPLAN=?";
 
 	private final static String INSERTSQL = "insert into  workload("
 			+ DerbyDatabase.COLUMNS + ") values (" + DerbyDatabase.PARAMETERS
 			+ ")";
 
 	public static PreparedStatement setParametersWhere(PreparedStatement ps,
-			List objetos, String where) throws SQLException {
-		ps = setParameters(ps, objetos);
-		ps.setString(17, where);
+			List objetos, String where, String testPlan) throws SQLException {
+		ps = setParameters(ps, objetos, testPlan);
+		ps.setString(18, where);
+		ps.setString(19, testPlan);
 		return ps;
 	}
 
 	public static PreparedStatement setParameters(PreparedStatement ps,
-			List objetos) throws SQLException {
+			List objetos, String testPlan) throws SQLException {
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ps.setString(2, String.valueOf(objetos.get(1)));
 		ps.setString(3, String.valueOf(objetos.get(2)));
@@ -66,15 +71,49 @@ public class DerbyDatabase {
 		ps.setString(14, String.valueOf(objetos.get(13)));
 		ps.setString(15, String.valueOf(objetos.get(14)));
 		ps.setString(16, String.valueOf(objetos.get(15)));
+		ps.setString(17, testPlan);
 		return ps;
 	}
 
 	public static Connection singleton() throws ClassNotFoundException,
 			SQLException {
 		if (DerbyDatabase.conn == null) {
-			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			DerbyDatabase.conn = DriverManager
-					.getConnection("jdbc:derby:memory:/dbworkload;create=true");
+
+			Properties prop = new Properties();
+			InputStream input = null;
+
+			String databaseIp = null;
+			String user = null;
+			String password = null;
+
+			try {
+
+				input = new FileInputStream("workload.properties");
+
+				// load a properties file
+				prop.load(input);
+
+				// get the property value and print it out
+				databaseIp = prop.getProperty("databaseip");
+				user = prop.getProperty("user");
+				password = prop.getProperty("password");
+
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			} finally {
+				if (input != null) {
+					try {
+						input.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			Class.forName("com.mysql.jdbc.Driver");
+
+			DerbyDatabase.conn = DriverManager.getConnection("jdbc:mysql:/"
+					+ databaseIp + ":3306/workload?" + "user=" + user
+					+ "&password=" + password);
 
 			DatabaseMetaData meta = conn.getMetaData();
 
@@ -115,19 +154,20 @@ public class DerbyDatabase {
 
 	}
 
-	public static void updateResponseTime(Long responseTime, String workload)
-			throws ClassNotFoundException, SQLException {
-		updateResponseTime(String.valueOf(responseTime), workload);
+	public static void updateResponseTime(Long responseTime, String workload,
+			String testPlan) throws ClassNotFoundException, SQLException {
+		updateResponseTime(String.valueOf(responseTime), workload, testPlan);
 	}
 
-	public static void updateResponseTime(String responseTime, String workload)
-			throws ClassNotFoundException, SQLException {
+	public static void updateResponseTime(String responseTime, String workload,
+			String testPlan) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM  workload WHERE NAME=?");
+				+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=?");
 		ps.setString(1, workload);
+		ps.setString(2, testPlan);
 
 		ResultSet rs = ps.executeQuery();
 
@@ -138,26 +178,29 @@ public class DerbyDatabase {
 		if (count > 0) {
 			ps = con.prepareStatement("" + "update workload set "
 
-			+ "RESPONSETIME=? WHERE NAME=?");
+			+ "RESPONSETIME=? WHERE NAME=? and TESTPLAN=?");
 			ps.setString(1, responseTime);
 			ps.setString(2, workload);
+			ps.setString(3, testPlan);
 			ps.executeUpdate();
 		}
 
 	}
-	
-	public static void insertWorkLoads(Object[] objetos) throws ClassNotFoundException, SQLException{
-		insertWorkLoads(Arrays.asList(objetos));
+
+	public static void insertWorkLoads(Object[] objetos, String testPlan)
+			throws ClassNotFoundException, SQLException {
+		insertWorkLoads(Arrays.asList(objetos), testPlan);
 	}
 
-	public static void insertWorkLoads(List objetos)
+	public static void insertWorkLoads(List objetos, String testPlan)
 			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM  workload WHERE NAME=?");
+				+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
+		ps.setString(2, String.valueOf(testPlan));
 
 		ResultSet rs = ps.executeQuery();
 
@@ -167,28 +210,28 @@ public class DerbyDatabase {
 		}
 		if (count <= 0) {
 			ps = con.prepareStatement(DerbyDatabase.INSERTSQL);
-			DerbyDatabase.setParameters(ps, objetos);
+			DerbyDatabase.setParameters(ps, objetos, testPlan);
 		} else {
 
 			ps = con.prepareStatement("" + "update workload set "
-					+ DerbyDatabase.SET + " WHERE NAME=?");
+					+ DerbyDatabase.SET + " WHERE NAME=? AND TESTPLAN=?");
 			DerbyDatabase.setParametersWhere(ps, objetos,
-					String.valueOf(objetos.get(0)));
+					String.valueOf(objetos.get(0)), testPlan);
 		}
 
 		ps.executeUpdate();
 
 	}
 
-	public static void createWorkLoadIfNotExist(List objetos)
+	public static void createWorkLoadIfNotExist(List objetos, String testPlan)
 			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM  workload WHERE NAME=?");
+				+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
-
+		ps.setString(2, String.valueOf(testPlan));
 		ResultSet rs = ps.executeQuery();
 
 		int count = 0;
@@ -197,20 +240,20 @@ public class DerbyDatabase {
 		}
 		if (count <= 0) {
 			ps = con.prepareStatement(DerbyDatabase.INSERTSQL);
-			DerbyDatabase.setParameters(ps, objetos);
+			DerbyDatabase.setParameters(ps, objetos, testPlan);
 			ps.executeUpdate();
 		}
 
 	}
 
-	public static List<WorkLoad> listWorkLoads() throws ClassNotFoundException,
-			SQLException {
+	public static List<WorkLoad> listWorkLoads(String testPlan)
+			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT "+COLUMNS+"  FROM  workload ");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
+				+ "  FROM  workload WHERE TESTPLAN=?");
+		ps.setString(1, testPlan);
 
 		ResultSet rs = ps.executeQuery();
 
@@ -247,14 +290,16 @@ public class DerbyDatabase {
 		return workload;
 	}
 
-	public static long getResponseTime(String workLoad)
-			throws ClassNotFoundException, SQLException {
+	public static long getResponseTime(String ip, String workLoad,
+			String testPlan) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT RESPONSETIME FROM  workload WHERE NAME=?");
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT RESPONSETIME FROM  workload WHERE NAME=? AND TESTPLAN=?");
 		ps.setString(1, workLoad);
+		ps.setString(2, testPlan);
 
 		ResultSet rs = ps.executeQuery();
 

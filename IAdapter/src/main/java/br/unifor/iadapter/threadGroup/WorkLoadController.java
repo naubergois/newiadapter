@@ -74,6 +74,8 @@ public class WorkLoadController extends GenericController implements
 	private static final long serialVersionUID = 240L;
 
 	private static final String CONDITION = "IfController.condition"; //$NON-NLS-1$
+	
+	
 
 	private static final String EVALUATE_ALL = "IfController.evaluateAll"; //$NON-NLS-1$
 

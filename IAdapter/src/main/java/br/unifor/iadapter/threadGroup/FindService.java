@@ -49,6 +49,18 @@ public class FindService {
 
 	}
 
+	public static List<JMeterTreeNode> searchWorkLoadThreadGroupWithGui() {
+		try {
+			JMeterTreeNode root = getRootWithGui();
+			return searchThreadGroup(root, new ArrayList<JMeterTreeNode>());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
 	public static List<TestElement> searchWorkLoadControllerWithNoGui(
 			ListedHashTree threadGroupTree) {
 		try {
@@ -66,6 +78,37 @@ public class FindService {
 
 			return searchTransactionNoGui(objects.toArray(),
 					new ArrayList<TestElement>());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	public static List<TestElement> searchWorkLoadThreadGroupWithNoGui(
+			ListedHashTree threadGroupTree) {
+		try {
+			ArrayList<TestElement> objectsReturn = new ArrayList<TestElement>();
+
+			ArrayList<Object> objects = new ArrayList<Object>();
+			Set keys = threadGroupTree.keySet();
+			for (Object object : keys) {
+				if (object instanceof WorkLoadThreadGroup) {
+					if (!(objectsReturn.contains(object))) {
+						objectsReturn.add((TestElement) object);
+					}
+				}
+				HashTree tree = threadGroupTree.getTree(object);
+				Object[] objects2 = tree.getArray();
+				for (Object object3 : objects2) {
+					objects.add(object3);
+				}
+
+			}
+
+			return searchWorkLoadThreadGroupNoGui(objects.toArray(),
+					objectsReturn);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -102,6 +145,34 @@ public class FindService {
 
 	}
 
+	private static List<JMeterTreeNode> searchThreadGroup(JMeterTreeNode root,
+			List<JMeterTreeNode> list) throws Exception {
+
+		Enumeration<JMeterTreeNode> enumr = root.children();
+
+		if (list == null) {
+			list = new ArrayList<JMeterTreeNode>();
+		}
+
+		while (enumr.hasMoreElements()) {
+			JMeterTreeNode child = enumr.nextElement();
+			if (child.getTestElement() instanceof WorkLoadThreadGroup) {
+				if (!(list.contains(child))) {
+					list.add(child);
+				}
+			}
+			List<JMeterTreeNode> listChild = searchTransaction(child, list);
+			for (JMeterTreeNode node : listChild) {
+				if (!(list.contains(node))) {
+					list.add(node);
+				}
+			}
+
+		}
+		return list;
+
+	}
+
 	private static List<TestElement> searchTransactionNoGui(Object[] object,
 			List<TestElement> list) throws Exception {
 
@@ -113,6 +184,27 @@ public class FindService {
 			TestElement child = (TestElement) element;
 
 			if (child instanceof WorkLoadController) {
+				if (!(list.contains(child))) {
+					list.add(child);
+				}
+			}
+
+		}
+		return list;
+
+	}
+
+	private static List<TestElement> searchWorkLoadThreadGroupNoGui(
+			Object[] object, List<TestElement> list) throws Exception {
+
+		if (list == null) {
+			list = new ArrayList<TestElement>();
+		}
+
+		for (Object element : object) {
+			TestElement child = (TestElement) element;
+
+			if (child instanceof WorkLoadThreadGroup) {
 				if (!(list.contains(child))) {
 					list.add(child);
 				}

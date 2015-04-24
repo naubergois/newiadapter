@@ -168,13 +168,13 @@ public abstract class JMeterPluginsUtils {
 		}
 	}
 
-	public static void tableModelRowsToDerby(PowerTableModel model)
-			throws ClassNotFoundException, SQLException {
+	public static void tableModelRowsToDerby(PowerTableModel model,
+			WorkLoadThreadGroup gp) throws ClassNotFoundException, SQLException {
 
 		for (int row = 0; row < model.getRowCount(); row++) {
 			List<Object> item = getArrayListForArray(model.getRowData(row));
 			if (item != null) {
-				DerbyDatabase.insertWorkLoads(item);
+				DerbyDatabase.insertWorkLoads(item, gp.getName());
 			} else {
 				System.out.println("Objeto nulo");
 			}
@@ -206,8 +206,7 @@ public abstract class JMeterPluginsUtils {
 		}
 		return rows;
 	}
-	
-	
+
 	public static CollectionProperty listWorkLoadToCollectionProperty(
 			List<WorkLoad> model, String propname) {
 		CollectionProperty rows = new CollectionProperty(propname,
@@ -218,9 +217,9 @@ public abstract class JMeterPluginsUtils {
 				for (int i = 0; i < item.length; i++) {
 					String object = String.valueOf(item[i]);
 					if (object == null) {
-						item[i]="0";
+						item[i] = "0";
 					} else {
-						item[i]=String.valueOf(object);
+						item[i] = String.valueOf(object);
 					}
 
 				}
@@ -233,7 +232,6 @@ public abstract class JMeterPluginsUtils {
 		return rows;
 	}
 
-
 	public static CollectionProperty tableModelRowsToCollectionPropertyEval(
 			PowerTableModel model, String propname) {
 		CollectionProperty rows = new CollectionProperty(propname,
@@ -245,13 +243,13 @@ public abstract class JMeterPluginsUtils {
 		return rows;
 	}
 
-	public static void collectionPropertyToDerby(CollectionProperty prop)
-			throws ClassNotFoundException, SQLException {
+	public static void collectionPropertyToDerby(CollectionProperty prop,
+			WorkLoadThreadGroup gp) throws ClassNotFoundException, SQLException {
 
 		for (int rowN = 0; rowN < prop.size(); rowN++) {
 			ArrayList<String> rowObject = (ArrayList<String>) prop.get(rowN)
 					.getObjectValue();
-			DerbyDatabase.insertWorkLoads(rowObject);
+			DerbyDatabase.insertWorkLoads(rowObject, gp.getName());
 		}
 
 	}
@@ -298,9 +296,10 @@ public abstract class JMeterPluginsUtils {
 
 	}
 
-	public static void modelFromDerby(PowerTableModel model)
+	public static void modelFromDerbyGui(PowerTableModel model, String testPlan)
 			throws ClassNotFoundException, SQLException {
-		List<WorkLoad> list = DerbyDatabase.listWorkLoads();
+
+		List<WorkLoad> list = DerbyDatabase.listWorkLoads(testPlan);
 		model.clearData();
 		for (int rowN = 0; rowN < list.size(); rowN++) {
 			WorkLoad workload = list.get(rowN);

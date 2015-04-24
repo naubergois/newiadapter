@@ -26,6 +26,7 @@ import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.testelement.property.JMeterProperty;
 import org.apache.jmeter.testelement.property.NullProperty;
 import org.apache.jmeter.testelement.property.PropertyIterator;
+import org.apache.jmeter.testelement.property.StringProperty;
 import org.apache.jmeter.threads.JMeterContext;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterThread;
@@ -44,6 +45,12 @@ import org.jgap.Population;
  */
 public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		Serializable, TestStateListener, SampleListener, LoopIterationListener {
+
+	/**
+	 * Condition Accessor - this is gonna be like <code>${count} &lt; 10</code>
+	 * 
+	 * @return the condition associated with this controller
+	 */
 
 	/**
 	 * 
@@ -215,9 +222,11 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 									this.tree);
 
 					try {
+
 						for (WorkLoad workLoad : listBest) {
-							DerbyDatabase.insertWorkLoads(JMeterPluginsUtils
-									.getObjectList(workLoad));
+							DerbyDatabase.insertWorkLoads(
+									JMeterPluginsUtils.getObjectList(workLoad),
+									this.getName());
 						}
 
 					} catch (Exception e) {
@@ -293,7 +302,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				WorkLoad workload = JMeterPluginsUtils.getWorkLoad(object);
 
 				try {
-					DerbyDatabase.createWorkLoadIfNotExist(object);
+
+					DerbyDatabase.createWorkLoadIfNotExist(object,
+							this.getName());
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -520,15 +531,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		this.currentTest = 0;
 		if (this.listWorkLoads == null) {
 			listWorkLoads = new ArrayList<WorkLoad>();
-		}
-		try {
-			DerbyDatabase.createDatabase();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
 	}

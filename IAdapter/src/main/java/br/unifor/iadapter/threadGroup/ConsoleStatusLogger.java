@@ -91,17 +91,6 @@ public class ConsoleStatusLogger extends AbstractListenerElement implements
 
 				reponseTimes.put(this.currentWorkload,
 						String.valueOf(se.getResult().getTime()));
-				try {
-					DerbyDatabase.updateResponseTime(
-							String.valueOf(se.getResult().getTime()),
-							this.currentWorkload);
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 
 		}
@@ -137,15 +126,6 @@ public class ConsoleStatusLogger extends AbstractListenerElement implements
 	public ConsoleStatusLogger() {
 		super();
 
-		try {
-			DerbyDatabase.createDatabase();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	private void flush(long sec) {
@@ -184,19 +164,11 @@ public class ConsoleStatusLogger extends AbstractListenerElement implements
 	}
 
 	public void testEnded() {
-		
-		Set keys=this.getReponseTimes().keySet();
+
+		Set keys = this.getReponseTimes().keySet();
 		for (Object object : keys) {
-			String responseTime=this.getReponseTimes().get(object);
-			try {
-				DerbyDatabase.updateResponseTime(responseTime, object.toString());
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			String responseTime = this.getReponseTimes().get(object);
+
 		}
 		System.out.println("Teste console terminou");
 	}

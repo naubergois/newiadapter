@@ -4,16 +4,19 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
@@ -124,6 +127,11 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		panel.add(scroll, BorderLayout.CENTER);
 		buttons = new JPanel();
 
+		JPanel southPanel = new JPanel();
+		southPanel.setLayout(new GridLayout(0, 1));
+
+		JPanel database = new JPanel();
+
 		JButton button1 = new JButton("Create Workloads");
 		buttons.add(button1);
 
@@ -145,7 +153,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		button4.addActionListener(new DeleteRowAction(this, grid, wtableModel,
 				null));
-		panel.add(buttons, BorderLayout.SOUTH);
+		southPanel.add(buttons, BorderLayout.SOUTH);
+		southPanel.add(database, BorderLayout.SOUTH);
+
+		panel.add(southPanel, BorderLayout.SOUTH);
 
 		return panel;
 	}
@@ -162,7 +173,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	public TestElement createTestElement() {
 
 		WorkLoadThreadGroup tg = new WorkLoadThreadGroup();
+
 		modifyTestElement(tg);
+
 		tg.setComment(JMeterPluginsUtils.getWikiLinkText(WIKIPAGE));
 
 		return tg;
@@ -178,6 +191,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	public void modifyTestElement(TestElement tg) {
 		if (tg instanceof WorkLoadThreadGroup) {
+
 			WorkLoadThreadGroup utg = (WorkLoadThreadGroup) tg;
 
 			if (grid == null) {
