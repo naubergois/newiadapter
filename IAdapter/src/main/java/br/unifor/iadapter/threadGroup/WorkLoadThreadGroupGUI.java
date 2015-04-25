@@ -258,10 +258,13 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			wtableModel.removeTableModelListener(this);
 			JMeterPluginsUtils.collectionPropertyToTableModelRows(columns,
 					wtableModel);
-			/*
-			 * try { JMeterPluginsUtils.collectionPropertyToDerby(columns); }
-			 * catch (Exception e) { e.printStackTrace(); }
-			 */
+
+			try {
+				JMeterPluginsUtils.collectionPropertyToDerby(columns, utg);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 			wtableModel.addTableModelListener(this);
 			updateUI();
 		} else {

@@ -33,7 +33,11 @@ public class DerbyDatabase {
 			+ "FUNCTION5,FUNCTION6,FUNCTION7,FUNCTION8,"
 			+ "FUNCTION9,FUNCTION10,TESTPLAN";
 
+	private final static String COLUMNSAGENT = "NAME,RUNNING," + "IP";
+
 	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+
+	private final static String PARAMETERSAGENT = "?,?,?";
 
 	private final static String SET = "NAME=?,TYPE=?,"
 			+ "USERS=?,RESPONSETIME=?,ERROR=?,FIT=?,FUNCTION1=?,"
@@ -41,9 +45,15 @@ public class DerbyDatabase {
 			+ "FUNCTION6=?,FUNCTION7=?,FUNCTION8=?,FUNCTION9=?,"
 			+ "FUNCTION10=?,TESTPLAN=?";
 
+	private final static String SETAGENT = "NAME=?,RUNNING=?," + "IP=?";
+
 	private final static String INSERTSQL = "insert into  workload("
 			+ DerbyDatabase.COLUMNS + ") values (" + DerbyDatabase.PARAMETERS
 			+ ")";
+
+	private final static String INSERTSQLAGENT = "insert into  agent("
+			+ DerbyDatabase.COLUMNSAGENT + ") values ("
+			+ DerbyDatabase.PARAMETERSAGENT + ")";
 
 	public static PreparedStatement setParametersWhere(PreparedStatement ps,
 			List objetos, String where, String testPlan) throws SQLException {
@@ -111,7 +121,7 @@ public class DerbyDatabase {
 			}
 			Class.forName("com.mysql.jdbc.Driver");
 
-			DerbyDatabase.conn = DriverManager.getConnection("jdbc:mysql:/"
+			DerbyDatabase.conn = DriverManager.getConnection("jdbc:mysql://"
 					+ databaseIp + ":3306/workload?" + "user=" + user
 					+ "&password=" + password);
 
@@ -120,7 +130,7 @@ public class DerbyDatabase {
 			ResultSet tables = meta.getTables(null, null, "workload", null);
 			if (tables.next()) {
 
-				System.out.println("tabela existe");
+				System.out.println("tabela workload existe");
 
 			} else {
 
@@ -246,13 +256,76 @@ public class DerbyDatabase {
 
 	}
 
+	public static int verifyRunning() throws ClassNotFoundException,
+			SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement(""
+				+ "SELECT count(*) FROM agent WHERE RUNNING='true");
+
+		ResultSet rs = ps.executeQuery();
+
+		int count = 0;
+		while (rs.next()) {
+			count = rs.getInt(1);
+		}
+		return count;
+
+	}
+
+	public static void deleteAgent(List objetos, String testPlan)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement(""
+				+ "DELETE  FROM  agent WHERE NAME=? AND IP=?");
+		ps.setString(1, String.valueOf(objetos.get(0)));
+		ps.setString(2, String.valueOf(objetos.get(1)));
+		ps.executeUpdate();
+
+	}
+
+	public static void updateAgentOrCreateIfNotExist(List objetos,
+			String testPlan) throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement(""
+				+ "SELECT count(*) FROM  AGENT WHERE NAME=?");
+		ps.setString(1, String.valueOf(objetos.get(0)));
+		ResultSet rs = ps.executeQuery();
+
+		int count = 0;
+		while (rs.next()) {
+			count = rs.getInt(1);
+		}
+		if (count <= 0) {
+			ps = con.prepareStatement(DerbyDatabase.INSERTSQLAGENT);
+			ps.setString(1, objetos.get(0).toString());
+			ps.setString(2, objetos.get(1).toString());
+			ps.setString(3, objetos.get(2).toString());
+			ps.executeUpdate();
+		} else {
+
+			ps = con.prepareStatement("UPDATE AGENT SET RUNNING=? WHERE NAME=? AND IP=?");
+
+			ps.setString(1, objetos.get(1).toString());
+			ps.setString(2, objetos.get(0).toString());
+			ps.setString(3, objetos.get(2).toString());
+			ps.executeUpdate();
+		}
+
+	}
+
 	public static List<WorkLoad> listWorkLoads(String testPlan)
 			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=?");
+				+ "  FROM  workload WHERE TESTPLAN=? ORDER BY FIT DESC");
 		ps.setString(1, testPlan);
 
 		ResultSet rs = ps.executeQuery();

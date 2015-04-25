@@ -161,7 +161,7 @@ public class FindService {
 					list.add(child);
 				}
 			}
-			List<JMeterTreeNode> listChild = searchTransaction(child, list);
+			List<JMeterTreeNode> listChild = searchThreadGroup(child, list);
 			for (JMeterTreeNode node : listChild) {
 				if (!(list.contains(node))) {
 					list.add(node);

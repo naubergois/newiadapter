@@ -1,6 +1,7 @@
 package br.unifor.iadapter.threadGroup;
 
 import java.io.Serializable;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -56,6 +57,16 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private int generation=1;
+
+	public int getGeneration() {
+		return generation;
+	}
+
+	public void setGeneration(int generation) {
+		this.generation = generation;
+	}
 
 	private int currentTest;
 
@@ -138,6 +149,28 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		if (this.allThreads.size() == 0) {
 
+			List<Object> listAgent = new ArrayList<Object>();
+			listAgent.add(this.getName() + this.hashCode());
+			try {
+				listAgent.add(java.net.InetAddress.getLocalHost());
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			try {
+				DerbyDatabase.deleteAgent(listAgent, null);
+
+				while (DerbyDatabase.verifyRunning() > 0)
+					;
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
 			System.out.println("Sample"
 					+ JMeterContextService.getContext().getCurrentSampler());
 			System.out.println("Sample"
@@ -219,7 +252,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 					List<WorkLoad> listBest = JMeterPluginsUtils
 							.getListWorkLoadFromPopulation(populationBest,
-									this.tree);
+									this.tree,generation);
 
 					try {
 
@@ -241,6 +274,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				generation=generation+1;
 			}
 		}
 
@@ -272,14 +306,18 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	public void start(int groupCount, ListenerNotifier notifier,
 			ListedHashTree threadGroupTree, StandardJMeterEngine engine) {
 
-		JMeterProperty data = getData();
+		List<WorkLoad> list = null;
+		try {
+			list = DerbyDatabase.listWorkLoads(this.getName());
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		this.setTree(threadGroupTree);
-
-		if (!(data instanceof NullProperty)) {
-			scheduleIT = ((CollectionProperty) data).iterator();
-
-		}
 
 		List<TestElement> lista = FindService
 				.searchWorkLoadControllerWithNoGui(threadGroupTree);
@@ -288,86 +326,88 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		SinglentonEngine.notifier = notifier;
 		SinglentonEngine.threadGroupTree = threadGroupTree;
 		SinglentonEngine.engine1 = engine;
-		CollectionProperty collection = ((CollectionProperty) data);
-		int size = collection.size();
 
-		if (scheduleIT.hasNext()) {
+		int size = list.size();
 
-			if (size > 0) {
-				running = true;
+		if (size > 0) {
+			running = true;
 
-				ArrayList object = (ArrayList) collection.get(currentTest)
-						.getObjectValue();
-
-				WorkLoad workload = JMeterPluginsUtils.getWorkLoad(object);
-
-				try {
-
-					DerbyDatabase.createWorkLoadIfNotExist(object,
-							this.getName());
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				JMeterContextService.getContext().getVariables()
-						.put("currentWorkload", workload.getName());
-
-				this.workloadCurrent = workload;
-
-				int numThreads = getThreadNumberCounter(workload,
-						workload.getNumThreads());
-
-				threadsToSchedule = numThreads;
-
-				log.info("Starting thread group number " + groupCount
-						+ " threads " + numThreads);
-
-				final JMeterContext context = JMeterContextService.getContext();
-
-				context.setRestartNextLoop(true);
-
-				int count = 1;
-				int count2 = 1;
-
-				while (count <= workload.getNumThreads()) {
-
-					if (count > workload.getNumThreads())
-						break;
-
-					String nameWorkloadController = getFunctionNameByID(
-							workload, count2 % 10);
-
-					if ((nameWorkloadController != null)
-							&& (!(nameWorkloadController.equals("None")))) {
-
-						count++;
-
-						TestElement node = getNodesByName(
-								nameWorkloadController, lista);
-
-						JMeterThread jmThread = makeThread(groupCount,
-								notifier, threadGroupTree, engine, count,
-								context, workload, node);
-						workload.scheduleThread(log, numThreads, jmThread,
-								count);
-						Thread newThread = new Thread(jmThread,
-								jmThread.getThreadName());
-
-						registerStartedThread(jmThread, newThread);
-
-						newThread.start();
-					}
-
-					count2++;
-
-				}
-
-				log.info("Started thread group number " + groupCount);
+			List<Object> listAgent = new ArrayList<Object>();
+			listAgent.add(this.getName() + this.hashCode());
+			listAgent.add(new Boolean(true));
+			try {
+				listAgent.add(java.net.InetAddress.getLocalHost());
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+
+			try {
+				DerbyDatabase.updateAgentOrCreateIfNotExist(listAgent,
+						this.getName());
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			WorkLoad workload = list.get(this.getCurrentTest());
+
+			JMeterContextService.getContext().getVariables()
+					.put("currentWorkload", workload.getName());
+
+			this.workloadCurrent = workload;
+
+			int numThreads = getThreadNumberCounter(workload,
+					workload.getNumThreads());
+
+			threadsToSchedule = numThreads;
+
+			log.info("Starting thread group number " + groupCount + " threads "
+					+ numThreads);
+
+			final JMeterContext context = JMeterContextService.getContext();
+
+			context.setRestartNextLoop(true);
+
+			int count = 1;
+			int count2 = 1;
+
+			while (count <= workload.getNumThreads()) {
+
+				if (count > workload.getNumThreads())
+					break;
+
+				String nameWorkloadController = getFunctionNameByID(workload,
+						count2 % 10);
+
+				if ((nameWorkloadController != null)
+						&& (!(nameWorkloadController.equals("None")))) {
+
+					count++;
+
+					TestElement node = getNodesByName(nameWorkloadController,
+							lista);
+
+					JMeterThread jmThread = makeThread(groupCount, notifier,
+							threadGroupTree, engine, count, context, workload,
+							node);
+					workload.scheduleThread(log, numThreads, jmThread, count);
+					Thread newThread = new Thread(jmThread,
+							jmThread.getThreadName());
+
+					registerStartedThread(jmThread, newThread);
+
+					newThread.start();
+				}
+
+				count2++;
+
+			}
+
+			log.info("Started thread group number " + groupCount);
 		}
 
 	}

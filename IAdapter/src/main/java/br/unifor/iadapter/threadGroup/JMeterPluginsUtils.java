@@ -105,46 +105,106 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	public static List<WorkLoad> getListWorkLoadFromPopulation(
-			Population population, ListedHashTree tree) {
+			Population population, ListedHashTree tree,int generation) {
 		List<TestElement> listElement = FindService
 				.searchWorkLoadControllerWithNoGui(tree);
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 		List<Chromosome> listC = population.getChromosomes();
 		for (Chromosome chromosome : listC) {
-			list.add(getWorkLoadFromChromosome(chromosome, listElement));
+			list.add(getWorkLoadFromChromosome(chromosome, listElement,generation));
 		}
 
 		return list;
 	}
 
 	public static WorkLoad getWorkLoadFromChromosome(Chromosome chromosome,
-			List<TestElement> list) {
+			List<TestElement> list, int generation) {
 
 		Gene[] gene = chromosome.getGenes();
 		WorkLoad workload = new WorkLoad();
 		workload.setNumThreads(((IntegerGene) gene[1]).intValue());
 		workload.setType(WorkLoad.getTypes()[((IntegerGene) gene[0]).intValue()]);
 		workload.setFit(chromosome.getFitnessValueDirectly());
-		workload.setFunction1(list.get(((IntegerGene) gene[2]).intValue())
-				.getName());
-		workload.setFunction2(list.get(((IntegerGene) gene[3]).intValue())
-				.getName());
-		workload.setFunction3(list.get(((IntegerGene) gene[4]).intValue())
-				.getName());
-		workload.setFunction4(list.get(((IntegerGene) gene[5]).intValue())
-				.getName());
-		workload.setFunction5(list.get(((IntegerGene) gene[6]).intValue())
-				.getName());
-		workload.setFunction6(list.get(((IntegerGene) gene[7]).intValue())
-				.getName());
-		workload.setFunction7(list.get(((IntegerGene) gene[8]).intValue())
-				.getName());
-		workload.setFunction8(list.get(((IntegerGene) gene[9]).intValue())
-				.getName());
-		workload.setFunction9(list.get(((IntegerGene) gene[10]).intValue())
-				.getName());
-		workload.setFunction10(list.get(((IntegerGene) gene[11]).intValue())
-				.getName());
+
+		int index = ((IntegerGene) gene[2]).intValue();
+		if (index == -1) {
+			workload.setFunction1("None");
+		} else {
+			workload.setFunction1(list.get(((IntegerGene) gene[2]).intValue())
+					.getName());
+		}
+		index = ((IntegerGene) gene[3]).intValue();
+		if (index == -1) {
+			workload.setFunction2("None");
+		} else {
+			workload.setFunction2(list.get(((IntegerGene) gene[3]).intValue())
+					.getName());
+		}
+		index = ((IntegerGene) gene[4]).intValue();
+		if (index == -1) {
+			workload.setFunction3("None");
+		} else {
+			workload.setFunction3(list.get(((IntegerGene) gene[4]).intValue())
+					.getName());
+		}
+		index = ((IntegerGene) gene[5]).intValue();
+		if (index == -1) {
+			workload.setFunction4("None");
+		} else {
+			workload.setFunction4(list.get(((IntegerGene) gene[5]).intValue())
+					.getName());
+		}
+		index = ((IntegerGene) gene[6]).intValue();
+		if (index == -1) {
+			workload.setFunction5("None");
+		} else {
+			workload.setFunction5(list.get(((IntegerGene) gene[6]).intValue())
+					.getName());
+		}
+		index = ((IntegerGene) gene[7]).intValue();
+		if (index == -1) {
+			workload.setFunction6("None");
+		} else {
+			workload.setFunction6(list.get(((IntegerGene) gene[7]).intValue())
+					.getName());
+		}
+		index = ((IntegerGene) gene[8]).intValue();
+		if (index == -1) {
+			workload.setFunction7("None");
+		} else {
+			workload.setFunction7(list.get(((IntegerGene) gene[8]).intValue())
+					.getName());
+		}
+		index = ((IntegerGene) gene[9]).intValue();
+		if (index == -1) {
+			workload.setFunction8("None");
+		} else {
+			workload.setFunction8(list.get(((IntegerGene) gene[9]).intValue())
+					.getName());
+		}
+		index = ((IntegerGene) gene[10]).intValue();
+		if (index == -1) {
+			workload.setFunction9("None");
+		} else {
+			workload.setFunction9(list.get(((IntegerGene) gene[10]).intValue())
+					.getName());
+		}
+		index = ((IntegerGene) gene[11]).intValue();
+		if (index == -1) {
+			workload.setFunction10("None");
+		} else {
+			workload.setFunction10(list
+					.get(((IntegerGene) gene[11]).intValue()).getName());
+		}
+
+		workload.setName("G" + generation + ":" + workload.getType() + "-"
+				+ workload.getNumThreads() + "-" + workload.getFunction1()
+				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
+				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()
+				+ "-" + workload.getFunction6() + "-" + workload.getFunction7()
+				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
+				+ "-" + workload.getFunction10());
+
 		return workload;
 	}
 
@@ -249,7 +309,7 @@ public abstract class JMeterPluginsUtils {
 		for (int rowN = 0; rowN < prop.size(); rowN++) {
 			ArrayList<String> rowObject = (ArrayList<String>) prop.get(rowN)
 					.getObjectValue();
-			DerbyDatabase.insertWorkLoads(rowObject, gp.getName());
+			DerbyDatabase.createWorkLoadIfNotExist(rowObject, gp.getName());
 		}
 
 	}

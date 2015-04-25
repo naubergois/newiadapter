@@ -22,7 +22,7 @@ public class GeneWorkLoad {
 	private static Configuration conf;
 
 	public static int indexOf(List<TestElement> list, String name) {
-		int index = 0;
+		int index = -1;
 		for (int i = 0; i < list.size(); i++) {
 			TestElement element = list.get(i);
 			if (element.getName().equals(name)) {
