@@ -262,7 +262,7 @@ public class DerbyDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM agent WHERE RUNNING='true");
+				+ "SELECT count(*) FROM agent WHERE RUNNING='true'");
 
 		ResultSet rs = ps.executeQuery();
 
