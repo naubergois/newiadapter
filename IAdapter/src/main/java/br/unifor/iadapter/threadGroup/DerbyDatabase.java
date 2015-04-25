@@ -257,7 +257,9 @@ public class DerbyDatabase {
 	}
 
 	public static int verifyRunning() throws ClassNotFoundException,
-			SQLException {
+			SQLException, InterruptedException {
+		
+		Thread.sleep(20000);
 
 		Connection con = singleton();
 
@@ -270,6 +272,9 @@ public class DerbyDatabase {
 		while (rs.next()) {
 			count = rs.getInt(1);
 		}
+		
+		rs=null;
+		ps=null;
 		return count;
 
 	}

@@ -36,6 +36,7 @@ import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
+import org.jgap.Chromosome;
 import org.jgap.Population;
 
 /***
@@ -57,8 +58,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private int generation=1;
+
+	private int generation = 1;
 
 	public int getGeneration() {
 		return generation;
@@ -169,6 +170,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 			System.out.println("Sample"
@@ -247,12 +251,15 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					Population population = GeneWorkLoad.population(list,
 							this.tree);
 
-					Population populationBest = GeneWorkLoad
-							.selectBestIndividuals(population, 10);
+					List<Chromosome> bestChromossomes = GeneWorkLoad
+							.selectBestIndividualsList(population, 10);
+
+					GeneWorkLoad.crossOverPopulation(population,
+							bestChromossomes);
 
 					List<WorkLoad> listBest = JMeterPluginsUtils
-							.getListWorkLoadFromPopulation(populationBest,
-									this.tree,generation);
+							.getListWorkLoadFromPopulation(population,
+									this.tree, generation);
 
 					try {
 
@@ -274,7 +281,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				generation=generation+1;
+				generation = generation + 1;
 			}
 		}
 

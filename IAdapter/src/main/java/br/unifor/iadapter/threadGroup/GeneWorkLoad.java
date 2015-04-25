@@ -14,6 +14,7 @@ import org.jgap.Genotype;
 import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.Population;
+import org.jgap.impl.CrossoverOperator;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.IntegerGene;
 
@@ -30,6 +31,13 @@ public class GeneWorkLoad {
 			}
 		}
 		return index;
+	}
+
+	public static void crossOverPopulation(Population population,
+			List<Chromosome> list) throws InvalidConfigurationException {
+		CrossoverOperator cs = new CrossoverOperator(getConfiguration());
+		cs.operate(population, list);
+
 	}
 
 	public static Gene[] geneFromWorkLoad(WorkLoad workload,
@@ -78,6 +86,23 @@ public class GeneWorkLoad {
 			population2.addChromosome(chromosome);
 		}
 		return population2;
+	}
+
+	public static List<Chromosome> selectBestIndividualsList(
+			Population population, int index)
+			throws InvalidConfigurationException {
+		List<Chromosome> listReturn = new ArrayList<Chromosome>();
+		Population population2 = new Population(getConfiguration());
+		population.sortByFitness();
+		List<Chromosome> list = population.getChromosomes();
+		for (int i = 0; i < index; i++) {
+			if (i < list.size()) {
+				Chromosome chromosome = list.get(i);
+				listReturn.add(chromosome);
+			}
+
+		}
+		return list;
 	}
 
 	public static Population population(List<WorkLoad> list,
