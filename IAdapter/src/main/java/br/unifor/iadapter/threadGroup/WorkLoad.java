@@ -5,7 +5,7 @@ import org.apache.log.Logger;
 
 public class WorkLoad {
 
-	private static String[] types = { "UpDown" };
+	private static String[] types = { "UpDown","Stress" };
 
 	private String function1;
 
@@ -235,7 +235,9 @@ public class WorkLoad {
 	}
 
 	public long getEndTimeStrategy(long numberThread) {
-		return (long) (numberThread * 1000 + 10000 + System.currentTimeMillis() + 1000);
+		long totalTime = this.getNumThreads() * 2 * 1000;
+		long difftime = totalTime - numThreads * 1000;
+		return (long) (getStartTimeStrategy(numberThread) + difftime);
 	}
 
 	protected void scheduleThread(Logger log, long numberThreads,
@@ -251,6 +253,23 @@ public class WorkLoad {
 			thread.setScheduled(true);
 
 		}
+	}
+
+	public  void plotGraph(GraphRowSumValues row, WorkLoad workLoad) {
+
+		long initialTime = System.currentTimeMillis();
+
+		for (int n = 0; n < workLoad.getNumThreads(); n++) {
+
+			long now = workLoad.getStartTimeStrategy(n);
+			row.add(now - initialTime, 0);
+			row.add(now - initialTime, 1);
+
+			long nowEnd = workLoad.getEndTimeStrategy(n);
+			row.add(nowEnd - initialTime, 0);
+			row.add(nowEnd - initialTime, -1);
+		}
+
 	}
 
 }

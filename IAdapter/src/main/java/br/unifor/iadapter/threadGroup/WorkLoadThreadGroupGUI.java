@@ -11,12 +11,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
@@ -63,6 +61,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			"Kind", "Users", "Response Time", "Error", "Fit", "Function1",
 			"Function2", "Function3", "Function4", "Function5", "Function6",
 			"Function7", "Function8", "Function9", "Function10" };
+
+	public static final String[] columnIdentifiersAgent = new String[] {
+			"Name", "Running", "IP" };
 	/**
      *
      */
@@ -72,13 +73,22 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class };
+
+	public static final Class[] columnClassesAgent = new Class[] {
+			String.class, String.class, String.class };
+
 	public static final String[] defaultValues = new String[] { "1", "1", "1",
 			"1", "1", "1", "None", "None", "None", "None", "None", "None",
 			"None", "None", "None", "None" };
 
+	public static final String[] defaultValuesAgent = new String[] { "1", "1",
+			"1", "1" };
+
 	private LoopControlPanel loopPanel;
 	protected PowerTableModel wtableModel;
+	protected PowerTableModel wtableModelAgents;
 	protected JTable grid;
+	protected JTable gridAgents;
 	protected JPanel buttons;
 
 	private PropertyIterator scheduleIT;
@@ -102,6 +112,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		containerPanel.add(GuiBuilderHelper.getComponentWithMargin(
 				createChart(), 2, 2, 0, 2), BorderLayout.CENTER);
 		tabbedPane.addTab("Main", containerPanel);
+		createTabAgent(tabbedPane);
 		add(tabbedPane, BorderLayout.CENTER);
 
 		createControllerPanel();
@@ -113,8 +124,20 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		createTableModel();
 		grid.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		grid.setMinimumSize(new Dimension(200, 100));
+		grid.addMouseListener(new WorkLoadTableClicked(grid, this, wtableModel,
+				chart));
 
 		return grid;
+	}
+
+	private JTable createGridAgent() {
+		gridAgents = new JTable();
+		gridAgents.getDefaultEditor(String.class).addCellEditorListener(this);
+		createTableModelAgent();
+		gridAgents.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		gridAgents.setMinimumSize(new Dimension(200, 100));
+
+		return gridAgents;
 	}
 
 	private JPanel createParamsPanel() {
@@ -260,6 +283,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 					wtableModel);
 
 			try {
+				JMeterPluginsUtils
+						.derbyAgentToTableModelRows(wtableModelAgents);
 				JMeterPluginsUtils.collectionPropertyToDerby(columns, utg);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -372,7 +397,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		row.setMarkerSize(AbstractGraphRow.MARKER_SIZE_NONE);
 		row.setDrawThickLines(true);
 
-		WorkLoadThreadGroupGUI.plotGraph(row, workLoad);
+		// WorkLoadThreadGroupGUI.plotGraph(row, workLoad);
 
 		final HashTree hashTree = new HashTree();
 		hashTree.add(new LoopController());
@@ -387,15 +412,37 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	}
 
+	public Component createTabAgent(JTabbedPane tab1) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		JScrollPane scroll = new JScrollPane(createGridAgent());
+		scroll.setPreferredSize(scroll.getMinimumSize());
+		panel.add(scroll, BorderLayout.CENTER);
+
+		JPanel buttons = new JPanel();
+		JButton button1 = new JButton("Delete");
+		button1.addActionListener(new DeleteAgentAction(gridAgents,
+				wtableModelAgents, this));
+		buttons.add(button1);
+		panel.add(buttons, BorderLayout.SOUTH);
+
+		tab1.addTab("Agents", panel);
+
+		return tab1;
+
+	}
+
 	private Component createChart() {
-		chart = new GraphPanelChart(false, true);
-		model = new ConcurrentHashMap<String, AbstractGraphRow>();
-		chart.setRows(model);
-		chart.getChartSettings().setDrawFinalZeroingLines(true);
-		chart.setxAxisLabel("Elapsed time");
-		chart.setYAxisLabel("Number of active threads");
-		chart.setBorder(javax.swing.BorderFactory
-				.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+		if (this.chart == null) {
+			chart = new GraphPanelChart(false, true);
+			model = new ConcurrentHashMap<String, AbstractGraphRow>();
+			chart.setRows(model);
+			chart.getChartSettings().setDrawFinalZeroingLines(true);
+			chart.setxAxisLabel("Elapsed time");
+			chart.setYAxisLabel("Number of active threads");
+			chart.setBorder(javax.swing.BorderFactory
+					.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+		}
 		return chart;
 	}
 
@@ -407,10 +454,25 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		wtableModel = new PowerTableModel(columnIdentifiers, columnClasses);
 		wtableModel.addTableModelListener(this);
 
+		if (this.chart == null)
+			createChart();
+
 		if (grid == null) {
 			createGrid();
 		}
 		grid.setModel(wtableModel);
+
+	}
+
+	private void createTableModelAgent() {
+		wtableModelAgents = new PowerTableModel(columnIdentifiersAgent,
+				columnClassesAgent);
+		wtableModelAgents.addTableModelListener(this);
+
+		if (gridAgents == null) {
+			createGridAgent();
+		}
+		gridAgents.setModel(wtableModelAgents);
 
 	}
 
@@ -424,6 +486,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		if (wtableModel != null) {
 			wtableModel.clearData();
 		}
+		if (wtableModelAgents != null) {
+			wtableModelAgents.clearData();
+		}
 	}
 
 	public void editingCanceled(ChangeEvent arg0) {
@@ -435,20 +500,22 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		init();
 	}
 
-	public static void plotGraph(GraphRowSumValues row, WorkLoad workLoad) {
+	public static void plotGraph(WorkLoad workLoad, GraphPanelChart chart1) {
 
-		for (int n = 0; n < workLoad.getNumThreads(); n++) {
+		ConcurrentHashMap<String, AbstractGraphRow> model1 = new ConcurrentHashMap<String, AbstractGraphRow>();
+		chart1.setRows(model1);
 
-			long initialTime = System.currentTimeMillis();
+		GraphRowSumValues row = new GraphRowSumValues();
+		row.setColor(Color.RED);
+		row.setDrawLine(true);
+		row.setMarkerSize(AbstractGraphRow.MARKER_SIZE_NONE);
+		row.setDrawThickLines(true);
 
-			long now = workLoad.getStartTimeStrategy(n);
-			row.add(now - initialTime, 0);
-			row.add(now - initialTime, 1);
+		workLoad.plotGraph(row, workLoad);
 
-			long nowEnd = workLoad.getEndTimeStrategy(n);
-			row.add(nowEnd - initialTime, 0);
-			row.add(nowEnd - initialTime, -1);
-		}
+		model1.put("Expected parallel users count", row);
+		chart1.invalidateCache();
+		chart1.repaint();
 
 	}
 

@@ -45,6 +45,12 @@ public class FactoryWorkLoad {
 			workload.setType(WorkLoad.getTypes()[0]);
 
 		}
+		if (gene.intValue() == 1) {
+			workload = new StressWorkload();
+
+			workload.setType(WorkLoad.getTypes()[1]);
+
+		}
 
 		workload.setFunction1(getName(nodes, gene2));
 		workload.setFunction2(getName(nodes, gene3));

@@ -84,34 +84,40 @@ public abstract class JMeterPluginsUtils {
 
 	public static WorkLoad getWorkLoad(ArrayList object) {
 
-		WorkLoad workload = new WorkLoad();
-		workload.setNumThreads(Integer.valueOf(object.get(2).toString()));
-		workload.setName((object.get(0).toString()));
-		workload.setType((object.get(1).toString()));
-		workload.setWorstResponseTime(Long.valueOf(object.get(3).toString()));
-		workload.setError(Boolean.valueOf(object.get(4).toString()));
-		workload.setFit(Double.valueOf(object.get(5).toString()));
-		workload.setFunction1(object.get(6).toString());
-		workload.setFunction2(object.get(7).toString());
-		workload.setFunction3(object.get(8).toString());
-		workload.setFunction4(object.get(9).toString());
-		workload.setFunction5(object.get(10).toString());
-		workload.setFunction6(object.get(11).toString());
-		workload.setFunction7(object.get(12).toString());
-		workload.setFunction8(object.get(13).toString());
-		workload.setFunction9(object.get(14).toString());
-		workload.setFunction10(object.get(15).toString());
-		return workload;
+		if (object != null) {
+
+			WorkLoad workload = new WorkLoad();
+			workload.setNumThreads(Integer.valueOf(object.get(2).toString()));
+			workload.setName((object.get(0).toString()));
+			workload.setType((object.get(1).toString()));
+			workload.setWorstResponseTime(Long
+					.valueOf(object.get(3).toString()));
+			workload.setError(Boolean.valueOf(object.get(4).toString()));
+			workload.setFit(Double.valueOf(object.get(5).toString()));
+			workload.setFunction1(object.get(6).toString());
+			workload.setFunction2(object.get(7).toString());
+			workload.setFunction3(object.get(8).toString());
+			workload.setFunction4(object.get(9).toString());
+			workload.setFunction5(object.get(10).toString());
+			workload.setFunction6(object.get(11).toString());
+			workload.setFunction7(object.get(12).toString());
+			workload.setFunction8(object.get(13).toString());
+			workload.setFunction9(object.get(14).toString());
+			workload.setFunction10(object.get(15).toString());
+			return workload;
+		}
+		return null;
 	}
 
 	public static List<WorkLoad> getListWorkLoadFromPopulation(
-			Population population, ListedHashTree tree,int generation) {
+			Population population, ListedHashTree tree, int generation) {
 		List<TestElement> listElement = FindService
 				.searchWorkLoadControllerWithNoGui(tree);
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 		List<Chromosome> listC = population.getChromosomes();
 		for (Chromosome chromosome : listC) {
-			list.add(getWorkLoadFromChromosome(chromosome, listElement,generation));
+			list.add(getWorkLoadFromChromosome(chromosome, listElement,
+					generation));
 		}
 
 		return list;
@@ -325,12 +331,29 @@ public abstract class JMeterPluginsUtils {
 		model.fireTableDataChanged();
 	}
 
+	public static void derbyAgentToTableModelRows(PowerTableModel model)
+			throws ClassNotFoundException, SQLException {
+		model.clearData();
+		List<Agent> list = DerbyDatabase.selectAgents();
+		for (int rowN = 0; rowN < list.size(); rowN++) {
+			Agent agent = list.get(rowN);
+
+			ArrayList<String> rowObject = new ArrayList<String>();
+			rowObject.add(agent.getName());
+			rowObject.add(agent.getRunning());
+			rowObject.add(agent.getIp());
+			model.addRow(rowObject.toArray());
+		}
+		model.fireTableDataChanged();
+	}
+
 	public static void updateFitnessValue(
-			HashMap<String, String> responseTimes, List<WorkLoad> list) {
+			HashMap<String, String> responseTimes, List<WorkLoad> list,
+			WorkLoadThreadGroup tg) throws ClassNotFoundException, SQLException {
 		for (WorkLoad workLoad : list) {
 			String responseTime = responseTimes.get(workLoad.getName());
-			long responseTimeLong = Long.valueOf(responseTime);
-			workLoad.setFit(responseTimeLong);
+			DerbyDatabase.updateResponseTime(responseTime, workLoad.getName(),
+					tg.getName());
 		}
 
 	}

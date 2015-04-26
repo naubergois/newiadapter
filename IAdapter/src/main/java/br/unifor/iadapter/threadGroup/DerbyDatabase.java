@@ -186,13 +186,31 @@ public class DerbyDatabase {
 			count = rs.getInt(1);
 		}
 		if (count > 0) {
-			ps = con.prepareStatement("" + "update workload set "
 
-			+ "RESPONSETIME=? WHERE NAME=? and TESTPLAN=?");
-			ps.setString(1, responseTime);
-			ps.setString(2, workload);
-			ps.setString(3, testPlan);
-			ps.executeUpdate();
+			ps = con.prepareStatement(""
+					+ "SELECT RESPONSETIME FROM  workload WHERE NAME=? AND TESTPLAN=?");
+			ps.setString(1, workload);
+			ps.setString(2, testPlan);
+
+			rs = ps.executeQuery();
+
+			String responseTimeDatabase = "";
+			while (rs.next()) {
+				responseTimeDatabase = rs.getString(1);
+			}
+
+			long responseTimeDatabaseLong = Long.valueOf(responseTimeDatabase);
+			long responseTimeLong = Long.valueOf(responseTime);
+
+			if (responseTimeLong > responseTimeDatabaseLong) {
+				ps = con.prepareStatement("" + "update workload set "
+
+				+ "RESPONSETIME=? WHERE NAME=? and TESTPLAN=?");
+				ps.setString(1, responseTime);
+				ps.setString(2, workload);
+				ps.setString(3, testPlan);
+				ps.executeUpdate();
+			}
 		}
 
 	}
@@ -258,7 +276,7 @@ public class DerbyDatabase {
 
 	public static int verifyRunning() throws ClassNotFoundException,
 			SQLException, InterruptedException {
-		
+
 		Thread.sleep(20000);
 
 		Connection con = singleton();
@@ -272,9 +290,9 @@ public class DerbyDatabase {
 		while (rs.next()) {
 			count = rs.getInt(1);
 		}
-		
-		rs=null;
-		ps=null;
+
+		rs = null;
+		ps = null;
 		return count;
 
 	}
@@ -287,8 +305,34 @@ public class DerbyDatabase {
 		PreparedStatement ps = con.prepareStatement(""
 				+ "DELETE  FROM  agent WHERE NAME=? AND IP=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
-		ps.setString(2, String.valueOf(objetos.get(1)));
+		ps.setString(2, String.valueOf(objetos.get(2)));
 		ps.executeUpdate();
+
+	}
+
+	public static List<Agent> selectAgents() throws ClassNotFoundException,
+			SQLException {
+
+		List<Agent> list = new ArrayList<Agent>();
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement(""
+				+ "select *  FROM  agent ");
+
+		ResultSet rs = ps.executeQuery();
+
+		while (rs.next()) {
+			Agent agent = new Agent();
+			String name = rs.getString(1);
+			String running = rs.getString(2);
+			String ip = rs.getString(3);
+			agent.setIp(ip);
+			agent.setName(name);
+			agent.setRunning(running);
+			list.add(agent);
+		}
+		return list;
 
 	}
 

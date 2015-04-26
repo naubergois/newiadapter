@@ -175,16 +175,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				e.printStackTrace();
 			}
 
-			System.out.println("Sample"
-					+ JMeterContextService.getContext().getCurrentSampler());
-			System.out.println("Sample"
-					+ JMeterContextService.getContext().isSamplingStarted());
-			System.out.println("Sample"
-					+ JMeterContextService.getContext().isRestartNextLoop());
-			System.out.println("Sample"
-					+ JMeterContextService.getContext().getThreadNum());
-			System.out.println("Num" + thread.getThreadNum());
-
 			JMeterProperty data = getData();
 
 			if (!(data instanceof NullProperty)) {
@@ -204,13 +194,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			WorkLoad.setThreadStopped(WorkLoad.getThreadStopped() + 1);
 
 			int threadStopped = WorkLoad.getThreadStopped();
-
-			System.out.println("TS:" + threadStopped);
-			System.out.println(">=");
-			System.out.println("TS:" + workloadCurrent + ":"
-					+ workloadCurrent.getNumThreads());
-			// if (threadStopped>=this.workloadCurrent.getNumThreads()) {
-			System.out.println("Entrou novo laço");
 
 			WorkLoad.setThreadStopped(0);
 
@@ -240,11 +223,19 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				CSVReadStats.run();
 
-				List<WorkLoad> list = JMeterPluginsUtils
-						.collectionPropertyToWorkLoad(this);
-
-				JMeterPluginsUtils.updateFitnessValue(
-						CSVReadStats.getWorkloads(), list);
+				List<WorkLoad> list = null;
+				try {
+					list = DerbyDatabase.listWorkLoads(this.getName());
+					JMeterPluginsUtils.updateFitnessValue(
+							CSVReadStats.getWorkloads(), list, this);
+					list = DerbyDatabase.listWorkLoads(this.getName());
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
 				try {
 

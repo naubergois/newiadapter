@@ -26,6 +26,8 @@ public class RefreshRowWorkloadAction implements ActionListener {
 					.getTestElement();
 			JMeterPluginsUtils.modelFromDerbyGui(sender.wtableModel,
 					gp.getName());
+			JMeterPluginsUtils
+					.derbyAgentToTableModelRows(sender.wtableModelAgents);
 
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
