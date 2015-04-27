@@ -36,6 +36,7 @@ import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
 import org.jgap.Chromosome;
 import org.jgap.Population;
+import org.jgap.impl.CrossoverOperator;
 
 /***
  * Class for define workload model
@@ -238,17 +239,21 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					Population population = GeneWorkLoad.population(list,
 							this.tree);
 
-					List<Chromosome> bestChromossomes = GeneWorkLoad
+					List<Chromosome> bestI= GeneWorkLoad
 							.selectBestIndividualsList(population,
 									Integer.valueOf(getBestIndividuals()));
 
-					GeneWorkLoad.crossOverPopulation(population,
-							bestChromossomes);
+					 CrossoverOperator operator=GeneWorkLoad
+							.crossOverPopulation(population,bestI);
+					 
+					 DerbyDatabase.insertLog("Generation"+operator.getCrossOverRate());
+					 DerbyDatabase.insertLog("CrossOverRate"+operator.getCrossOverRate());
+					 DerbyDatabase.insertLog("CrossOverRatePercent"+operator.getCrossOverRatePercent());
 
 					generation = generation + 1;
 
 					List<WorkLoad> listBest = JMeterPluginsUtils
-							.getListWorkLoadFromPopulation(population,
+							.getListWorkLoadFromPopulation(population.getChromosomes(),
 									this.tree, generation);
 
 					try {

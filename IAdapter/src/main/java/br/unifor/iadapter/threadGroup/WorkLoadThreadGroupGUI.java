@@ -286,30 +286,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		super.configureTestElement(tg);
 	}
 
-	public static void updateModelWithProperty(WorkLoadThreadGroupGUI gui) {
-		GuiPackage gp = GuiPackage.getInstance();
-		if (gp != null) {
-			JMeterTreeNode root = (JMeterTreeNode) gp.getTreeModel().getRoot();
-			List<JMeterTreeNode> lista = WorkLoadThreadGroup
-					.findWorkLoadThreadGroup(root, new ArrayList());
-			for (JMeterTreeNode jMeterTreeNode : lista) {
-				WorkLoadThreadGroup utg = (WorkLoadThreadGroup) jMeterTreeNode
-						.getTestElement();
-				JMeterProperty threadValues = utg.getData();
-				if (!(threadValues instanceof NullProperty)) {
-					CollectionProperty columns = (CollectionProperty) threadValues;
-
-					gui.getWtableModel().removeTableModelListener(gui);
-					JMeterPluginsUtils.collectionPropertyToTableModelRows(
-							columns, gui.getWtableModel());
-					gui.getWtableModel().addTableModelListener(gui);
-					gui.getWtableModel().fireTableDataChanged();
-					gui.updateUI();
-				}
-			}
-		}
-	}
-
+	
 	@Override
 	public void configure(TestElement tg) {
 
@@ -363,59 +340,6 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	}
 
-	private void updateChart(WorkLoadThreadGroup tg) {
-		tg.testStarted();
-		if (model == null) {
-			createChart();
-		}
-
-		model.clear();
-		GraphRowSumValues row = new GraphRowSumValues();
-		row.setColor(Color.RED);
-		row.setDrawLine(true);
-		row.setMarkerSize(AbstractGraphRow.MARKER_SIZE_NONE);
-		row.setDrawThickLines(true);
-
-		final HashTree hashTree = new HashTree();
-		hashTree.add(new LoopController());
-		JMeterThread thread = new JMeterThread(hashTree, null, null);
-
-		long now = System.currentTimeMillis();
-
-		chart.setxAxisLabelRenderer(new DateTimeRenderer(
-				DateTimeRenderer.HHMMSS, now - 1)); // -1 because
-													// row.add(thread.getStartTime()
-													// - 1, 0)
-		chart.setForcedMinX(now);
-
-		row.add(now, 0);
-
-		// users in
-		int numThreads = tg.getNumThreads();
-		log.debug("Num Threads: " + numThreads);
-		for (int n = 0; n < numThreads; n++) {
-			thread.setThreadNum(n);
-			thread.setThreadName(Integer.toString(n));
-			tg.scheduleThread(thread, now);
-			row.add(thread.getStartTime() - 1, 0);
-			row.add(thread.getStartTime(), 1);
-		}
-
-		tg.testStarted();
-
-		for (int n = 0; n < tg.getNumThreads(); n++) {
-			thread.setThreadNum(n);
-			thread.setThreadName(Integer.toString(n));
-			tg.scheduleThread(thread, now);
-			row.add(thread.getEndTime() - 1, 0);
-			row.add(thread.getEndTime(), -1);
-		}
-
-		model.put("Expected parallel users count", row);
-		chart.invalidateCache();
-		chart.repaint();
-	}
-
 	private JPanel createControllerPanel() {
 		loopPanel = new LoopControlPanel(false);
 		LoopController looper = (LoopController) loopPanel.createTestElement();
@@ -423,42 +347,6 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		looper.setContinueForever(true);
 		loopPanel.configure(looper);
 		return loopPanel;
-	}
-
-	public static Component createTabChart(JTabbedPane tab1, WorkLoad workLoad) {
-		JPanel panel = new JPanel();
-
-		GraphPanelChart chart1 = new GraphPanelChart(false, true);
-		ConcurrentHashMap<String, AbstractGraphRow> model1 = new ConcurrentHashMap<String, AbstractGraphRow>();
-		chart1.setRows(model1);
-		chart1.getChartSettings().setDrawFinalZeroingLines(true);
-		chart1.setxAxisLabel("Elapsed time");
-		chart1.setYAxisLabel("Number of active threads");
-		chart1.setBorder(javax.swing.BorderFactory
-				.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-		panel.add(chart1);
-
-		tab1.addTab("Test1", chart1);
-
-		GraphRowSumValues row = new GraphRowSumValues();
-		row.setColor(Color.RED);
-		row.setDrawLine(true);
-		row.setMarkerSize(AbstractGraphRow.MARKER_SIZE_NONE);
-		row.setDrawThickLines(true);
-
-		// WorkLoadThreadGroupGUI.plotGraph(row, workLoad);
-
-		final HashTree hashTree = new HashTree();
-		hashTree.add(new LoopController());
-
-		log.debug("Num Threads: " + 50);
-
-		model1.put("Expected parallel users count", row);
-		chart1.invalidateCache();
-		chart1.repaint();
-
-		return chart1;
-
 	}
 
 	public Component createTabAgent(JTabbedPane tab1) {
@@ -472,7 +360,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		JButton button1 = new JButton("Delete");
 		button1.addActionListener(new DeleteAgentAction(gridAgents,
 				wtableModelAgents, this));
-		
+
 		JButton button2 = new JButton("Refresh");
 		button2.addActionListener(new RefreshRowWorkloadAction(this));
 		buttons.add(button1);

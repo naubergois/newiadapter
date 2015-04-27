@@ -33,10 +33,11 @@ public class GeneWorkLoad {
 		return index;
 	}
 
-	public static void crossOverPopulation(Population population,
+	public static CrossoverOperator crossOverPopulation(Population population,
 			List<Chromosome> list) throws InvalidConfigurationException {
 		CrossoverOperator cs = new CrossoverOperator(getConfiguration());
 		cs.operate(population, list);
+		return cs;
 
 	}
 
@@ -80,29 +81,23 @@ public class GeneWorkLoad {
 	public static Population selectBestIndividuals(Population population,
 			int index) throws InvalidConfigurationException {
 		Population population2 = new Population(getConfiguration());
-		population.sortByFitness();
-		List<Chromosome> list = population.getChromosomes();
+		population.determineFittestChromosomes(index);
+		List<Chromosome> list = population.determineFittestChromosomes(index);
 		for (Chromosome chromosome : list) {
 			population2.addChromosome(chromosome);
 		}
 		return population2;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<Chromosome> selectBestIndividualsList(
 			Population population, int index)
 			throws InvalidConfigurationException {
-		List<Chromosome> listReturn = new ArrayList<Chromosome>();
-		Population population2 = new Population(getConfiguration());
-		population.sortByFitness();
-		List<Chromosome> list = population.getChromosomes();
-		for (int i = 0; i < index; i++) {
-			if (i < list.size()) {
-				Chromosome chromosome = list.get(i);
-				listReturn.add(chromosome);
-			}
-
-		}
-		return list;
+		
+		
+		
+		return population.determineFittestChromosomes(index);
+		
 	}
 
 	public static Population population(List<WorkLoad> list,
@@ -135,7 +130,7 @@ public class GeneWorkLoad {
 	public static Configuration getConfiguration()
 			throws InvalidConfigurationException {
 		if (conf == null) {
-			
+
 			Configuration.reset();
 
 			conf = new DefaultConfiguration();
@@ -146,12 +141,14 @@ public class GeneWorkLoad {
 	}
 
 	public static List<WorkLoad> createWorkLoadsFromChromossomeWithGui(
-			int userNumbers,int generation) throws InvalidConfigurationException {
+			int userNumbers, int generation)
+			throws InvalidConfigurationException {
 		IChromosome[] list = createPopulation(userNumbers);
 		List<WorkLoad> workLoads = new ArrayList<WorkLoad>();
 		for (IChromosome iChromosome : list) {
 			Gene[] gene = iChromosome.getGenes();
-			WorkLoad workload = FactoryWorkLoad.createWorkLoadWithGui(gene,generation);
+			WorkLoad workload = FactoryWorkLoad.createWorkLoadWithGui(gene,
+					generation);
 			workLoads.add(workload);
 		}
 		conf = null;

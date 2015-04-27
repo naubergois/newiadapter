@@ -127,6 +127,20 @@ public abstract class JMeterPluginsUtils {
 		return list;
 	}
 
+	public static List<WorkLoad> getListWorkLoadFromPopulation(
+			List<Chromosome> listC, ListedHashTree tree, int generation) {
+		List<TestElement> listElement = FindService
+				.searchWorkLoadControllerWithNoGui(tree);
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		for (Chromosome chromosome : listC) {
+			list.add(getWorkLoadFromChromosome(chromosome, listElement,
+					generation));
+		}
+
+		return list;
+	}
+
 	public static WorkLoad getWorkLoadFromChromosome(Chromosome chromosome,
 			List<TestElement> list, int generation) {
 		Gene[] gene = chromosome.getGenes();
@@ -389,15 +403,14 @@ public abstract class JMeterPluginsUtils {
 		}
 
 	}
-	
-	
-	public static void updateErrorValue(
-			HashMap<String, String> errors, List<WorkLoad> list,
-			WorkLoadThreadGroup tg) throws ClassNotFoundException, SQLException {
+
+	public static void updateErrorValue(HashMap<String, String> errors,
+			List<WorkLoad> list, WorkLoadThreadGroup tg)
+			throws ClassNotFoundException, SQLException {
 		for (WorkLoad workLoad : list) {
 			String error = errors.get(workLoad.getName());
-			DerbyDatabase.updateError(error, workLoad.getName(),
-					tg.getName(), String.valueOf(tg.getGeneration()));
+			DerbyDatabase.updateError(error, workLoad.getName(), tg.getName(),
+					String.valueOf(tg.getGeneration()));
 		}
 
 	}

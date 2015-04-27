@@ -58,6 +58,9 @@ public class DerbyDatabase {
 			+ DerbyDatabase.COLUMNS + ") values (" + DerbyDatabase.PARAMETERS
 			+ ")";
 
+	private final static String INSERTSQLLog = "insert into  log("
+			+ "log) values (?)";
+
 	private final static String INSERTSQLAGENT = "insert into  agent("
 			+ DerbyDatabase.COLUMNSAGENT + ") values ("
 			+ DerbyDatabase.PARAMETERSAGENT + ")";
@@ -217,6 +220,7 @@ public class DerbyDatabase {
 			}
 
 			long responseTimeDatabaseLong = Long.valueOf(responseTimeDatabase);
+
 			long responseTimeLong = Long.valueOf(responseTime);
 
 			if (responseTimeLong > responseTimeDatabaseLong) {
@@ -319,6 +323,22 @@ public class DerbyDatabase {
 		}
 
 		return error;
+
+	}
+
+	public static int deleteTestPlan(String testPlan)
+			throws ClassNotFoundException, SQLException {
+
+		long rst = 0;
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement(""
+				+ "DELETE FROM  workload WHERE  TESTPLAN=? ");
+
+		ps.setString(2, testPlan);
+
+		return ps.executeUpdate();
 
 	}
 
@@ -445,6 +465,17 @@ public class DerbyDatabase {
 					String.valueOf(objetos.get(0)), testPlan);
 		}
 
+		ps.executeUpdate();
+
+	}
+
+	public static void insertLog(String message) throws ClassNotFoundException,
+			SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement(DerbyDatabase.INSERTSQLLog);
+		ps.setString(1, message);
 		ps.executeUpdate();
 
 	}
