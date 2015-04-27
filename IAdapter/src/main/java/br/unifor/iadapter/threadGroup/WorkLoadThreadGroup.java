@@ -25,9 +25,7 @@ import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.testelement.property.JMeterProperty;
-import org.apache.jmeter.testelement.property.NullProperty;
 import org.apache.jmeter.testelement.property.PropertyIterator;
-import org.apache.jmeter.testelement.property.StringProperty;
 import org.apache.jmeter.threads.JMeterContext;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterThread;
@@ -220,6 +218,11 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 							String.valueOf(this.getGeneration()));
 					JMeterPluginsUtils.updateFitnessValue(
 							CSVReadStats.getWorkloads(), list, this);
+					JMeterPluginsUtils.updateErrorValue(
+							CSVReadStats.getErrors(), list, this);
+					JMeterPluginsUtils.updateFit(list, this.getName(),
+							String.valueOf(this.getGeneration()),
+							this.getMaxTime());
 					list = DerbyDatabase.listWorkLoads(this.getName(),
 							String.valueOf(this.getGeneration()));
 				} catch (ClassNotFoundException e1) {
@@ -236,7 +239,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 							this.tree);
 
 					List<Chromosome> bestChromossomes = GeneWorkLoad
-							.selectBestIndividualsList(population, 10);
+							.selectBestIndividualsList(population,
+									Integer.valueOf(getBestIndividuals()));
 
 					GeneWorkLoad.crossOverPopulation(population,
 							bestChromossomes);
@@ -263,7 +267,25 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					JMeterPluginsUtils.listWorkLoadToCollectionProperty(
 							listBest, WorkLoadThreadGroup.DATA_PROPERTY);
 
-					System.out.println(CSVReadStats.getWorkloads());
+					int generations = Integer.valueOf(getGenNumber());
+
+					if (getGeneration() <= generations) {
+						this.currentTest = 0;
+
+						final JMeterContext context = JMeterContextService
+								.getContext();
+
+						try {
+
+							JMeterEngine engine = context.getEngine();
+
+							new Thread((Runnable) engine).start();
+
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+					}
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -295,6 +317,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	private PropertyIterator scheduleIT;
 	private static final long TOLERANCE = 1000;
+
+	private static final String THREAD_NUMBER_MAX = "threadnumbermax";
+
+	private static final String THREAD_MAX_TIME = "threadmaxtimemax";
+
+	private static final String THREAD_IND = "threadind";
+
+	private static final String THREAD_GEN_NUMBER = "threadgennumber";
 
 	@Override
 	public void start(int groupCount, ListenerNotifier notifier,
@@ -568,6 +598,38 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			listWorkLoads = new ArrayList<WorkLoad>();
 		}
 
+	}
+
+	public String getMaxTime() {
+		return getPropertyAsString(THREAD_MAX_TIME);
+	}
+
+	public void setMaxTime(String delay) {
+		setProperty(THREAD_MAX_TIME, delay);
+	}
+
+	public String getBestIndividuals() {
+		return getPropertyAsString(THREAD_IND);
+	}
+
+	public void setBestIndividuals(String delay) {
+		setProperty(THREAD_IND, delay);
+	}
+
+	public String getGenNumber() {
+		return getPropertyAsString(THREAD_GEN_NUMBER);
+	}
+
+	public void setGenNumber(String delay) {
+		setProperty(THREAD_GEN_NUMBER, delay);
+	}
+
+	public String getThreadNumberMax() {
+		return getPropertyAsString(THREAD_NUMBER_MAX);
+	}
+
+	public void setThreadNumberMax(String delay) {
+		setProperty(THREAD_NUMBER_MAX, delay);
 	}
 
 	public JMeterProperty getData() {

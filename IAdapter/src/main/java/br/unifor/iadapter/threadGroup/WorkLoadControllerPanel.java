@@ -46,11 +46,6 @@ public class WorkLoadControllerPanel extends AbstractControllerGui {
 	 * A field allowing the user to specify the number of times the controller
 	 * should loop.
 	 */
-	private JTextField theCondition;
-
-	private JCheckBox useExpression;
-
-	private JCheckBox evaluateAll;
 
 	/**
 	 * Boolean indicating whether or not this component should display its name.
@@ -95,9 +90,7 @@ public class WorkLoadControllerPanel extends AbstractControllerGui {
 		super.configure(element);
 		if (element instanceof WorkLoadController) {
 			WorkLoadController ifController = (WorkLoadController) element;
-			theCondition.setText(ifController.getCondition());
-			evaluateAll.setSelected(ifController.isEvaluateAll());
-			useExpression.setSelected(ifController.isUseExpression());
+
 		}
 
 	}
@@ -120,9 +113,7 @@ public class WorkLoadControllerPanel extends AbstractControllerGui {
 		configureTestElement(controller);
 		if (controller instanceof WorkLoadController) {
 			WorkLoadController ifController = (WorkLoadController) controller;
-			ifController.setCondition(theCondition.getText());
-			ifController.setEvaluateAll(evaluateAll.isSelected());
-			ifController.setUseExpression(useExpression.isSelected());
+
 		}
 	}
 
@@ -132,11 +123,9 @@ public class WorkLoadControllerPanel extends AbstractControllerGui {
 	@Override
 	public void clearGui() {
 		super.clearGui();
-		theCondition.setText(""); // $NON-NLS-1$
-		evaluateAll.setSelected(false);
+
 	}
 
-	
 	public String getLabelResource() {
 		return "WorkLoadController"; // $NON-NLS-1$
 	}
@@ -152,13 +141,13 @@ public class WorkLoadControllerPanel extends AbstractControllerGui {
 			add(makeTitlePanel(), BorderLayout.NORTH);
 
 			JPanel mainPanel = new JPanel(new BorderLayout());
-			mainPanel.add(createConditionPanel(), BorderLayout.NORTH);
+
 			add(mainPanel, BorderLayout.CENTER);
 
 		} else {
 			// Embedded
 			setLayout(new BorderLayout());
-			add(createConditionPanel(), BorderLayout.NORTH);
+
 		}
 	}
 
@@ -167,36 +156,5 @@ public class WorkLoadControllerPanel extends AbstractControllerGui {
 	 *
 	 * @return a GUI panel containing the condition components
 	 */
-	private JPanel createConditionPanel() {
-		JPanel conditionPanel = new JPanel(new BorderLayout(5, 0));
 
-		// Condition LABEL
-		JLabel conditionLabel = new JLabel(
-				JMeterUtils.getResString("if_controller_label")); // $NON-NLS-1$
-		conditionPanel.add(conditionLabel, BorderLayout.WEST);
-
-		// TEXT FIELD
-		theCondition = new JTextField(""); // $NON-NLS-1$
-		conditionLabel.setLabelFor(theCondition);
-		conditionPanel.add(theCondition, BorderLayout.CENTER);
-
-		conditionPanel.add(Box.createHorizontalStrut(conditionLabel
-				.getPreferredSize().width
-				+ theCondition.getPreferredSize().width), BorderLayout.NORTH);
-
-		JPanel optionPanel = new JPanel();
-
-		// Use expression instead of Javascript
-		useExpression = new JCheckBox(
-				JMeterUtils.getResString("if_controller_expression")); // $NON-NLS-1$
-		optionPanel.add(useExpression);
-
-		// Evaluate All checkbox
-		evaluateAll = new JCheckBox(
-				JMeterUtils.getResString("if_controller_evaluate_all")); // $NON-NLS-1$
-		optionPanel.add(evaluateAll);
-
-		conditionPanel.add(optionPanel, BorderLayout.SOUTH);
-		return conditionPanel;
-	}
 }

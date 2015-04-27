@@ -11,10 +11,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
@@ -48,6 +50,11 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	private static final long serialVersionUID = 1L;
 	public static final String WIKIPAGE = "WorkLoadThreadGroup";
 	private static final Logger log = LoggingManager.getLoggerForClass();
+
+	private JTextField threadMax;
+	private JTextField maxtime;
+	private JTextField genNumber;
+	private JTextField bestInd;
 	/**
      *
      */
@@ -65,6 +72,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	public static final String[] columnIdentifiersAgent = new String[] {
 			"Name", "Running", "IP" };
+
+	public static final String[] columnIdentifiersLog = new String[] { "Log" };
 	/**
      *
      */
@@ -79,6 +88,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	public static final Class[] columnClassesAgent = new Class[] {
 			String.class, String.class, String.class };
 
+	public static final Class[] columnClassesLog = new Class[] { String.class };
+
 	public static final String[] defaultValues = new String[] { "1", "1", "1",
 			"1", "1", "1", "None", "None", "None", "None", "None", "None",
 			"None", "None", "None", "None" };
@@ -88,9 +99,11 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	private LoopControlPanel loopPanel;
 	protected PowerTableModel wtableModel;
+	protected PowerTableModel wtableLog;
 	protected PowerTableModel wtableModelAgents;
 	protected JTable grid;
 	protected JTable gridAgents;
+	protected JTable gridLog;
 	protected JPanel buttons;
 
 	private PropertyIterator scheduleIT;
@@ -115,6 +128,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 				createChart(), 2, 2, 0, 2), BorderLayout.CENTER);
 		tabbedPane.addTab("Main", containerPanel);
 		createTabAgent(tabbedPane);
+		createTabParameters(tabbedPane);
 		add(tabbedPane, BorderLayout.CENTER);
 
 		createControllerPanel();
@@ -140,6 +154,16 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		gridAgents.setMinimumSize(new Dimension(200, 100));
 
 		return gridAgents;
+	}
+
+	private JTable createGridLog() {
+		gridLog = new JTable();
+		gridLog.getDefaultEditor(String.class).addCellEditorListener(this);
+		createTableModelLog();
+		gridLog.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		gridLog.setMinimumSize(new Dimension(200, 100));
+
+		return gridLog;
 	}
 
 	private JPanel createParamsPanel() {
@@ -186,6 +210,14 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		return panel;
 	}
 
+	public JTextField getThreadMax() {
+		return threadMax;
+	}
+
+	public void setThreadMax(JTextField threadMax) {
+		this.threadMax = threadMax;
+	}
+
 	public String getLabelResource() {
 		return this.getClass().getSimpleName();
 	}
@@ -218,6 +250,11 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		if (tg instanceof WorkLoadThreadGroup) {
 
 			WorkLoadThreadGroup utg = (WorkLoadThreadGroup) tg;
+
+			utg.setThreadNumberMax(threadMax.getText());
+			utg.setMaxTime(maxtime.getText());
+			utg.setGenNumber(genNumber.getText());
+			utg.setBestIndividuals(bestInd.getText());
 
 			if (grid == null) {
 				createGrid();
@@ -279,6 +316,11 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		super.configure(tg);
 
 		WorkLoadThreadGroup utg = (WorkLoadThreadGroup) tg;
+
+		threadMax.setText(utg.getThreadNumberMax());
+		maxtime.setText(utg.getMaxTime());
+		genNumber.setText(utg.getGenNumber());
+		bestInd.setText(utg.getBestIndividuals());
 
 		JMeterProperty threadValues = utg.getData();
 		if (!(threadValues instanceof NullProperty)) {
@@ -430,10 +472,42 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		JButton button1 = new JButton("Delete");
 		button1.addActionListener(new DeleteAgentAction(gridAgents,
 				wtableModelAgents, this));
+		
+		JButton button2 = new JButton("Refresh");
+		button2.addActionListener(new RefreshRowWorkloadAction(this));
 		buttons.add(button1);
+		buttons.add(button2);
 		panel.add(buttons, BorderLayout.SOUTH);
 
 		tab1.addTab("Agents", panel);
+
+		return tab1;
+
+	}
+
+	public Component createTabParameters(JTabbedPane tab1) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		JScrollPane scroll = new JScrollPane(createGridLog());
+		scroll.setPreferredSize(scroll.getMinimumSize());
+		panel.add(scroll, BorderLayout.CENTER);
+
+		JPanel param = new JPanel();
+		threadMax = new JTextField("10", 5);
+		maxtime = new JTextField("30000", 5);
+		genNumber = new JTextField("3", 5);
+		bestInd = new JTextField("1", 5);
+		param.add(new JLabel("Thread Max Number"));
+		param.add(threadMax);
+		param.add(new JLabel("Max response time"));
+		param.add(maxtime);
+		param.add(new JLabel("Generations Number"));
+		param.add(genNumber);
+		param.add(new JLabel("BestforCross"));
+		param.add(bestInd);
+		panel.add(param, BorderLayout.SOUTH);
+
+		tab1.addTab("Parameters", panel);
 
 		return tab1;
 
@@ -480,6 +554,17 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			createGridAgent();
 		}
 		gridAgents.setModel(wtableModelAgents);
+
+	}
+
+	private void createTableModelLog() {
+		wtableLog = new PowerTableModel(columnIdentifiersLog, columnClassesLog);
+		wtableLog.addTableModelListener(this);
+
+		if (gridLog == null) {
+			createGridLog();
+		}
+		gridLog.setModel(wtableLog);
 
 	}
 

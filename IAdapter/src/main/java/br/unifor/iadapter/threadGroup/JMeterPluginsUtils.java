@@ -18,7 +18,6 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -136,7 +135,7 @@ public abstract class JMeterPluginsUtils {
 		WorkLoad workload = FactoryWorkLoad.createWorkLoad(type);
 		workload.setNumThreads(((IntegerGene) gene[1]).intValue());
 		workload.setType(type);
-		workload.setFit(chromosome.getFitnessValueDirectly());
+		workload.setFit(0);
 
 		int index = ((IntegerGene) gene[2]).intValue();
 		if (index == -1) {
@@ -309,6 +308,26 @@ public abstract class JMeterPluginsUtils {
 		return rows;
 	}
 
+	public static void updateFit(List<WorkLoad> list, String testPlan,
+			String generation, String maxTime) {
+		for (WorkLoad workload : list) {
+			try {
+				workload.setFit(DerbyDatabase.updateFitValue(
+						workload.getName(), testPlan, generation,
+						Long.valueOf(maxTime)));
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public static CollectionProperty tableModelRowsToCollectionPropertyEval(
 			PowerTableModel model, String propname) {
 		CollectionProperty rows = new CollectionProperty(propname,
@@ -366,6 +385,18 @@ public abstract class JMeterPluginsUtils {
 		for (WorkLoad workLoad : list) {
 			String responseTime = responseTimes.get(workLoad.getName());
 			DerbyDatabase.updateResponseTime(responseTime, workLoad.getName(),
+					tg.getName(), String.valueOf(tg.getGeneration()));
+		}
+
+	}
+	
+	
+	public static void updateErrorValue(
+			HashMap<String, String> errors, List<WorkLoad> list,
+			WorkLoadThreadGroup tg) throws ClassNotFoundException, SQLException {
+		for (WorkLoad workLoad : list) {
+			String error = errors.get(workLoad.getName());
+			DerbyDatabase.updateError(error, workLoad.getName(),
 					tg.getName(), String.valueOf(tg.getGeneration()));
 		}
 

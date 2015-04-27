@@ -184,6 +184,8 @@ public class DerbyDatabase {
 			String testPlan, String generation) throws ClassNotFoundException,
 			SQLException {
 
+		long rst = 0;
+
 		Connection con = singleton();
 
 		PreparedStatement ps = con
@@ -218,6 +220,7 @@ public class DerbyDatabase {
 			long responseTimeLong = Long.valueOf(responseTime);
 
 			if (responseTimeLong > responseTimeDatabaseLong) {
+
 				ps = con.prepareStatement("" + "update workload set "
 
 				+ "RESPONSETIME=? WHERE NAME=? and TESTPLAN=?");
@@ -227,6 +230,186 @@ public class DerbyDatabase {
 				ps.executeUpdate();
 			}
 		}
+
+	}
+
+	public static void updateError(String error, String workload,
+			String testPlan, String generation) throws ClassNotFoundException,
+			SQLException {
+
+		if (error.equals(true)) {
+
+			long rst = 0;
+
+			Connection con = singleton();
+
+			PreparedStatement ps = con
+					.prepareStatement(""
+							+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=?");
+			ps.setString(1, workload);
+			ps.setString(2, testPlan);
+			ps.setString(3, generation);
+
+			ResultSet rs = ps.executeQuery();
+
+			int count = 0;
+			while (rs.next()) {
+				count = rs.getInt(1);
+			}
+			if (count > 0) {
+
+				ps = con.prepareStatement("" + "update workload set "
+
+				+ "ERROR=? WHERE NAME=? and TESTPLAN=?");
+				ps.setString(1, error);
+				ps.setString(2, workload);
+				ps.setString(3, testPlan);
+				ps.executeUpdate();
+
+			}
+		}
+
+	}
+
+	public static long selectResponseTime(String workload, String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
+
+		long rst = 0;
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT RESPONSETIME FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+		ps.setString(1, workload);
+		ps.setString(2, testPlan);
+		ps.setString(3, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		String responseTime = "0";
+		while (rs.next()) {
+			responseTime = rs.getString(1);
+		}
+
+		rst = Long.valueOf(responseTime);
+		return rst;
+
+	}
+
+	public static String selectError(String workload, String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
+
+		long rst = 0;
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT error FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+		ps.setString(1, workload);
+		ps.setString(2, testPlan);
+		ps.setString(3, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		String error = "false";
+		while (rs.next()) {
+			error = rs.getString(1);
+		}
+
+		return error;
+
+	}
+
+	public static double selectFit(String workload, String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
+
+		double rst = 0;
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT FIT FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+		ps.setString(1, workload);
+		ps.setString(2, testPlan);
+		ps.setString(3, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		String fit = "0";
+		while (rs.next()) {
+			fit = rs.getString(1);
+		}
+
+		rst = Double.valueOf(fit);
+		return rst;
+
+	}
+
+	public static double updateFitValue(String workload, String testPlan,
+			String generation, long maxTime) throws ClassNotFoundException,
+			SQLException {
+
+		double fit = 0;
+		long responseTime = selectResponseTime(workload, testPlan, generation);
+		double fitDatabase = selectFit(workload, testPlan, generation);
+		String error = selectError(workload, testPlan, generation);
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=?");
+		ps.setString(1, workload);
+		ps.setString(2, testPlan);
+		ps.setString(3, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		int count = 0;
+		while (rs.next()) {
+			count = rs.getInt(1);
+		}
+		if (count > 0) {
+
+			if (responseTime < maxTime) {
+
+				if (error.equals("true")) {
+					fit = Long.MIN_VALUE - 1;
+				} else {
+					fit = responseTime;
+				}
+
+			} else {
+				fit = Long.MIN_VALUE;
+
+			}
+
+			if (fitDatabase >= 0) {
+				if ((fit < 0) || (fit > fitDatabase)) {
+					ps = con.prepareStatement(""
+							+ "UPDATE workload SET FIT=? WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+					ps.setString(1, String.valueOf(fit));
+					ps.setString(2, workload);
+					ps.setString(3, testPlan);
+					ps.setString(4, generation);
+
+					ps.executeUpdate();
+
+				}
+			}
+		}
+
+		if (fitDatabase < 0) {
+			return fitDatabase;
+		}
+
+		if (fit > fitDatabase)
+			return fit;
+		else
+			return fitDatabase;
 
 	}
 
@@ -240,12 +423,10 @@ public class DerbyDatabase {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=?");
+		PreparedStatement ps = con.prepareStatement(""
+				+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ps.setString(2, String.valueOf(testPlan));
-		ps.setString(3, String.valueOf(generation));
 
 		ResultSet rs = ps.executeQuery();
 
@@ -273,12 +454,11 @@ public class DerbyDatabase {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=?");
+		PreparedStatement ps = con.prepareStatement(""
+				+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ps.setString(2, String.valueOf(testPlan));
-		ps.setString(3, String.valueOf(generation));
+
 		ResultSet rs = ps.executeQuery();
 
 		int count = 0;
@@ -434,7 +614,7 @@ public class DerbyDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=?  ORDER BY FIT DESC");
+				+ "  FROM  workload WHERE TESTPLAN=?  ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 
 		ResultSet rs = ps.executeQuery();

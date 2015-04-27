@@ -20,7 +20,6 @@ public class AddRowWorkloadAction implements ActionListener {
 	private JButton deleteRowButton;
 	private Object[] defaultValues;
 	private WorkLoadThreadGroupGUI sender;
-	
 
 	public AddRowWorkloadAction(WorkLoadThreadGroupGUI aSender, JTable grid,
 			PowerTableModel tableModel, JButton deleteRowButton,
@@ -42,17 +41,20 @@ public class AddRowWorkloadAction implements ActionListener {
 
 		List<WorkLoad> workloadList = null;
 		try {
-			workloadList = GeneWorkLoad
-					.createWorkLoadsFromChromossomeWithGui(10,1);
+			int users = 10;
+			try {
+				users = Integer.valueOf(sender.getThreadMax().getText());
+			} catch (NumberFormatException e2) {
+				e2.printStackTrace();
+			}
+			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(
+					users, 1);
 		} catch (InvalidConfigurationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		GuiPackage gp = GuiPackage.getInstance();
 		if (gp != null) {
-
-			// JMeterTreeNode root = (JMeterTreeNode)
-			// gp.getTreeModel().getRoot();
 
 			List<JMeterTreeNode> lista = FindService
 					.searchWorkLoadControllerWithGui();
@@ -63,9 +65,6 @@ public class AddRowWorkloadAction implements ActionListener {
 
 			Object[] rowObject = JMeterPluginsUtils.getObjectList(workLoad);
 			tableModel.addRow(rowObject);
-
-			WorkLoadThreadGroupGUI.createTabChart(sender.getTabbedPane(),
-					workLoad);
 
 		}
 

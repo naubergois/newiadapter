@@ -8,6 +8,14 @@ import java.util.HashMap;
 
 public class CSVReadStats {
 
+	public static HashMap getErrors() {
+		return errors;
+	}
+
+	public static void setErrors(HashMap errors) {
+		CSVReadStats.errors = errors;
+	}
+
 	private static HashMap workloads = new HashMap<String, String>();
 	private static HashMap errors = new HashMap<String, String>();
 	
