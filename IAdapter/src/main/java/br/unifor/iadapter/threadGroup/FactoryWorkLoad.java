@@ -1,5 +1,6 @@
 package br.unifor.iadapter.threadGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
@@ -39,7 +40,20 @@ public class FactoryWorkLoad {
 		}
 	}
 
-	public static WorkLoad createWorkLoadWithGui(Gene[] genes,int generation) {
+	public static String getName(List<JMeterTreeNode> nodes, int i) {
+		if (i < nodes.size()) {
+
+			String name = nodes.get(i).getTestElement().getName();
+			if (name == null) {
+				name = nodes.get(i).getTestElement().NAME;
+			}
+			return name;
+		} else {
+			return "None";
+		}
+	}
+
+	public static WorkLoad createWorkLoadWithGui(Gene[] genes, int generation) {
 		WorkLoad workload = null;
 
 		List<JMeterTreeNode> nodes = FindService
@@ -90,4 +104,72 @@ public class FactoryWorkLoad {
 		return workload;
 	}
 
+	public static List<WorkLoad> createWorkLoadNodes(int maxThreads,
+			int generation) {
+
+		List<WorkLoad> returnList = new ArrayList<WorkLoad>();
+		List<JMeterTreeNode> nodes = FindService
+				.searchWorkLoadControllerWithGui();
+		String[] types = WorkLoad.getTypes();
+		if ((nodes.size() > 0) && (types.length > 0) && (maxThreads > 0)) {
+
+			int rest = maxThreads % 20;
+
+			if (rest <= 0) {
+				rest = 20;
+			}
+
+			for (int i = 0; i < nodes.size(); i++) {
+				for (int j = 0; j < types.length; j++) {
+					for (int z = 0; z < maxThreads; z = z + rest) {
+
+						WorkLoad workload = null;
+						if (j == 0) {
+							workload = createWorkLoad(WorkLoad.getTypes()[0]);
+
+						}
+						if (j == 1) {
+							workload = createWorkLoad(WorkLoad.getTypes()[1]);
+
+						}
+						workload.setFunction1(getName(nodes, i));
+						workload.setFunction2(getName(nodes, i));
+						workload.setFunction3(getName(nodes, i));
+						workload.setFunction4(getName(nodes, i));
+						workload.setFunction5(getName(nodes, i));
+						workload.setFunction6(getName(nodes, i));
+						workload.setFunction7(getName(nodes, i));
+						workload.setFunction8(getName(nodes, i));
+						workload.setFunction9(getName(nodes, i));
+						workload.setFunction10(getName(nodes, i));
+
+						if (z > 0)
+							workload.setNumThreads(z);
+						else
+							workload.setNumThreads(1);
+						workload.setName(workload.getType() + "-"
+								+ workload.getNumThreads() + "-"
+								+ workload.getFunction1() + "-"
+								+ workload.getFunction2() + "-"
+								+ workload.getFunction3() + "-"
+								+ workload.getFunction4() + "-"
+								+ workload.getFunction5() + "-"
+								+ workload.getFunction6() + "-"
+								+ workload.getFunction7() + "-"
+								+ workload.getFunction8() + "-"
+								+ workload.getFunction9() + "-"
+								+ workload.getFunction10());
+
+						workload.setGeneration(generation);
+						workload.setActive(true);
+						returnList.add(workload);
+
+					}
+
+				}
+			}
+		}
+
+		return returnList;
+	}
 }

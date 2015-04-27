@@ -18,12 +18,10 @@ public class CSVReadStats {
 
 	private static HashMap workloads = new HashMap<String, String>();
 	private static HashMap errors = new HashMap<String, String>();
-	
-	
 
 	public static void run() {
 
-		boolean error=false;
+		boolean error = false;
 		String csvFile = "tempResults.csv";
 		BufferedReader br = null;
 		String line = "";
@@ -53,13 +51,7 @@ public class CSVReadStats {
 				}
 				String responseMessage = result[9];
 				Boolean isFailed = Boolean.valueOf(result[10]);
-				if (isFailed){
-					errors.put(workLoadName, String.valueOf(isFailed));
-				}else{
-					if (!(errors.containsKey(workLoadName))) {
-						errors.put(workLoadName, String.valueOf(isFailed));
-					} 
-				}
+
 				String threadName = result[11];
 				String sampleLabel = result[12];
 				double startTimeMillis = Double.valueOf(result[13]);
@@ -67,6 +59,20 @@ public class CSVReadStats {
 				double responseTimeMicros = Double.valueOf(result[15]);
 				double latencyTimeMicros = Double.valueOf(result[16]);
 				long threadCount = Long.valueOf(result[17]);
+
+				if (!(errors.containsKey(workLoadName))) {
+
+					errors.put(workLoadName, String.valueOf(isFailed));
+
+				} else {
+
+					String isFailedString = (String) errors.get(workLoadName);
+					if (!(isFailedString.equals("true"))) {
+
+						errors.put(workLoadName, String.valueOf(isFailed));
+
+					}
+				}
 
 				if (!(workloads.containsKey(workLoadName))) {
 					workloads.put(workLoadName, String.valueOf(responseTime));

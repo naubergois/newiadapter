@@ -397,7 +397,8 @@ public class DerbyDatabase {
 			if (responseTime < maxTime) {
 
 				if (error.equals("true")) {
-					fit = Long.MAX_VALUE;
+					System.out.println("error 1");
+					fit = 0.5;
 				} else {
 					fit = responseTime;
 				}
@@ -405,15 +406,17 @@ public class DerbyDatabase {
 			} else {
 
 				if (error.equals("true")) {
-					fit = Long.MAX_VALUE;
+					System.out.println("error");
+					fit = 0.5;
 				} else {
+
 					fit = Long.MIN_VALUE;
 				}
 
 			}
 
-			if (fitDatabase >= 0) {
-				if ((fit < 0) || (fit > fitDatabase)) {
+			if ((fitDatabase >= 0) && (fitDatabase != 0.5)) {
+				if ((fit < 0) || (fit > fitDatabase) || (fit == 0.5)) {
 					ps = con.prepareStatement(""
 							+ "UPDATE workload SET FIT=? WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 					ps.setString(1, String.valueOf(fit));

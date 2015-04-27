@@ -408,7 +408,9 @@ public abstract class JMeterPluginsUtils {
 			List<WorkLoad> list, WorkLoadThreadGroup tg)
 			throws ClassNotFoundException, SQLException {
 		for (WorkLoad workLoad : list) {
+			System.out.println(errors);
 			String error = errors.get(workLoad.getName());
+			System.out.println(workLoad.getName() + "-" + error);
 			DerbyDatabase.updateError(error, workLoad.getName(), tg.getName(),
 					String.valueOf(tg.getGeneration()));
 		}

@@ -49,6 +49,7 @@ public class AddRowWorkloadAction implements ActionListener {
 			}
 			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(
 					users, 1);
+			workloadList.addAll(FactoryWorkLoad.createWorkLoadNodes(users, 1));
 		} catch (InvalidConfigurationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
