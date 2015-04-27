@@ -397,13 +397,18 @@ public class DerbyDatabase {
 			if (responseTime < maxTime) {
 
 				if (error.equals("true")) {
-					fit = Long.MIN_VALUE - 1;
+					fit = Long.MAX_VALUE;
 				} else {
 					fit = responseTime;
 				}
 
 			} else {
-				fit = Long.MIN_VALUE;
+
+				if (error.equals("true")) {
+					fit = Long.MAX_VALUE;
+				} else {
+					fit = Long.MIN_VALUE;
+				}
 
 			}
 
