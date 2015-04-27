@@ -336,7 +336,7 @@ public class DerbyDatabase {
 		PreparedStatement ps = con.prepareStatement(""
 				+ "DELETE FROM  workload WHERE  TESTPLAN=? ");
 
-		ps.setString(2, testPlan);
+		ps.setString(1, testPlan);
 
 		return ps.executeUpdate();
 

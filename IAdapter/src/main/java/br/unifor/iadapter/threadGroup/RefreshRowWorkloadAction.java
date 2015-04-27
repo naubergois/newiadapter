@@ -24,7 +24,7 @@ public class RefreshRowWorkloadAction implements ActionListener {
 					.searchWorkLoadThreadGroupWithGui();
 			WorkLoadThreadGroup gp = (WorkLoadThreadGroup) nodes.get(0)
 					.getTestElement();
-			DerbyDatabase.deleteTestPlan(gp.getName());
+			
 			JMeterPluginsUtils.modelFromDerbyGui(sender.wtableModel,
 					gp.getName());
 			JMeterPluginsUtils

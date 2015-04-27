@@ -2,6 +2,7 @@ package br.unifor.iadapter.threadGroup;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -33,6 +34,16 @@ public class ClearRowWorkloadAction implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		
+		try {
+			DerbyDatabase.deleteTestPlan(sender.getName());
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		this.tableModel.clearData();
 
 		sender.updateUI();
