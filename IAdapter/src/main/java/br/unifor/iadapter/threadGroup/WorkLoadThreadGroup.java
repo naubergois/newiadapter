@@ -152,6 +152,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 			List<Object> listAgent = new ArrayList<Object>();
 			listAgent.add(this.getName() + this.hashCode());
+			listAgent.add("true");
 			try {
 				listAgent.add(java.net.InetAddress.getLocalHost());
 			} catch (UnknownHostException e) {
@@ -159,11 +160,16 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				e.printStackTrace();
 			}
 
+			List<WorkLoad> workLoads = null;
+
 			try {
 				DerbyDatabase.deleteAgent(listAgent, null);
 
 				while (DerbyDatabase.verifyRunning() > 0)
 					;
+
+				workLoads = DerbyDatabase.listWorkLoadsByGeneration(
+						this.getName(), String.valueOf(this.getGeneration()));
 			} catch (ClassNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -175,27 +181,12 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				e.printStackTrace();
 			}
 
-			JMeterProperty data = getData();
-
-			if (!(data instanceof NullProperty)) {
-				scheduleIT = ((CollectionProperty) data).iterator();
-
-			}
-
-			CollectionProperty collection = ((CollectionProperty) data);
-
 			int inc = 0;
 			if (JMeter.isNonGUI()) {
 				inc = 1;
 			}
 
-			int size = collection.size() + inc;
-
-			WorkLoad.setThreadStopped(WorkLoad.getThreadStopped() + 1);
-
-			int threadStopped = WorkLoad.getThreadStopped();
-
-			WorkLoad.setThreadStopped(0);
+			int size = workLoads.size() + inc;
 
 			this.setCurrentTest(this.getCurrentTest() + 1);
 			if (this.getCurrentTest() < size) {
@@ -225,10 +216,12 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				List<WorkLoad> list = null;
 				try {
-					list = DerbyDatabase.listWorkLoads(this.getName());
+					list = DerbyDatabase.listWorkLoads(this.getName(),
+							String.valueOf(this.getGeneration()));
 					JMeterPluginsUtils.updateFitnessValue(
 							CSVReadStats.getWorkloads(), list, this);
-					list = DerbyDatabase.listWorkLoads(this.getName());
+					list = DerbyDatabase.listWorkLoads(this.getName(),
+							String.valueOf(this.getGeneration()));
 				} catch (ClassNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -248,6 +241,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					GeneWorkLoad.crossOverPopulation(population,
 							bestChromossomes);
 
+					generation = generation + 1;
+
 					List<WorkLoad> listBest = JMeterPluginsUtils
 							.getListWorkLoadFromPopulation(population,
 									this.tree, generation);
@@ -257,7 +252,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 						for (WorkLoad workLoad : listBest) {
 							DerbyDatabase.insertWorkLoads(
 									JMeterPluginsUtils.getObjectList(workLoad),
-									this.getName());
+									this.getName(),
+									String.valueOf(this.getGeneration()));
 						}
 
 					} catch (Exception e) {
@@ -272,7 +268,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				generation = generation + 1;
+
 			}
 		}
 
@@ -306,7 +302,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		List<WorkLoad> list = null;
 		try {
-			list = DerbyDatabase.listWorkLoads(this.getName());
+			list = DerbyDatabase.listWorkLoads(this.getName(),
+					String.valueOf(this.getGeneration()));
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

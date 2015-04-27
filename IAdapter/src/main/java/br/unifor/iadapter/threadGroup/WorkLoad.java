@@ -7,6 +7,26 @@ public class WorkLoad {
 
 	private static String[] types = { "UpDown","Stress" };
 
+	private int generation;
+	
+	private boolean active;
+	
+	public int getGeneration() {
+		return generation;
+	}
+
+	public void setGeneration(int generation) {
+		this.generation = generation;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 	private String function1;
 
 	public static String[] getTypes() {

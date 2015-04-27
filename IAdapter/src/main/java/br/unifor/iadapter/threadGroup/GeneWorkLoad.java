@@ -135,6 +135,8 @@ public class GeneWorkLoad {
 	public static Configuration getConfiguration()
 			throws InvalidConfigurationException {
 		if (conf == null) {
+			
+			Configuration.reset();
 
 			conf = new DefaultConfiguration();
 
@@ -144,12 +146,12 @@ public class GeneWorkLoad {
 	}
 
 	public static List<WorkLoad> createWorkLoadsFromChromossomeWithGui(
-			int userNumbers) throws InvalidConfigurationException {
+			int userNumbers,int generation) throws InvalidConfigurationException {
 		IChromosome[] list = createPopulation(userNumbers);
 		List<WorkLoad> workLoads = new ArrayList<WorkLoad>();
 		for (IChromosome iChromosome : list) {
 			Gene[] gene = iChromosome.getGenes();
-			WorkLoad workload = FactoryWorkLoad.createWorkLoadWithGui(gene);
+			WorkLoad workload = FactoryWorkLoad.createWorkLoadWithGui(gene,generation);
 			workLoads.add(workload);
 		}
 		conf = null;

@@ -9,6 +9,17 @@ public class StressWorkload extends WorkLoad {
 	protected void scheduleThread(Logger log, long numberThreads,
 			JMeterThread thread, long number) {
 
+		long threadsToSchedule = numberThreads - number;
+		log.debug("Scheduling thread: " + thread.getThreadName());
+		if (threadsToSchedule > 0) {
+
+		thread.setStartTime(System.currentTimeMillis());
+	    thread.setEndTime(System.currentTimeMillis()+1000*60);
+
+	    thread.setScheduled(false);
+
+		}
+
 	}
 
 	@Override
@@ -30,12 +41,12 @@ public class StressWorkload extends WorkLoad {
 		// for (int n = 0; n < workLoad.getNumThreads(); n++) {
 
 		long now = workLoad.getStartTimeStrategy(0);
-		row.add(now - initialTime, 0);
-		row.add(now - initialTime, workLoad.getNumThreads());
+		row.add(0, 0);
+		row.add(0, workLoad.getNumThreads());
 
 		long nowEnd = workLoad.getEndTimeStrategy(0);
-		//row.add(nowEnd - initialTime, 0);
-		//row.add(nowEnd - initialTime, workLoad.getNumThreads());
+		row.add(1000, 0);
+		// row.add(1000, workLoad.getNumThreads());
 		// }
 	}
 

@@ -62,7 +62,7 @@ public abstract class JMeterPluginsUtils {
 
 	public static Object[] getObjectList(WorkLoad workLoad) {
 
-		Object[] rowObject = new Object[16];
+		Object[] rowObject = new Object[18];
 		rowObject[0] = workLoad.getName();
 		rowObject[1] = workLoad.getType();
 		rowObject[2] = String.valueOf(workLoad.getNumThreads());
@@ -79,6 +79,8 @@ public abstract class JMeterPluginsUtils {
 		rowObject[13] = String.valueOf(workLoad.getFunction8());
 		rowObject[14] = String.valueOf(workLoad.getFunction9());
 		rowObject[15] = String.valueOf(workLoad.getFunction10());
+		rowObject[16] = String.valueOf(workLoad.getGeneration());
+		rowObject[17] = String.valueOf(workLoad.isActive());
 		return rowObject;
 	}
 
@@ -86,10 +88,11 @@ public abstract class JMeterPluginsUtils {
 
 		if (object != null) {
 
-			WorkLoad workload = new WorkLoad();
+			String type = object.get(1).toString();
+			WorkLoad workload = FactoryWorkLoad.createWorkLoad(type);
 			workload.setNumThreads(Integer.valueOf(object.get(2).toString()));
 			workload.setName((object.get(0).toString()));
-			workload.setType((object.get(1).toString()));
+			workload.setType((type));
 			workload.setWorstResponseTime(Long
 					.valueOf(object.get(3).toString()));
 			workload.setError(Boolean.valueOf(object.get(4).toString()));
@@ -104,6 +107,8 @@ public abstract class JMeterPluginsUtils {
 			workload.setFunction8(object.get(13).toString());
 			workload.setFunction9(object.get(14).toString());
 			workload.setFunction10(object.get(15).toString());
+			workload.setGeneration(Integer.valueOf(object.get(16).toString()));
+			workload.setActive(Boolean.valueOf(object.get(17).toString()));
 			return workload;
 		}
 		return null;
@@ -125,11 +130,12 @@ public abstract class JMeterPluginsUtils {
 
 	public static WorkLoad getWorkLoadFromChromosome(Chromosome chromosome,
 			List<TestElement> list, int generation) {
-
 		Gene[] gene = chromosome.getGenes();
-		WorkLoad workload = new WorkLoad();
+		String type = WorkLoad.getTypes()[((IntegerGene) gene[0]).intValue()];
+
+		WorkLoad workload = FactoryWorkLoad.createWorkLoad(type);
 		workload.setNumThreads(((IntegerGene) gene[1]).intValue());
-		workload.setType(WorkLoad.getTypes()[((IntegerGene) gene[0]).intValue()]);
+		workload.setType(type);
 		workload.setFit(chromosome.getFitnessValueDirectly());
 
 		int index = ((IntegerGene) gene[2]).intValue();
@@ -203,6 +209,10 @@ public abstract class JMeterPluginsUtils {
 					.get(((IntegerGene) gene[11]).intValue()).getName());
 		}
 
+		workload.setGeneration(generation);
+
+		workload.setActive(true);
+
 		workload.setName("G" + generation + ":" + workload.getType() + "-"
 				+ workload.getNumThreads() + "-" + workload.getFunction1()
 				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
@@ -235,12 +245,13 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	public static void tableModelRowsToDerby(PowerTableModel model,
-			WorkLoadThreadGroup gp) throws ClassNotFoundException, SQLException {
+			WorkLoadThreadGroup gp, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		for (int row = 0; row < model.getRowCount(); row++) {
 			List<Object> item = getArrayListForArray(model.getRowData(row));
 			if (item != null) {
-				DerbyDatabase.insertWorkLoads(item, gp.getName());
+				DerbyDatabase.insertWorkLoads(item, gp.getName(), generation);
 			} else {
 				System.out.println("Objeto nulo");
 			}
@@ -310,12 +321,14 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	public static void collectionPropertyToDerby(CollectionProperty prop,
-			WorkLoadThreadGroup gp) throws ClassNotFoundException, SQLException {
+			WorkLoadThreadGroup gp, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		for (int rowN = 0; rowN < prop.size(); rowN++) {
 			ArrayList<String> rowObject = (ArrayList<String>) prop.get(rowN)
 					.getObjectValue();
-			DerbyDatabase.createWorkLoadIfNotExist(rowObject, gp.getName());
+			DerbyDatabase.createWorkLoadIfNotExist(rowObject, gp.getName(),
+					generation);
 		}
 
 	}
@@ -353,7 +366,7 @@ public abstract class JMeterPluginsUtils {
 		for (WorkLoad workLoad : list) {
 			String responseTime = responseTimes.get(workLoad.getName());
 			DerbyDatabase.updateResponseTime(responseTime, workLoad.getName(),
-					tg.getName());
+					tg.getName(), String.valueOf(tg.getGeneration()));
 		}
 
 	}
@@ -382,7 +395,7 @@ public abstract class JMeterPluginsUtils {
 	public static void modelFromDerbyGui(PowerTableModel model, String testPlan)
 			throws ClassNotFoundException, SQLException {
 
-		List<WorkLoad> list = DerbyDatabase.listWorkLoads(testPlan);
+		List<WorkLoad> list = DerbyDatabase.listAllWorkLoads(testPlan);
 		model.clearData();
 		for (int rowN = 0; rowN < list.size(); rowN++) {
 			WorkLoad workload = list.get(rowN);
@@ -403,6 +416,8 @@ public abstract class JMeterPluginsUtils {
 			rowObject.add(workload.getFunction8());
 			rowObject.add(workload.getFunction9());
 			rowObject.add(workload.getFunction10());
+			rowObject.add(String.valueOf(workload.getGeneration()));
+			rowObject.add(String.valueOf(workload.isActive()));
 			model.addRow(rowObject.toArray());
 		}
 		model.fireTableDataChanged();

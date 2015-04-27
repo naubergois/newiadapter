@@ -60,7 +60,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	public static final String[] columnIdentifiers = new String[] { "Name",
 			"Kind", "Users", "Response Time", "Error", "Fit", "Function1",
 			"Function2", "Function3", "Function4", "Function5", "Function6",
-			"Function7", "Function8", "Function9", "Function10" };
+			"Function7", "Function8", "Function9", "Function10", "Generation",
+			"Active" };
 
 	public static final String[] columnIdentifiersAgent = new String[] {
 			"Name", "Running", "IP" };
@@ -72,7 +73,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class, String.class,
-			String.class, String.class, String.class };
+			String.class, String.class, String.class, String.class,
+			String.class };
 
 	public static final Class[] columnClassesAgent = new Class[] {
 			String.class, String.class, String.class };
@@ -228,10 +230,14 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			CollectionProperty rows = JMeterPluginsUtils
 					.tableModelRowsToCollectionProperty(wtableModel,
 							WorkLoadThreadGroup.DATA_PROPERTY);
-			/*
-			 * try { JMeterPluginsUtils.tableModelRowsToDerby(wtableModel); }
-			 * catch (Exception e) { e.printStackTrace(); }
-			 */
+
+			try {
+				JMeterPluginsUtils.tableModelRowsToDerby(wtableModel, utg,
+						String.valueOf(utg.getGeneration()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 			utg.setData(rows);
 
 			LoopController controler = (LoopController) loopPanel
@@ -285,7 +291,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			try {
 				JMeterPluginsUtils
 						.derbyAgentToTableModelRows(wtableModelAgents);
-				JMeterPluginsUtils.collectionPropertyToDerby(columns, utg);
+				JMeterPluginsUtils.collectionPropertyToDerby(columns, utg,
+						String.valueOf(utg.getGeneration()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

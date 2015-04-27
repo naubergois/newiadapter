@@ -2,10 +2,15 @@ package br.unifor.iadapter.threadGroup;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
+
 import org.apache.jmeter.gui.util.PowerTableModel;
 
 public class DeleteRowAction implements ActionListener {
@@ -32,6 +37,20 @@ public class DeleteRowAction implements ActionListener {
 
 		int rowSelected = grid.getSelectedRow();
 		if (rowSelected >= 0) {
+
+			Object[] workloadData = tableModel.getRowData(rowSelected);
+
+			try {
+				DerbyDatabase.deleteWorkLoad(String.valueOf(workloadData[0]),
+						sender.getName(), String.valueOf(workloadData[16]));
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
 			tableModel.removeRow(rowSelected);
 			tableModel.fireTableDataChanged();
 

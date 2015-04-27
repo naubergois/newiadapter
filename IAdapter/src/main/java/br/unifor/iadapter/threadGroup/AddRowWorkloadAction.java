@@ -20,6 +20,7 @@ public class AddRowWorkloadAction implements ActionListener {
 	private JButton deleteRowButton;
 	private Object[] defaultValues;
 	private WorkLoadThreadGroupGUI sender;
+	
 
 	public AddRowWorkloadAction(WorkLoadThreadGroupGUI aSender, JTable grid,
 			PowerTableModel tableModel, JButton deleteRowButton,
@@ -42,7 +43,7 @@ public class AddRowWorkloadAction implements ActionListener {
 		List<WorkLoad> workloadList = null;
 		try {
 			workloadList = GeneWorkLoad
-					.createWorkLoadsFromChromossomeWithGui(10);
+					.createWorkLoadsFromChromossomeWithGui(10,1);
 		} catch (InvalidConfigurationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

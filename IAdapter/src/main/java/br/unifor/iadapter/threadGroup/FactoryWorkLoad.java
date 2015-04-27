@@ -8,6 +8,24 @@ import org.jgap.impl.IntegerGene;
 
 public class FactoryWorkLoad {
 
+	public static WorkLoad createWorkLoad(String type) {
+		WorkLoad workload = null;
+		if (type.equals(WorkLoad.getTypes()[0])) {
+			workload = new WorkLoad();
+
+			workload.setType(WorkLoad.getTypes()[0]);
+
+		}
+		if (type.equals(WorkLoad.getTypes()[1])) {
+			workload = new StressWorkload();
+
+			workload.setType(WorkLoad.getTypes()[1]);
+
+		}
+		return workload;
+
+	}
+
 	public static String getName(List<JMeterTreeNode> nodes, IntegerGene gene) {
 		if (gene.intValue() < nodes.size()) {
 
@@ -21,7 +39,7 @@ public class FactoryWorkLoad {
 		}
 	}
 
-	public static WorkLoad createWorkLoadWithGui(Gene[] genes) {
+	public static WorkLoad createWorkLoadWithGui(Gene[] genes,int generation) {
 		WorkLoad workload = null;
 
 		List<JMeterTreeNode> nodes = FindService
@@ -40,15 +58,11 @@ public class FactoryWorkLoad {
 		IntegerGene gene10 = (IntegerGene) genes[10];
 		IntegerGene gene11 = (IntegerGene) genes[11];
 		if (gene.intValue() == 0) {
-			workload = new WorkLoad();
-
-			workload.setType(WorkLoad.getTypes()[0]);
+			workload = createWorkLoad(WorkLoad.getTypes()[0]);
 
 		}
 		if (gene.intValue() == 1) {
-			workload = new StressWorkload();
-
-			workload.setType(WorkLoad.getTypes()[1]);
+			workload = createWorkLoad(WorkLoad.getTypes()[1]);
 
 		}
 
@@ -71,6 +85,8 @@ public class FactoryWorkLoad {
 				+ "-" + workload.getFunction9() + "-"
 				+ workload.getFunction10());
 
+		workload.setGeneration(generation);
+		workload.setActive(true);
 		return workload;
 	}
 

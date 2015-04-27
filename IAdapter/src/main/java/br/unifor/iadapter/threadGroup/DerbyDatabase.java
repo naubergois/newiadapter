@@ -25,17 +25,24 @@ public class DerbyDatabase {
 			+ "FUNCTION3 VARCHAR(30),FUNCTION4 VARCHAR(30),"
 			+ "FUNCTION5 VARCHAR(30),FUNCTION6 VARCHAR(30),"
 			+ "FUNCTION7 VARCHAR(30),FUNCTION8 VARCHAR(30),"
-			+ "FUNCTION9 VARCHAR(30),FUNCTION10 VARCHAR(30),TESTPLAN VARCHAR(30))";
+			+ "FUNCTION9 VARCHAR(30),FUNCTION10 VARCHAR(30),TESTPLAN VARCHAR(30),"
+			+ "GENERATION VARCHAR(30),ACTIVE VARCHAR(30))";
+
+	private final static String CREATETABLEAGENT = "CREATE TABLE agent ("
+			+ "name varchar(45) DEFAULT NULL,"
+			+ "running varchar(45) DEFAULT NULL,"
+			+ "ip varchar(45) DEFAULT NULL"
+			+ ") ENGINE=InnoDB DEFAULT CHARSET=latin";
 
 	private final static String COLUMNS = "NAME,TYPE,"
 			+ "USERS,RESPONSETIME,ERROR,FIT,"
 			+ "FUNCTION1,FUNCTION2,FUNCTION3,FUNCTION4,"
 			+ "FUNCTION5,FUNCTION6,FUNCTION7,FUNCTION8,"
-			+ "FUNCTION9,FUNCTION10,TESTPLAN";
+			+ "FUNCTION9,FUNCTION10,TESTPLAN,GENERATION,ACTIVE";
 
 	private final static String COLUMNSAGENT = "NAME,RUNNING," + "IP";
 
-	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
 
 	private final static String PARAMETERSAGENT = "?,?,?";
 
@@ -43,7 +50,7 @@ public class DerbyDatabase {
 			+ "USERS=?,RESPONSETIME=?,ERROR=?,FIT=?,FUNCTION1=?,"
 			+ "FUNCTION2=?,FUNCTION3=?,FUNCTION4=?,FUNCTION5=?,"
 			+ "FUNCTION6=?,FUNCTION7=?,FUNCTION8=?,FUNCTION9=?,"
-			+ "FUNCTION10=?,TESTPLAN=?";
+			+ "FUNCTION10=?,TESTPLAN=?,GENERATION=?,ACTIVE=?";
 
 	private final static String SETAGENT = "NAME=?,RUNNING=?," + "IP=?";
 
@@ -58,8 +65,8 @@ public class DerbyDatabase {
 	public static PreparedStatement setParametersWhere(PreparedStatement ps,
 			List objetos, String where, String testPlan) throws SQLException {
 		ps = setParameters(ps, objetos, testPlan);
-		ps.setString(18, where);
-		ps.setString(19, testPlan);
+		ps.setString(20, where);
+		ps.setString(21, testPlan);
 		return ps;
 	}
 
@@ -82,6 +89,8 @@ public class DerbyDatabase {
 		ps.setString(15, String.valueOf(objetos.get(14)));
 		ps.setString(16, String.valueOf(objetos.get(15)));
 		ps.setString(17, testPlan);
+		ps.setString(18, String.valueOf(objetos.get(16)));
+		ps.setString(19, String.valueOf(objetos.get(17)));
 		return ps;
 	}
 
@@ -165,19 +174,24 @@ public class DerbyDatabase {
 	}
 
 	public static void updateResponseTime(Long responseTime, String workload,
-			String testPlan) throws ClassNotFoundException, SQLException {
-		updateResponseTime(String.valueOf(responseTime), workload, testPlan);
+			String testPlan, String generation) throws ClassNotFoundException,
+			SQLException {
+		updateResponseTime(String.valueOf(responseTime), workload, testPlan,
+				generation);
 	}
 
 	public static void updateResponseTime(String responseTime, String workload,
-			String testPlan) throws ClassNotFoundException, SQLException {
+			String testPlan, String generation) throws ClassNotFoundException,
+			SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=?");
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=?");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
+		ps.setString(3, generation);
 
 		ResultSet rs = ps.executeQuery();
 
@@ -188,9 +202,10 @@ public class DerbyDatabase {
 		if (count > 0) {
 
 			ps = con.prepareStatement(""
-					+ "SELECT RESPONSETIME FROM  workload WHERE NAME=? AND TESTPLAN=?");
+					+ "SELECT RESPONSETIME FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 			ps.setString(1, workload);
 			ps.setString(2, testPlan);
+			ps.setString(3, generation);
 
 			rs = ps.executeQuery();
 
@@ -215,20 +230,22 @@ public class DerbyDatabase {
 
 	}
 
-	public static void insertWorkLoads(Object[] objetos, String testPlan)
-			throws ClassNotFoundException, SQLException {
-		insertWorkLoads(Arrays.asList(objetos), testPlan);
+	public static void insertWorkLoads(Object[] objetos, String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
+		insertWorkLoads(Arrays.asList(objetos), testPlan, generation);
 	}
 
-	public static void insertWorkLoads(List objetos, String testPlan)
-			throws ClassNotFoundException, SQLException {
+	public static void insertWorkLoads(List objetos, String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=?");
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ps.setString(2, String.valueOf(testPlan));
+		ps.setString(3, String.valueOf(generation));
 
 		ResultSet rs = ps.executeQuery();
 
@@ -251,15 +268,17 @@ public class DerbyDatabase {
 
 	}
 
-	public static void createWorkLoadIfNotExist(List objetos, String testPlan)
-			throws ClassNotFoundException, SQLException {
+	public static void createWorkLoadIfNotExist(List objetos, String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=?");
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ps.setString(2, String.valueOf(testPlan));
+		ps.setString(3, String.valueOf(generation));
 		ResultSet rs = ps.executeQuery();
 
 		int count = 0;
@@ -277,7 +296,7 @@ public class DerbyDatabase {
 	public static int verifyRunning() throws ClassNotFoundException,
 			SQLException, InterruptedException {
 
-		Thread.sleep(20000);
+		Thread.sleep(1000);
 
 		Connection con = singleton();
 
@@ -306,6 +325,21 @@ public class DerbyDatabase {
 				+ "DELETE  FROM  agent WHERE NAME=? AND IP=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ps.setString(2, String.valueOf(objetos.get(2)));
+		ps.executeUpdate();
+
+	}
+
+	public static void deleteWorkLoad(String name, String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "DELETE  FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+		ps.setString(1, name);
+		ps.setString(2, testPlan);
+		ps.setString(3, generation);
 		ps.executeUpdate();
 
 	}
@@ -368,14 +402,66 @@ public class DerbyDatabase {
 
 	}
 
-	public static List<WorkLoad> listWorkLoads(String testPlan)
+	public static List<WorkLoad> listWorkLoads(String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT "
+						+ COLUMNS
+						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? ORDER BY FIT DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = DerbyDatabase.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
+	public static List<WorkLoad> listAllWorkLoads(String testPlan)
 			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=? ORDER BY FIT DESC");
+				+ "  FROM  workload WHERE TESTPLAN=?  ORDER BY FIT DESC");
 		ps.setString(1, testPlan);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = DerbyDatabase.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
+	public static List<WorkLoad> listWorkLoadsByGeneration(String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT "
+						+ COLUMNS
+						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? ORDER BY FIT DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
 
 		ResultSet rs = ps.executeQuery();
 
@@ -392,9 +478,10 @@ public class DerbyDatabase {
 
 	public static WorkLoad resultSetToWorkLoad(ResultSet rs)
 			throws SQLException {
-		WorkLoad workload = new WorkLoad();
+		String type = rs.getString(2);
+		WorkLoad workload = FactoryWorkLoad.createWorkLoad(type);
 		workload.setName(rs.getString(1));
-		workload.setType(rs.getString(2));
+		workload.setType(type);
 		workload.setNumThreads(Integer.valueOf(rs.getString(3)));
 		workload.setWorstResponseTime(Long.valueOf(rs.getString(4)));
 		workload.setError(Boolean.valueOf(rs.getString(5)));
@@ -409,6 +496,12 @@ public class DerbyDatabase {
 		workload.setFunction8(rs.getString(14));
 		workload.setFunction9(rs.getString(15));
 		workload.setFunction10(rs.getString(16));
+		if (rs.getString(18) != null) {
+			workload.setGeneration(Integer.valueOf(rs.getString(18)));
+		}
+		if (rs.getString(19) != null) {
+			workload.setActive(Boolean.valueOf(rs.getString(19)));
+		}
 		return workload;
 	}
 
