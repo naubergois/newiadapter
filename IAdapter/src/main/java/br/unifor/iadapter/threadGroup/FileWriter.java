@@ -229,8 +229,6 @@ public class FileWriter {
 		if (buf == null) {
 			buf = ByteBuffer.allocateDirect(writeBufferSize);
 		}
-		
-		
 
 		return buf;
 
@@ -276,7 +274,7 @@ public class FileWriter {
 				lock.release();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info("Erro in lock file ");
 		}
 	}
 
