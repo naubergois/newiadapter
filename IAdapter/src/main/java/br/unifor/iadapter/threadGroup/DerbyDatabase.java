@@ -598,7 +598,7 @@ public class DerbyDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM  AGENT WHERE NAME=?");
+				+ "SELECT count(*) FROM  agent WHERE NAME=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ResultSet rs = ps.executeQuery();
 
@@ -614,7 +614,7 @@ public class DerbyDatabase {
 			ps.executeUpdate();
 		} else {
 
-			ps = con.prepareStatement("UPDATE AGENT SET RUNNING=? WHERE NAME=? AND IP=?");
+			ps = con.prepareStatement("UPDATE agent SET RUNNING=? WHERE NAME=? AND IP=?");
 
 			ps.setString(1, objetos.get(1).toString());
 			ps.setString(2, objetos.get(0).toString());
