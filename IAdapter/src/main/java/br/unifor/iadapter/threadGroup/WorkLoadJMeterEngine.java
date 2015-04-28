@@ -196,7 +196,7 @@ public class WorkLoadJMeterEngine extends
 	public void runTest() throws JMeterEngineException {
 		if (host != null) {
 			long now = System.currentTimeMillis();
-			System.out.println("Starting the test on host " + host + " @ "
+			log.info("Starting the test on host " + host + " @ "
 					+ new Date(now) + " (" + now + ")");
 		}
 		try {
@@ -256,7 +256,7 @@ public class WorkLoadJMeterEngine extends
 		if (host != null) {
 			log.info("Test has ended on host " + host);
 			long now = System.currentTimeMillis();
-			System.out.println("Finished the test on host " + host + " @ "
+			log.info("Finished the test on host " + host + " @ "
 					+ new Date(now) + " (" + now + ")"
 					+ (exitAfterTest ? " - exit requested." : ""));
 			if (exitAfterTest) {

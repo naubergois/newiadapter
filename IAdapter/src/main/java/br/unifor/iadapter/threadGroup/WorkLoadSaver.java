@@ -99,9 +99,7 @@ public class WorkLoadSaver extends AbstractTestElement implements Serializable,
 	 */
 	public WorkLoadSaver() {
 		super();
-		// log.debug(Thread.currentThread().getName());
-		// System.out.println(">> "+me+" "+this.getName()+"
-		// "+Thread.currentThread().getName());
+
 	}
 
 	/*
@@ -142,8 +140,6 @@ public class WorkLoadSaver extends AbstractTestElement implements Serializable,
 	private HashMap<String, String> responseTimes = new HashMap<String, String>();
 
 	public void sampleOccurred(SampleEvent e) {
-		
-		
 
 		FileWriter file = new FileWriter();
 		file.setFilename("tempResults.csv");
