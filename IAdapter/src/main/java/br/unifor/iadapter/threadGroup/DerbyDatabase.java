@@ -221,17 +221,20 @@ public class DerbyDatabase {
 
 			long responseTimeDatabaseLong = Long.valueOf(responseTimeDatabase);
 
-			long responseTimeLong = Long.valueOf(responseTime);
+			if (responseTime != null) {
 
-			if (responseTimeLong > responseTimeDatabaseLong) {
+				long responseTimeLong = Long.valueOf(responseTime);
 
-				ps = con.prepareStatement("" + "update workload set "
+				if (responseTimeLong > responseTimeDatabaseLong) {
 
-				+ "RESPONSETIME=? WHERE NAME=? and TESTPLAN=?");
-				ps.setString(1, responseTime);
-				ps.setString(2, workload);
-				ps.setString(3, testPlan);
-				ps.executeUpdate();
+					ps = con.prepareStatement("" + "update workload set "
+
+					+ "RESPONSETIME=? WHERE NAME=? and TESTPLAN=?");
+					ps.setString(1, responseTime);
+					ps.setString(2, workload);
+					ps.setString(3, testPlan);
+					ps.executeUpdate();
+				}
 			}
 		}
 
@@ -241,7 +244,7 @@ public class DerbyDatabase {
 			String testPlan, String generation) throws ClassNotFoundException,
 			SQLException {
 
-		if (error.equals(true)) {
+		if (error.equals("true")) {
 
 			long rst = 0;
 

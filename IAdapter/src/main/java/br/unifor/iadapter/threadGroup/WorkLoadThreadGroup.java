@@ -1,5 +1,6 @@
 package br.unifor.iadapter.threadGroup;
 
+import java.io.File;
 import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
@@ -37,6 +38,7 @@ import org.apache.log.Logger;
 import org.jgap.Chromosome;
 import org.jgap.Population;
 import org.jgap.impl.CrossoverOperator;
+import org.jgap.impl.MutationOperator;
 
 /***
  * Class for define workload model
@@ -239,22 +241,30 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					Population population = GeneWorkLoad.population(list,
 							this.tree);
 
-					List<Chromosome> bestI= GeneWorkLoad
+					List<Chromosome> bestI = GeneWorkLoad
 							.selectBestIndividualsList(population,
 									Integer.valueOf(getBestIndividuals()));
 
-					 CrossoverOperator operator=GeneWorkLoad
-							.crossOverPopulation(population,bestI);
-					 
-					 DerbyDatabase.insertLog("Generation"+operator.getCrossOverRate());
-					 DerbyDatabase.insertLog("CrossOverRate"+operator.getCrossOverRate());
-					 DerbyDatabase.insertLog("CrossOverRatePercent"+operator.getCrossOverRatePercent());
+					CrossoverOperator operator = GeneWorkLoad
+							.crossOverPopulation(population, bestI);
+
+					MutationOperator operator1 = GeneWorkLoad
+							.mutationPopulation(population, bestI);
+
+					DerbyDatabase.insertLog(this.getName() + "Generation "
+							+ operator.getCrossOverRate());
+					DerbyDatabase.insertLog(this.getName() + "CrossOverRate "
+							+ operator.getCrossOverRate());
+					DerbyDatabase.insertLog(this.getName()
+							+ "CrossOverRatePercent"
+							+ operator.getCrossOverRatePercent());
 
 					generation = generation + 1;
 
 					List<WorkLoad> listBest = JMeterPluginsUtils
-							.getListWorkLoadFromPopulation(population.getChromosomes(),
-									this.tree, generation);
+							.getListWorkLoadFromPopulation(
+									population.getChromosomes(), this.tree,
+									generation);
 
 					try {
 
@@ -290,6 +300,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 							e.printStackTrace();
 						}
 
+					} else {
+						File file = new File("tempResults.csv");
+						file.delete();
 					}
 
 				} catch (Exception e) {

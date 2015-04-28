@@ -17,6 +17,7 @@ import org.jgap.Population;
 import org.jgap.impl.CrossoverOperator;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.IntegerGene;
+import org.jgap.impl.MutationOperator;
 
 public class GeneWorkLoad {
 
@@ -36,6 +37,14 @@ public class GeneWorkLoad {
 	public static CrossoverOperator crossOverPopulation(Population population,
 			List<Chromosome> list) throws InvalidConfigurationException {
 		CrossoverOperator cs = new CrossoverOperator(getConfiguration());
+		cs.operate(population, list);
+		return cs;
+
+	}
+	
+	public static MutationOperator mutationPopulation(Population population,
+			List<Chromosome> list) throws InvalidConfigurationException {
+		MutationOperator cs = new MutationOperator(getConfiguration());
 		cs.operate(population, list);
 		return cs;
 

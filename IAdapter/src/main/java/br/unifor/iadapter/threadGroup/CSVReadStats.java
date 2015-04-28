@@ -50,7 +50,7 @@ public class CSVReadStats {
 					responseCode = -1;
 				}
 				String responseMessage = result[9];
-				Boolean isFailed = Boolean.valueOf(result[10]);
+				String isFailed = result[10];
 
 				String threadName = result[11];
 				String sampleLabel = result[12];
@@ -62,14 +62,22 @@ public class CSVReadStats {
 
 				if (!(errors.containsKey(workLoadName))) {
 
-					errors.put(workLoadName, String.valueOf(isFailed));
+					if (isFailed.equals("0"))
+
+						errors.put(workLoadName, "false");
+					if (isFailed.equals("1"))
+						errors.put(workLoadName, "true");
 
 				} else {
 
 					String isFailedString = (String) errors.get(workLoadName);
 					if (!(isFailedString.equals("true"))) {
 
-						errors.put(workLoadName, String.valueOf(isFailed));
+						if (isFailed.equals("0"))
+
+							errors.put(workLoadName, "false");
+						if (isFailed.equals("1"))
+							errors.put(workLoadName, "true");
 
 					}
 				}

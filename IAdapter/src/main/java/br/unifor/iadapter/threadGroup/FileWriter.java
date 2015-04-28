@@ -5,22 +5,16 @@ package br.unifor.iadapter.threadGroup;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.apache.jmeter.engine.util.NoThreadClone;
-import org.apache.jmeter.reporters.AbstractListenerElement;
 import org.apache.jmeter.reporters.ResultCollector;
-import org.apache.jmeter.samplers.Remoteable;
 import org.apache.jmeter.samplers.SampleEvent;
-import org.apache.jmeter.samplers.SampleListener;
 import org.apache.jmeter.samplers.SampleResult;
-import org.apache.jmeter.testelement.TestStateListener;
-import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
 
@@ -226,6 +220,20 @@ public class FileWriter {
 				log.error("Failed to close file: " + getFilename(), ex);
 			}
 		}
+	}
+
+	private static ByteBuffer buf;
+
+	public static ByteBuffer singleton(int writeBufferSize) {
+
+		if (buf == null) {
+			buf = ByteBuffer.allocateDirect(writeBufferSize);
+		}
+		
+		
+
+		return buf;
+
 	}
 
 	public void sampleOccurred(SampleEvent evt, String workLoadName) {

@@ -142,6 +142,8 @@ public class WorkLoadSaver extends AbstractTestElement implements Serializable,
 	private HashMap<String, String> responseTimes = new HashMap<String, String>();
 
 	public void sampleOccurred(SampleEvent e) {
+		
+		
 
 		FileWriter file = new FileWriter();
 		file.setFilename("tempResults.csv");
@@ -152,7 +154,7 @@ public class WorkLoadSaver extends AbstractTestElement implements Serializable,
 		try {
 			String workLoad = JMeterContextService.getContext().getVariables()
 					.get("currentWorkload");
-			file.setWriteBufferSize(10000024);
+			file.setWriteBufferSize(100024);
 
 			file.setColumns("workLoadName|isSuccsessful|startTime|endTime|sentBytes|receivedBytes|responseTime|latency|responseCode|responseMessage|isFailed|threadName|sampleLabel|startTimeMillis|endTimeMillis|responseTimeMicros|latencyMicros|threadsCount|enter");
 			file.compileColumns();
