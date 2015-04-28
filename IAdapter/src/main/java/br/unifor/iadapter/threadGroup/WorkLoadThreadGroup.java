@@ -182,12 +182,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				e.printStackTrace();
 			}
 
-			int inc = 0;
-			if (JMeter.isNonGUI()) {
-				inc = 1;
-			}
-
-			int size = workLoads.size() + inc;
+			int size = workLoads.size();
 
 			this.setCurrentTest(this.getCurrentTest() + 1);
 			if (this.getCurrentTest() < size) {
