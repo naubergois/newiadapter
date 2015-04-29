@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Set;
 
 public class CSVReadStats {
 
@@ -18,6 +19,8 @@ public class CSVReadStats {
 
 	private static HashMap workloads = new HashMap<String, String>();
 	private static HashMap errors = new HashMap<String, String>();
+	private static HashMap errorsTotal = new HashMap<String, String>();
+	private static HashMap requestTotal = new HashMap<String, String>();
 
 	public static void run() {
 
@@ -60,6 +63,18 @@ public class CSVReadStats {
 				double latencyTimeMicros = Double.valueOf(result[16]);
 				long threadCount = Long.valueOf(result[17]);
 
+				if (!(requestTotal.containsKey(workLoadName))) {
+					requestTotal.put(workLoadName, "1");
+				} else {
+					String totalRequest = (String) requestTotal
+							.get(workLoadName);
+					long totalRequestLong = Long.valueOf(totalRequest);
+					totalRequestLong++;
+					requestTotal.put(workLoadName,
+							String.valueOf(totalRequestLong));
+
+				}
+
 				if (!(errors.containsKey(workLoadName))) {
 
 					if (isFailed.equals("0"))
@@ -70,14 +85,32 @@ public class CSVReadStats {
 
 				} else {
 
+					if (isFailed.equals("1")) {
+
+						errorsTotal.put(workLoadName, "1");
+
+					} else {
+						String totalError = (String)errorsTotal
+								.get(workLoadName);
+						long totalErrorLong = Long.valueOf(totalError);
+						totalErrorLong++;
+						errorsTotal.put(workLoadName,
+								String.valueOf(totalErrorLong));
+
+					}
+
 					String isFailedString = (String) errors.get(workLoadName);
 					if (!(isFailedString.equals("true"))) {
 
-						if (isFailed.equals("0"))
+						if (isFailed.equals("0")) {
+							errorsTotal.put(workLoadName, "1");
 
 							errors.put(workLoadName, "false");
-						if (isFailed.equals("1"))
+						}
+						if (isFailed.equals("1")) {
+
 							errors.put(workLoadName, "true");
+						}
 
 					}
 				}
@@ -95,6 +128,18 @@ public class CSVReadStats {
 					}
 				}
 
+			}
+			
+			Set keys=workloads.keySet();
+			for (Object object : keys) {
+				long errorTotal=Long.valueOf(errorsTotal.get(object).toString());
+				long total=Long.valueOf(requestTotal.get(object).toString());
+				double percent=Double.valueOf(errorTotal)/Double.valueOf(total);
+				if (percent<0.15){
+					errors.put(object, "false");
+				}
+				
+				
 			}
 
 		} catch (FileNotFoundException e) {
