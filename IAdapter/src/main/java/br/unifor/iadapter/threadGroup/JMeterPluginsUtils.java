@@ -266,7 +266,7 @@ public abstract class JMeterPluginsUtils {
 			if (item != null) {
 				DerbyDatabase.insertWorkLoads(item, gp.getName(), generation);
 			} else {
-				System.out.println("Objeto nulo");
+				log.info("Objeto nulo");
 			}
 		}
 
@@ -291,7 +291,7 @@ public abstract class JMeterPluginsUtils {
 
 				rows.addItem(item);
 			} else {
-				System.out.println("Objeto nulo");
+				log.info("Objeto nulo");
 			}
 		}
 		return rows;
@@ -316,7 +316,7 @@ public abstract class JMeterPluginsUtils {
 
 				rows.addItem(item);
 			} else {
-				System.out.println("Objeto nulo");
+				log.info("Objeto nulo");
 			}
 		}
 		return rows;
@@ -408,9 +408,9 @@ public abstract class JMeterPluginsUtils {
 			List<WorkLoad> list, WorkLoadThreadGroup tg)
 			throws ClassNotFoundException, SQLException {
 		for (WorkLoad workLoad : list) {
-			System.out.println(errors);
+			log.info(errors.toString());
 			String error = errors.get(workLoad.getName());
-			System.out.println(workLoad.getName() + "-" + error);
+			log.info(workLoad.getName() + "-" + error);
 			DerbyDatabase.updateError(error, workLoad.getName(), tg.getName(),
 					String.valueOf(tg.getGeneration()));
 		}

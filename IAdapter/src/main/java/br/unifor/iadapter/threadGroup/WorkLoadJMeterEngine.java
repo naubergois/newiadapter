@@ -196,7 +196,7 @@ public class WorkLoadJMeterEngine extends
 	public void runTest() throws JMeterEngineException {
 		if (host != null) {
 			long now = System.currentTimeMillis();
-			System.out.println("Starting the test on host " + host + " @ "
+			log.info("Starting the test on host " + host + " @ "
 					+ new Date(now) + " (" + now + ")");
 		}
 		try {
@@ -256,7 +256,7 @@ public class WorkLoadJMeterEngine extends
 		if (host != null) {
 			log.info("Test has ended on host " + host);
 			long now = System.currentTimeMillis();
-			System.out.println("Finished the test on host " + host + " @ "
+			log.info("Finished the test on host " + host + " @ "
 					+ new Date(now) + " (" + now + ")"
 					+ (exitAfterTest ? " - exit requested." : ""));
 			if (exitAfterTest) {
@@ -304,12 +304,10 @@ public class WorkLoadJMeterEngine extends
 								.getResString("stopping_test_failed")); //$NON-NLS-1$
 						if (SYSTEM_EXIT_ON_STOP_FAIL) { // default is true
 							log.fatalError("Exitting");
-							System.out
-									.println("Fatal error, could not stop test, exitting");
+							log.info("Fatal error, could not stop test, exitting");
 							System.exit(1);
 						} else {
-							System.out
-									.println("Fatal error, could not stop test");
+							log.info("Fatal error, could not stop test");
 						}
 					} else {
 						JMeterUtils

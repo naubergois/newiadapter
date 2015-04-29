@@ -142,7 +142,7 @@ public class DerbyDatabase {
 			ResultSet tables = meta.getTables(null, null, "workload", null);
 			if (tables.next()) {
 
-				System.out.println("tabela workload existe");
+			
 
 			} else {
 
@@ -400,7 +400,7 @@ public class DerbyDatabase {
 			if (responseTime < maxTime) {
 
 				if (error.equals("true")) {
-					System.out.println("error 1");
+					
 					fit = 0.5;
 				} else {
 					fit = responseTime;
@@ -409,7 +409,7 @@ public class DerbyDatabase {
 			} else {
 
 				if (error.equals("true")) {
-					System.out.println("error");
+					
 					fit = 0.5;
 				} else {
 
