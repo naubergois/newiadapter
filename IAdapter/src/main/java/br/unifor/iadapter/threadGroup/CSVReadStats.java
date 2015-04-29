@@ -86,17 +86,19 @@ public class CSVReadStats {
 				} else {
 
 					if (isFailed.equals("1")) {
+						if (!(errorsTotal.containsKey(workLoadName))) {
 
-						errorsTotal.put(workLoadName, "1");
+							errorsTotal.put(workLoadName, "1");
 
-					} else {
-						String totalError = (String)errorsTotal
-								.get(workLoadName);
-						long totalErrorLong = Long.valueOf(totalError);
-						totalErrorLong++;
-						errorsTotal.put(workLoadName,
-								String.valueOf(totalErrorLong));
+						} else {
+							String totalError = (String) errorsTotal
+									.get(workLoadName);
+							long totalErrorLong = Long.valueOf(totalError);
+							totalErrorLong++;
+							errorsTotal.put(workLoadName,
+									String.valueOf(totalErrorLong));
 
+						}
 					}
 
 					String isFailedString = (String) errors.get(workLoadName);
@@ -129,17 +131,18 @@ public class CSVReadStats {
 				}
 
 			}
-			
-			Set keys=workloads.keySet();
+
+			Set keys = workloads.keySet();
 			for (Object object : keys) {
-				long errorTotal=Long.valueOf(errorsTotal.get(object).toString());
-				long total=Long.valueOf(requestTotal.get(object).toString());
-				double percent=Double.valueOf(errorTotal)/Double.valueOf(total);
-				if (percent<0.15){
+				long errorTotal = Long.valueOf(errorsTotal.get(object)
+						.toString());
+				long total = Long.valueOf(requestTotal.get(object).toString());
+				double percent = Double.valueOf(errorTotal)
+						/ Double.valueOf(total);
+				if (percent < 0.15) {
 					errors.put(object, "false");
 				}
-				
-				
+
 			}
 
 		} catch (FileNotFoundException e) {
