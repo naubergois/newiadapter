@@ -633,7 +633,7 @@ public class DerbyDatabase {
 				.prepareStatement(""
 						+ "SELECT "
 						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? ORDER BY FIT DESC");
+						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
