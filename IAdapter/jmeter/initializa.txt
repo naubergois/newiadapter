@@ -1,0 +1,1 @@
+ /path/apache-jmeter-2.13/bin/jmeter.sh -n  -Rhost1:1099,host26:1099  -t /path/script.jmx 
