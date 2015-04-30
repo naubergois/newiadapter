@@ -99,13 +99,13 @@ public class CSVReadStats {
 									String.valueOf(totalErrorLong));
 
 						}
+						errors.put(workLoadName, "true");
 					}
 
 					String isFailedString = (String) errors.get(workLoadName);
 					if (!(isFailedString.equals("true"))) {
 
 						if (isFailed.equals("0")) {
-							errorsTotal.put(workLoadName, "1");
 
 							errors.put(workLoadName, "false");
 						}
@@ -134,13 +134,16 @@ public class CSVReadStats {
 
 			Set keys = workloads.keySet();
 			for (Object object : keys) {
-				long errorTotal = Long.valueOf(errorsTotal.get(object)
-						.toString());
-				long total = Long.valueOf(requestTotal.get(object).toString());
-				double percent = Double.valueOf(errorTotal)
-						/ Double.valueOf(total);
-				if (percent < 0.15) {
-					errors.put(object, "false");
+				if (errorsTotal.get(object) != null) {
+					long errorTotal = Long.valueOf(errorsTotal.get(object)
+							.toString());
+					long total = Long.valueOf(requestTotal.get(object)
+							.toString());
+					double percent = Double.valueOf(errorTotal)
+							/ Double.valueOf(total);
+					if (percent < 0.15) {
+						errors.put(object, "false");
+					}
 				}
 
 			}
