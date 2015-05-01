@@ -170,7 +170,7 @@ public class ConsoleStatusLogger extends AbstractListenerElement implements
 			String responseTime = this.getReponseTimes().get(object);
 
 		}
-
+		System.out.println("Teste console terminou");
 	}
 
 	public void testEnded(String string) {

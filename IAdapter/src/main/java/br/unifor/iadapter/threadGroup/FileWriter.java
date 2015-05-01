@@ -274,7 +274,9 @@ public class FileWriter {
 				lock.release();
 			}
 		} catch (Exception e) {
-			log.info("Erro in lock file ");
+
+			log.info(e.getMessage());
+
 		}
 	}
 

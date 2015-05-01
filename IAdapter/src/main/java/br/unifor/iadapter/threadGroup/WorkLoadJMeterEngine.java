@@ -304,12 +304,10 @@ public class WorkLoadJMeterEngine extends
 								.getResString("stopping_test_failed")); //$NON-NLS-1$
 						if (SYSTEM_EXIT_ON_STOP_FAIL) { // default is true
 							log.fatalError("Exitting");
-							System.out
-									.println("Fatal error, could not stop test, exitting");
+							log.info("Fatal error, could not stop test, exitting");
 							System.exit(1);
 						} else {
-							System.out
-									.println("Fatal error, could not stop test");
+							log.info("Fatal error, could not stop test");
 						}
 					} else {
 						JMeterUtils

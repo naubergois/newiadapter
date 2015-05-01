@@ -241,36 +241,38 @@ public class DerbyDatabase {
 	public static void updateError(String error, String workload,
 			String testPlan, String generation) throws ClassNotFoundException,
 			SQLException {
+		if (error != null) {
 
-		if (error.equals("true")) {
+			if (error.equals("true")) {
 
-			long rst = 0;
+				long rst = 0;
 
-			Connection con = singleton();
+				Connection con = singleton();
 
-			PreparedStatement ps = con
-					.prepareStatement(""
-							+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=?");
-			ps.setString(1, workload);
-			ps.setString(2, testPlan);
-			ps.setString(3, generation);
+				PreparedStatement ps = con
+						.prepareStatement(""
+								+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=?");
+				ps.setString(1, workload);
+				ps.setString(2, testPlan);
+				ps.setString(3, generation);
 
-			ResultSet rs = ps.executeQuery();
+				ResultSet rs = ps.executeQuery();
 
-			int count = 0;
-			while (rs.next()) {
-				count = rs.getInt(1);
-			}
-			if (count > 0) {
+				int count = 0;
+				while (rs.next()) {
+					count = rs.getInt(1);
+				}
+				if (count > 0) {
 
-				ps = con.prepareStatement("" + "update workload set "
+					ps = con.prepareStatement("" + "update workload set "
 
-				+ "ERROR=? WHERE NAME=? and TESTPLAN=?");
-				ps.setString(1, error);
-				ps.setString(2, workload);
-				ps.setString(3, testPlan);
-				ps.executeUpdate();
+					+ "ERROR=? WHERE NAME=? and TESTPLAN=?");
+					ps.setString(1, error);
+					ps.setString(2, workload);
+					ps.setString(3, testPlan);
+					ps.executeUpdate();
 
+				}
 			}
 		}
 
@@ -596,7 +598,7 @@ public class DerbyDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM  AGENT WHERE NAME=?");
+				+ "SELECT count(*) FROM  agent WHERE NAME=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ResultSet rs = ps.executeQuery();
 
@@ -612,7 +614,7 @@ public class DerbyDatabase {
 			ps.executeUpdate();
 		} else {
 
-			ps = con.prepareStatement("UPDATE AGENT SET RUNNING=? WHERE NAME=? AND IP=?");
+			ps = con.prepareStatement("UPDATE agent SET RUNNING=? WHERE NAME=? AND IP=?");
 
 			ps.setString(1, objetos.get(1).toString());
 			ps.setString(2, objetos.get(0).toString());
@@ -631,7 +633,7 @@ public class DerbyDatabase {
 				.prepareStatement(""
 						+ "SELECT "
 						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? ORDER BY FIT DESC");
+						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
