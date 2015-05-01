@@ -538,6 +538,29 @@ public class DerbyDatabase {
 
 	}
 
+	public static int verifyRunningFinal() throws ClassNotFoundException,
+			SQLException, InterruptedException {
+
+		Thread.sleep(1000);
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement(""
+				+ "SELECT count(*) FROM agent WHERE RUNNING='final'");
+
+		ResultSet rs = ps.executeQuery();
+
+		int count = 0;
+		while (rs.next()) {
+			count = rs.getInt(1);
+		}
+
+		rs = null;
+		ps = null;
+		return count;
+
+	}
+
 	public static void deleteAgent(List objetos, String testPlan)
 			throws ClassNotFoundException, SQLException {
 

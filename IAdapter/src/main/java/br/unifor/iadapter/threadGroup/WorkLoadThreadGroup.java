@@ -40,6 +40,8 @@ import org.jgap.Population;
 import org.jgap.impl.CrossoverOperator;
 import org.jgap.impl.MutationOperator;
 
+import com.drew.metadata.Age;
+
 /***
  * Class for define workload model
  * 
@@ -151,35 +153,22 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		if (this.allThreads.size() == 0) {
 
-			List<Object> listAgent = new ArrayList<Object>();
-			listAgent.add(this.getName() + this.hashCode());
-			listAgent.add("true");
-			try {
-				listAgent.add(java.net.InetAddress.getLocalHost());
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
 			List<WorkLoad> workLoads = null;
 
+			Agent agent = new Agent(this);
+			agent.delete();
+
+			Agent.sinchronize();
+
 			try {
-				DerbyDatabase.deleteAgent(listAgent, null);
-
-				while (DerbyDatabase.verifyRunning() > 0)
-					;
-
 				workLoads = DerbyDatabase.listWorkLoadsByGeneration(
 						this.getName(), String.valueOf(this.getGeneration()));
-			} catch (ClassNotFoundException e1) {
+			} catch (ClassNotFoundException e2) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (SQLException e1) {
+				e2.printStackTrace();
+			} catch (SQLException e2) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e2.printStackTrace();
 			}
 
 			int size = workLoads.size();
@@ -200,6 +189,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				}
 
 			} else {
+
+				agent.runningFinal();
+
 				while (!(verifyThreadsStopped()))
 					;
 
@@ -279,6 +271,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 					int generations = Integer.valueOf(getGenNumber());
 
+					agent.delete();
+
+					Agent.sinchronizeFinal();
 					if (getGeneration() <= generations) {
 						this.currentTest = 0;
 
@@ -370,27 +365,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		if (size > 0) {
 			running = true;
 
-			List<Object> listAgent = new ArrayList<Object>();
-			listAgent.add(this.getName() + this.hashCode());
-			listAgent.add(new Boolean(true));
-			try {
-				listAgent.add(java.net.InetAddress.getLocalHost());
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			try {
-				DerbyDatabase.updateAgentOrCreateIfNotExist(listAgent,
-						this.getName());
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			Agent agent = new Agent(this);
+			agent.running();
 			WorkLoad workload = list.get(this.getCurrentTest());
 
 			JMeterContextService.getContext().getVariables()

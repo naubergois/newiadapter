@@ -27,22 +27,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_components.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_core.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_ftp.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_functions.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_http.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_java.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_jdbc.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_jms.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_junit.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_ldap.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_mail.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_mongodb.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_monitors.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_native.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/ApacheJMeter_tcp.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/ext/IAdapter-0.0.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/home/74397176353/Downloads/apache-jmeter-2.13/lib/jgap-3.4.4.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
