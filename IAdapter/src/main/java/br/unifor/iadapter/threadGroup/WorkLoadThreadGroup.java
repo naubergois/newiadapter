@@ -206,8 +206,12 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				try {
 					list = DerbyDatabase.listWorkLoads(this.getName(),
 							String.valueOf(this.getGeneration()));
-					JMeterPluginsUtils.updateFitnessValue(
-							CSVReadStats.getWorkloads(), list, this);
+					JMeterPluginsUtils.updateResponseTime(
+							CSVReadStats.getWorkloads(),
+							CSVReadStats.getPercentiles(), list, this);
+					JMeterPluginsUtils.updateSamples(
+							CSVReadStats.getRequestsMaxTime(), this,
+							String.valueOf(generation));
 					JMeterPluginsUtils.updateErrorValue(
 							CSVReadStats.getErrors(), list, this);
 					JMeterPluginsUtils.updateFit(list, this.getName(),
@@ -293,6 +297,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					} else {
 						File file = new File("tempResults.csv");
 						file.delete();
+						this.generation = 0;
+						this.currentTest = 0;
 					}
 
 				} catch (Exception e) {

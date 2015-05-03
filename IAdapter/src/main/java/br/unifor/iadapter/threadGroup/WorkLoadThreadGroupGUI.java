@@ -68,7 +68,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			"Kind", "Users", "Response Time", "Error", "Fit", "Function1",
 			"Function2", "Function3", "Function4", "Function5", "Function6",
 			"Function7", "Function8", "Function9", "Function10", "Generation",
-			"Active" };
+			"Active","Percentile90","Percentile80","Percentile70" };
 
 	public static final String[] columnIdentifiersAgent = new String[] {
 			"Name", "Running", "IP" };
@@ -83,7 +83,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class, String.class,
-			String.class };
+			String.class, String.class,String.class,String.class };
 
 	public static final Class[] columnClassesAgent = new Class[] {
 			String.class, String.class, String.class };
@@ -92,7 +92,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	public static final String[] defaultValues = new String[] { "1", "1", "1",
 			"1", "1", "1", "None", "None", "None", "None", "None", "None",
-			"None", "None", "None", "None" };
+			"None", "None", "None", "None", "None", "None", "None" };
 
 	public static final String[] defaultValuesAgent = new String[] { "1", "1",
 			"1", "1" };

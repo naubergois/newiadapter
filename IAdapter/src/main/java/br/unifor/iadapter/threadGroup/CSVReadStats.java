@@ -9,6 +9,14 @@ import java.util.Set;
 
 public class CSVReadStats {
 
+	public static HashMap getRequestsMaxTime() {
+		return requestsMaxTime;
+	}
+
+	public static void setRequestsMaxTime(HashMap requestsMaxTime) {
+		CSVReadStats.requestsMaxTime = requestsMaxTime;
+	}
+
 	public static HashMap getErrors() {
 		return errors;
 	}
@@ -18,9 +26,19 @@ public class CSVReadStats {
 	}
 
 	private static HashMap workloads = new HashMap<String, String>();
+	private static HashMap requestsMaxTime = new HashMap<String, String>();
 	private static HashMap errors = new HashMap<String, String>();
 	private static HashMap errorsTotal = new HashMap<String, String>();
+	public static HashMap getPercentiles() {
+		return percentiles;
+	}
+
+	public static void setPercentiles(HashMap percentiles) {
+		CSVReadStats.percentiles = percentiles;
+	}
+
 	private static HashMap requestTotal = new HashMap<String, String>();
+	private static HashMap percentiles = new HashMap<String, PercentileCounter>();
 
 	public static void run() {
 
@@ -62,6 +80,40 @@ public class CSVReadStats {
 				double responseTimeMicros = Double.valueOf(result[15]);
 				double latencyTimeMicros = Double.valueOf(result[16]);
 				long threadCount = Long.valueOf(result[17]);
+
+				String key = workLoadName + "##@" + sampleLabel;
+
+				if (!(requestsMaxTime.containsKey(key))) {
+					requestsMaxTime.put(key, String.valueOf(responseTime));
+
+				} else {
+					String responseTimeWorst = (String) requestsMaxTime
+							.get(key);
+					long responseTimeWorstLong = Long
+							.valueOf(responseTimeWorst);
+					if (responseTime > responseTimeWorstLong) {
+						requestsMaxTime.put(key, String.valueOf(responseTime));
+					}
+				}
+
+				if (!(percentiles.containsKey(workLoadName))) {
+					PercentileCounter counter = new PercentileCounter(0,100,200,300,400,500,600,700,800,900,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000,12000,13000
+							,14000,15000,16000,17000,18000,19000,20000,21000,22000,23000,24000,25000,26000,27000,28000,29000,30000,31000,32000,33000
+							,34000,35000,36000,37000,38000,39000,40000,41000,42000,43000,44000,45000,46000,47000,48000,49000,50000,51000,52000,53000,
+							54000,55000,56000,57000,58000,59000,60000,65000,70000,75000,80000,85000,90000,95000,100000,105000,11000,115000,120000,125000,
+							130000,135000,140000,145000,150000,155000,160000,165000,170000,175000,180000,185000,190000);
+					counter.increment((int) responseTime);
+					percentiles.put(workLoadName, counter);
+					System.out.print(counter);
+
+				} else {
+					PercentileCounter counter = (PercentileCounter) percentiles
+							.get(workLoadName);
+					counter.increment((int) responseTime);
+					System.out.print(counter);
+					percentiles.put(workLoadName, counter);
+
+				}
 
 				if (!(requestTotal.containsKey(workLoadName))) {
 					requestTotal.put(workLoadName, "1");
@@ -119,6 +171,7 @@ public class CSVReadStats {
 
 				if (!(workloads.containsKey(workLoadName))) {
 					workloads.put(workLoadName, String.valueOf(responseTime));
+
 				} else {
 					String responseTimeWorst = (String) workloads
 							.get(workLoadName);

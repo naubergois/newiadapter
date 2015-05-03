@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -61,7 +62,7 @@ public abstract class JMeterPluginsUtils {
 
 	public static Object[] getObjectList(WorkLoad workLoad) {
 
-		Object[] rowObject = new Object[18];
+		Object[] rowObject = new Object[21];
 		rowObject[0] = workLoad.getName();
 		rowObject[1] = workLoad.getType();
 		rowObject[2] = String.valueOf(workLoad.getNumThreads());
@@ -80,6 +81,9 @@ public abstract class JMeterPluginsUtils {
 		rowObject[15] = String.valueOf(workLoad.getFunction10());
 		rowObject[16] = String.valueOf(workLoad.getGeneration());
 		rowObject[17] = String.valueOf(workLoad.isActive());
+		rowObject[18] = String.valueOf(workLoad.getPercentile90());
+		rowObject[19] = String.valueOf(workLoad.getPercentile80());
+		rowObject[20] = String.valueOf(workLoad.getPercentile70());
 		return rowObject;
 	}
 
@@ -108,6 +112,9 @@ public abstract class JMeterPluginsUtils {
 			workload.setFunction10(object.get(15).toString());
 			workload.setGeneration(Integer.valueOf(object.get(16).toString()));
 			workload.setActive(Boolean.valueOf(object.get(17).toString()));
+			workload.setPercentile90(Integer.valueOf(object.get(18).toString()));
+			workload.setPercentile80(Integer.valueOf(object.get(19).toString()));
+			workload.setPercentile70(Integer.valueOf(object.get(20).toString()));
 			return workload;
 		}
 		return null;
@@ -393,13 +400,37 @@ public abstract class JMeterPluginsUtils {
 		model.fireTableDataChanged();
 	}
 
-	public static void updateFitnessValue(
-			HashMap<String, String> responseTimes, List<WorkLoad> list,
+	public static void updateResponseTime(
+			HashMap<String, String> responseTimes,
+			HashMap<String, PercentileCounter> counters, List<WorkLoad> list,
 			WorkLoadThreadGroup tg) throws ClassNotFoundException, SQLException {
 		for (WorkLoad workLoad : list) {
 			String responseTime = responseTimes.get(workLoad.getName());
+			PercentileCounter counter = counters.get(workLoad.getName());
 			DerbyDatabase.updateResponseTime(responseTime, workLoad.getName(),
-					tg.getName(), String.valueOf(tg.getGeneration()));
+					tg.getName(), String.valueOf(tg.getGeneration()), counter);
+		}
+	}
+
+	public static void updateSamples(HashMap<String, String> responseMaxTimes,
+			WorkLoadThreadGroup tg, String generation)
+			throws ClassNotFoundException, SQLException {
+
+		Set<String> keys = responseMaxTimes.keySet();
+		for (String key : keys) {
+			List<Object> listInsert = new ArrayList<Object>();
+			System.out.println(key);
+			String responseTime = responseMaxTimes.get(key);
+			System.out.println(responseTime);
+			String[] list = key.split("##@");
+			String workloadName = list[0];
+			String sampleName = list[1];
+			listInsert.add(sampleName);
+			listInsert.add(responseTime);
+			listInsert.add("message");
+			listInsert.add(workloadName);
+			DerbyDatabase.insertSample(listInsert, tg.getName(),
+					String.valueOf(tg.getGeneration()));
 		}
 
 	}
@@ -464,6 +495,9 @@ public abstract class JMeterPluginsUtils {
 			rowObject.add(workload.getFunction10());
 			rowObject.add(String.valueOf(workload.getGeneration()));
 			rowObject.add(String.valueOf(workload.isActive()));
+			rowObject.add(String.valueOf(workload.getPercentile90()));
+			rowObject.add(String.valueOf(workload.getPercentile80()));
+			rowObject.add(String.valueOf(workload.getPercentile70()));
 			model.addRow(rowObject.toArray());
 		}
 		model.fireTableDataChanged();

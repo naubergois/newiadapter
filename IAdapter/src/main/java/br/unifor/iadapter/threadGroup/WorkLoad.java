@@ -5,12 +5,42 @@ import org.apache.log.Logger;
 
 public class WorkLoad {
 
-	private static String[] types = { "UpDown","Stress" };
+	private long percentile90;
+
+	private long percentile80;
+
+	private long percentile70;
+
+	public long getPercentile90() {
+		return percentile90;
+	}
+
+	public void setPercentile90(long percentile90) {
+		this.percentile90 = percentile90;
+	}
+
+	public long getPercentile80() {
+		return percentile80;
+	}
+
+	public void setPercentile80(long percentile80) {
+		this.percentile80 = percentile80;
+	}
+
+	public long getPercentile70() {
+		return percentile70;
+	}
+
+	public void setPercentile70(long percentile70) {
+		this.percentile70 = percentile70;
+	}
+
+	private static String[] types = { "UpDown", "Stress" };
 
 	private int generation;
-	
+
 	private boolean active;
-	
+
 	public int getGeneration() {
 		return generation;
 	}
@@ -275,7 +305,7 @@ public class WorkLoad {
 		}
 	}
 
-	public  void plotGraph(GraphRowSumValues row, WorkLoad workLoad) {
+	public void plotGraph(GraphRowSumValues row, WorkLoad workLoad) {
 
 		long initialTime = System.currentTimeMillis();
 
