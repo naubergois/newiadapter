@@ -208,7 +208,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 							String.valueOf(this.getGeneration()));
 					JMeterPluginsUtils.updateResponseTime(
 							CSVReadStats.getWorkloads(),
-							CSVReadStats.getPercentiles(), list, this);
+							CSVReadStats.getPercentiles(),
+							CSVReadStats.getErrorsTotal(), list, this);
 					JMeterPluginsUtils.updateSamples(
 							CSVReadStats.getRequestsMaxTime(), this,
 							String.valueOf(generation));

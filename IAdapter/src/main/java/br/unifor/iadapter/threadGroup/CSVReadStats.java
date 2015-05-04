@@ -82,6 +82,32 @@ public class CSVReadStats {
 				long threadCount = Long.valueOf(result[17]);
 
 				String key = workLoadName + "##@" + sampleLabel;
+				
+				
+				if (!(errorsTotal.containsKey(workLoadName))) {
+
+					errorsTotal.put(workLoadName, "0");
+					if (isFailed.equals("1")) {
+						String totalError = (String) errorsTotal
+								.get(workLoadName);
+						long totalErrorLong = Long.valueOf(totalError);
+						totalErrorLong++;
+						errorsTotal.put(workLoadName,
+								String.valueOf(totalErrorLong));
+						}
+
+				} else {
+					if (isFailed.equals("1")) {
+					String totalError = (String) errorsTotal
+							.get(workLoadName);
+					long totalErrorLong = Long.valueOf(totalError);
+					totalErrorLong++;
+					errorsTotal.put(workLoadName,
+							String.valueOf(totalErrorLong));
+					}
+
+				}
+
 
 				if (!(requestsMaxTime.containsKey(key))) {
 					requestsMaxTime.put(key, String.valueOf(responseTime));
@@ -138,19 +164,7 @@ public class CSVReadStats {
 				} else {
 
 					if (isFailed.equals("1")) {
-						if (!(errorsTotal.containsKey(workLoadName))) {
 
-							errorsTotal.put(workLoadName, "1");
-
-						} else {
-							String totalError = (String) errorsTotal
-									.get(workLoadName);
-							long totalErrorLong = Long.valueOf(totalError);
-							totalErrorLong++;
-							errorsTotal.put(workLoadName,
-									String.valueOf(totalErrorLong));
-
-						}
 						errors.put(workLoadName, "true");
 					}
 
@@ -215,6 +229,14 @@ public class CSVReadStats {
 			}
 		}
 
+	}
+
+	public static HashMap getErrorsTotal() {
+		return errorsTotal;
+	}
+
+	public static void setErrorsTotal(HashMap errorsTotal) {
+		CSVReadStats.errorsTotal = errorsTotal;
 	}
 
 	public static HashMap getWorkloads() {

@@ -204,15 +204,15 @@ public class DerbyDatabase {
 	}
 
 	public static void updateResponseTime(Long responseTime, String workload,
-			String testPlan, String generation, PercentileCounter counter)
-			throws ClassNotFoundException, SQLException {
+			String testPlan, String generation, PercentileCounter counter,
+			String errors) throws ClassNotFoundException, SQLException {
 		updateResponseTime(String.valueOf(responseTime), workload, testPlan,
-				generation, counter);
+				generation, counter, errors);
 	}
 
 	public static void updateResponseTime(String responseTime, String workload,
-			String testPlan, String generation, PercentileCounter counter)
-			throws ClassNotFoundException, SQLException {
+			String testPlan, String generation, PercentileCounter counter,
+			String errors) throws ClassNotFoundException, SQLException {
 
 		long rst = 0;
 
@@ -234,7 +234,7 @@ public class DerbyDatabase {
 		if (count > 0) {
 
 			ps = con.prepareStatement(""
-					+ "SELECT RESPONSETIME,PERCENT90,PERCENT80,PERCENT70 FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+					+ "SELECT RESPONSETIME,PERCENT90,PERCENT80,PERCENT70,TOTALERROR FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 			ps.setString(1, workload);
 			ps.setString(2, testPlan);
 			ps.setString(3, generation);
@@ -245,11 +245,13 @@ public class DerbyDatabase {
 			String responseTimeDatabasePercent90 = "";
 			String responseTimeDatabasePercent80 = "";
 			String responseTimeDatabasePercent70 = "";
+			String totalError = "";
 			while (rs.next()) {
 				responseTimeDatabase = rs.getString(1);
 				responseTimeDatabasePercent90 = rs.getString(2);
 				responseTimeDatabasePercent80 = rs.getString(3);
 				responseTimeDatabasePercent70 = rs.getString(4);
+				totalError = rs.getString(5);
 			}
 
 			long responseTimeDatabaseLong = Long.valueOf(responseTimeDatabase);
@@ -259,6 +261,23 @@ public class DerbyDatabase {
 					.valueOf(responseTimeDatabasePercent80);
 			long responseTimeDatabaseLongPercent70 = Long
 					.valueOf(responseTimeDatabasePercent70);
+			long totalErrorLong = 0;
+			if (totalError != null) {
+				totalErrorLong = Long.valueOf(totalError);
+			}
+			long errorsLong = 0;
+			if (errors != null) {
+				errorsLong = Long.valueOf(errors);
+			}
+			totalErrorLong += errorsLong;
+
+			ps = con.prepareStatement("" + "update workload set "
+
+			+ "TOTALERROR=? WHERE NAME=? and TESTPLAN=?");
+			ps.setString(1, String.valueOf(totalErrorLong));
+			ps.setString(2, workload);
+			ps.setString(3, testPlan);
+			ps.executeUpdate();
 
 			if (responseTime != null) {
 
@@ -445,14 +464,13 @@ public class DerbyDatabase {
 		long rst = 0;
 
 		Connection con = singleton();
-		
+
 		PreparedStatement ps = con.prepareStatement(""
 				+ "DELETE FROM  samples WHERE  TESTPLAN=? ");
 
 		ps.setString(1, testPlan);
-		
-		ps.executeUpdate();
 
+		ps.executeUpdate();
 
 		ps = con.prepareStatement(""
 				+ "DELETE FROM  workload WHERE  TESTPLAN=? ");
@@ -764,13 +782,11 @@ public class DerbyDatabase {
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
 		ps.executeUpdate();
-		
-		ps = con
-				.prepareStatement(""
-						+ "DELETE  FROM  samples WHERE INDIVIDUAL=? AND TESTPLAN=?");
+
+		ps = con.prepareStatement(""
+				+ "DELETE  FROM  samples WHERE INDIVIDUAL=? AND TESTPLAN=?");
 		ps.setString(1, name);
 		ps.setString(2, testPlan);
-		ps.setString(3, generation);
 		ps.executeUpdate();
 
 	}

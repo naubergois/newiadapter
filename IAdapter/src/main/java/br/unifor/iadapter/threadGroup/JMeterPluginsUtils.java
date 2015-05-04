@@ -484,13 +484,16 @@ public abstract class JMeterPluginsUtils {
 
 	public static void updateResponseTime(
 			HashMap<String, String> responseTimes,
-			HashMap<String, PercentileCounter> counters, List<WorkLoad> list,
+			HashMap<String, PercentileCounter> counters,
+			HashMap<String, String> totalErrors, List<WorkLoad> list,
 			WorkLoadThreadGroup tg) throws ClassNotFoundException, SQLException {
 		for (WorkLoad workLoad : list) {
 			String responseTime = responseTimes.get(workLoad.getName());
+			String erros = totalErrors.get(workLoad);
 			PercentileCounter counter = counters.get(workLoad.getName());
 			DerbyDatabase.updateResponseTime(responseTime, workLoad.getName(),
-					tg.getName(), String.valueOf(tg.getGeneration()), counter);
+					tg.getName(), String.valueOf(tg.getGeneration()), counter,
+					erros);
 		}
 	}
 
