@@ -42,7 +42,7 @@ public class DerbyDatabase {
 			+ "USERS,RESPONSETIME,ERROR,FIT,"
 			+ "FUNCTION1,FUNCTION2,FUNCTION3,FUNCTION4,"
 			+ "FUNCTION5,FUNCTION6,FUNCTION7,FUNCTION8,"
-			+ "FUNCTION9,FUNCTION10,TESTPLAN,GENERATION,ACTIVE,PERCENT90,PERCENT80,PERCENT70";
+			+ "FUNCTION9,FUNCTION10,TESTPLAN,GENERATION,ACTIVE,PERCENT90,PERCENT80,PERCENT70,TOTALERROR";
 
 	private final static String COLUMNSAMPLES = "LABEL,RESPONSETIME,"
 			+ "MESSAGE,INDIVIDUAL,GENERATION,TESTPLAN";
@@ -53,7 +53,7 @@ public class DerbyDatabase {
 
 	private final static String COLUMNSAGENT = "name,running," + "ip";
 
-	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
 
 	private final static String PARAMETERSSAMPLE = "?,?,?,?,?,?";
 
@@ -63,7 +63,7 @@ public class DerbyDatabase {
 			+ "USERS=?,RESPONSETIME=?,ERROR=?,FIT=?,FUNCTION1=?,"
 			+ "FUNCTION2=?,FUNCTION3=?,FUNCTION4=?,FUNCTION5=?,"
 			+ "FUNCTION6=?,FUNCTION7=?,FUNCTION8=?,FUNCTION9=?,"
-			+ "FUNCTION10=?,TESTPLAN=?,GENERATION=?,ACTIVE=?,PERCENT90=?,PERCENT80=?,PERCENT70=?";
+			+ "FUNCTION10=?,TESTPLAN=?,GENERATION=?,ACTIVE=?,PERCENT90=?,PERCENT80=?,PERCENT70=?,TOTALERROR=?";
 
 	private final static String SETAGENT = "name=?,running=?," + "ip=?";
 
@@ -81,8 +81,8 @@ public class DerbyDatabase {
 	public static PreparedStatement setParametersWhere(PreparedStatement ps,
 			List objetos, String where, String testPlan) throws SQLException {
 		ps = setParameters(ps, objetos, testPlan);
-		ps.setString(23, where);
-		ps.setString(24, testPlan);
+		ps.setString(24, where);
+		ps.setString(25, testPlan);
 		return ps;
 	}
 
@@ -110,6 +110,7 @@ public class DerbyDatabase {
 		ps.setString(20, String.valueOf(objetos.get(18)));
 		ps.setString(21, String.valueOf(objetos.get(19)));
 		ps.setString(22, String.valueOf(objetos.get(20)));
+		ps.setString(23, String.valueOf(objetos.get(21)));
 		return ps;
 	}
 
@@ -360,6 +361,33 @@ public class DerbyDatabase {
 
 	}
 
+	public static long selectResponseTimePercent90(String workload,
+			String testPlan, String generation) throws ClassNotFoundException,
+			SQLException {
+
+		long rst = 0;
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT PERCENT90 FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+		ps.setString(1, workload);
+		ps.setString(2, testPlan);
+		ps.setString(3, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		String responseTime = "0";
+		while (rs.next()) {
+			responseTime = rs.getString(1);
+		}
+
+		rst = Long.valueOf(responseTime);
+		return rst;
+
+	}
+
 	public static long selectResponseTime(String workload, String testPlan,
 			String generation) throws ClassNotFoundException, SQLException {
 
@@ -417,8 +445,16 @@ public class DerbyDatabase {
 		long rst = 0;
 
 		Connection con = singleton();
-
+		
 		PreparedStatement ps = con.prepareStatement(""
+				+ "DELETE FROM  samples WHERE  TESTPLAN=? ");
+
+		ps.setString(1, testPlan);
+		
+		ps.executeUpdate();
+
+
+		ps = con.prepareStatement(""
 				+ "DELETE FROM  workload WHERE  TESTPLAN=? ");
 
 		ps.setString(1, testPlan);
@@ -459,6 +495,8 @@ public class DerbyDatabase {
 
 		double fit = 0;
 		long responseTime = selectResponseTime(workload, testPlan, generation);
+		long responseTime90Percent = selectResponseTimePercent90(workload,
+				testPlan, generation);
 		double fitDatabase = selectFit(workload, testPlan, generation);
 		String error = selectError(workload, testPlan, generation);
 
@@ -479,13 +517,13 @@ public class DerbyDatabase {
 		}
 		if (count > 0) {
 
-			if (responseTime < maxTime) {
+			if ((responseTime < maxTime) && (responseTime90Percent < maxTime)) {
 
 				if (error.equals("true")) {
 
 					fit = 0.5;
 				} else {
-					fit = responseTime;
+					fit = (long) (0.8 * responseTime90Percent + 0.2 * responseTime);
 				}
 
 			} else {
@@ -726,6 +764,14 @@ public class DerbyDatabase {
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
 		ps.executeUpdate();
+		
+		ps = con
+				.prepareStatement(""
+						+ "DELETE  FROM  samples WHERE INDIVIDUAL=? AND TESTPLAN=?");
+		ps.setString(1, name);
+		ps.setString(2, testPlan);
+		ps.setString(3, generation);
+		ps.executeUpdate();
 
 	}
 
@@ -868,7 +914,7 @@ public class DerbyDatabase {
 				.prepareStatement(""
 						+ "SELECT "
 						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? ORDER BY FIT DESC");
+						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
@@ -919,6 +965,9 @@ public class DerbyDatabase {
 		}
 		if (rs.getString(22) != null) {
 			workload.setPercentile70(Long.valueOf(rs.getString(22)));
+		}
+		if (rs.getString(23) != null) {
+			workload.setTotalErrors(Long.valueOf(rs.getString(23)));
 		}
 		return workload;
 	}

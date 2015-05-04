@@ -529,31 +529,33 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		ListedHashTree clone = cloneTree(threadGroupTree);
 
 		synchronized (clone) {
+			synchronized (threadGroupTree) {
 
-			Set keys = clone.keySet();
+				Set keys = clone.keySet();
 
-			for (Object object : keys) {
-				HashTree tree = clone.get(object);
-				Object[] object1 = tree.getArray();
-				for (Object object2 : object1) {
+				for (Object object : keys) {
+					HashTree tree = clone.get(object);
+					Object[] object1 = tree.getArray();
+					for (Object object2 : object1) {
 
-					if (object2 instanceof WorkLoadController) {
+						if (object2 instanceof WorkLoadController) {
 
-						if (object2.equals(node)) {
+							if (object2.equals(node)) {
 
-							WorkLoadController controler = (WorkLoadController) object2;
-							controler.setCondition("TRUE");
-						} else {
-							WorkLoadController controler = (WorkLoadController) object2;
-							if (controler != null) {
-								controler.setCondition("FALSE");
+								WorkLoadController controler = (WorkLoadController) object2;
+								controler.setCondition("TRUE");
+							} else {
+								WorkLoadController controler = (WorkLoadController) object2;
+								if (controler != null) {
+									controler.setCondition("FALSE");
+								}
 							}
+
 						}
 
 					}
 
 				}
-
 			}
 
 			boolean onErrorStopTest = getOnErrorStopTest();

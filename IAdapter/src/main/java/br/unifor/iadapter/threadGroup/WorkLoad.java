@@ -4,6 +4,16 @@ import org.apache.jmeter.threads.JMeterThread;
 import org.apache.log.Logger;
 
 public class WorkLoad {
+	
+	private long totalErrors;
+
+	public long getTotalErrors() {
+		return totalErrors;
+	}
+
+	public void setTotalErrors(long totalErrors) {
+		this.totalErrors = totalErrors;
+	}
 
 	private long percentile90;
 
