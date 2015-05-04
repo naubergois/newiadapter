@@ -186,7 +186,10 @@ public abstract class JMeterPluginsUtils {
 				if ((workLoad.getNumThreads() <= users)
 						&& (generationWorkLoad >= generation)) {
 					WorkLoad workloadMutation = new WorkLoad();
-					workloadMutation.setName("Mutation" + workLoad.getName());
+					int newUsers = (users + randInt(users, maxUsers)) / 2;
+					workloadMutation.setNumThreads(newUsers);
+					workloadMutation.setName("Mutation-" + newUsers + "-"
+							+ workLoad.getName());
 					workloadMutation.setType(workLoad.getType());
 					workloadMutation.setActive(workLoad.isActive());
 					workloadMutation.setEndRampUp(workLoad.getEndRampUp());
@@ -207,8 +210,7 @@ public abstract class JMeterPluginsUtils {
 					workloadMutation.setPercentile80(0);
 					workloadMutation.setPercentile90(0);
 					listAux.add(workloadMutation);
-					int newUsers = (users + randInt(users, maxUsers)) / 2;
-					workloadMutation.setNumThreads(newUsers);
+
 				}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -496,9 +498,9 @@ public abstract class JMeterPluginsUtils {
 		Set<String> keys = responseMaxTimes.keySet();
 		for (String key : keys) {
 			List<Object> listInsert = new ArrayList<Object>();
-			
+
 			String responseTime = responseMaxTimes.get(key);
-			
+
 			String[] list = key.split("##@");
 			String workloadName = list[0];
 			String sampleName = list[1];
