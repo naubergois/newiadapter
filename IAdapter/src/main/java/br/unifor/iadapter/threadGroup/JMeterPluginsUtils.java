@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -146,6 +147,82 @@ public abstract class JMeterPluginsUtils {
 		}
 
 		return list;
+	}
+
+	public static int randInt(int min, int max) {
+
+		// NOTE: Usually this should be a field rather than a method
+		// variable so that it is not re-seeded every call.
+		Random rand = new Random();
+
+		// nextInt is normally exclusive of the top value,
+		// so add 1 to make it inclusive
+		int randomNum = rand.nextInt((max - min) + 1) + min;
+
+		return randomNum;
+	}
+
+	public static List<WorkLoad> getListWorkLoadFromPopulationTestPlan(
+			List<Chromosome> listC, ListedHashTree tree, int generation,
+			String testPlan, int maxUsers) {
+		List<TestElement> listElement = FindService
+				.searchWorkLoadControllerWithNoGui(tree);
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		for (Chromosome chromosome : listC) {
+			list.add(getWorkLoadFromChromosome(chromosome, listElement,
+					generation));
+		}
+
+		List<WorkLoad> listAux = new ArrayList<WorkLoad>();
+
+		for (WorkLoad workLoad : list) {
+			try {
+				int users = DerbyDatabase.listBestWorkload(testPlan,
+						workLoad.getType());
+
+				int generationWorkLoad = Integer.valueOf(workLoad
+						.getGeneration());
+				if ((workLoad.getNumThreads() <= users)
+						&& (generationWorkLoad >= generation)) {
+					WorkLoad workloadMutation = new WorkLoad();
+					workloadMutation.setName("Mutation" + workLoad.getName());
+					workloadMutation.setType(workLoad.getType());
+					workloadMutation.setActive(workLoad.isActive());
+					workloadMutation.setEndRampUp(workLoad.getEndRampUp());
+					workloadMutation.setError(workLoad.isError());
+					workloadMutation.setFlightTime(workLoad.getFlightTime());
+					workloadMutation.setFunction1(workLoad.getFunction1());
+					workloadMutation.setFunction2(workLoad.getFunction2());
+					workloadMutation.setFunction3(workLoad.getFunction3());
+					workloadMutation.setFunction4(workLoad.getFunction4());
+					workloadMutation.setFunction5(workLoad.getFunction5());
+					workloadMutation.setFunction6(workLoad.getFunction6());
+					workloadMutation.setFunction7(workLoad.getFunction7());
+					workloadMutation.setFunction8(workLoad.getFunction8());
+					workloadMutation.setFunction9(workLoad.getFunction9());
+					workloadMutation.setFunction10(workLoad.getFunction10());
+					workloadMutation.setGeneration(workLoad.getGeneration());
+					workloadMutation.setPercentile70(0);
+					workloadMutation.setPercentile80(0);
+					workloadMutation.setPercentile90(0);
+					listAux.add(workloadMutation);
+					int newUsers = (users + randInt(users, maxUsers)) / 2;
+					workloadMutation.setNumThreads(newUsers);
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		list.addAll(listAux);
+
+		return list;
+
 	}
 
 	public static WorkLoad getWorkLoadFromChromosome(Chromosome chromosome,

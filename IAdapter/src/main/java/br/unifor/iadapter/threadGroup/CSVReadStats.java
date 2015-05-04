@@ -104,13 +104,13 @@ public class CSVReadStats {
 							130000,135000,140000,145000,150000,155000,160000,165000,170000,175000,180000,185000,190000);
 					counter.increment((int) responseTime);
 					percentiles.put(workLoadName, counter);
-					System.out.print(counter);
+
 
 				} else {
 					PercentileCounter counter = (PercentileCounter) percentiles
 							.get(workLoadName);
 					counter.increment((int) responseTime);
-					System.out.print(counter);
+					
 					percentiles.put(workLoadName, counter);
 
 				}

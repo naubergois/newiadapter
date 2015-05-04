@@ -51,7 +51,7 @@ public class DerbyDatabase {
 			+ DerbyDatabase.COLUMNSAMPLES + ") values ("
 			+ DerbyDatabase.PARAMETERSSAMPLE + ")";
 
-	private final static String COLUMNSAGENT = "NAME,RUNNING," + "IP";
+	private final static String COLUMNSAGENT = "name,running," + "ip";
 
 	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
 
@@ -63,9 +63,9 @@ public class DerbyDatabase {
 			+ "USERS=?,RESPONSETIME=?,ERROR=?,FIT=?,FUNCTION1=?,"
 			+ "FUNCTION2=?,FUNCTION3=?,FUNCTION4=?,FUNCTION5=?,"
 			+ "FUNCTION6=?,FUNCTION7=?,FUNCTION8=?,FUNCTION9=?,"
-			+ "FUNCTION10=?,TESTPLAN=?,GENERATION=?,ACTIVE=?,percent90=?,percent80=?,percent70=?";
+			+ "FUNCTION10=?,TESTPLAN=?,GENERATION=?,ACTIVE=?,PERCENT90=?,PERCENT80=?,PERCENT70=?";
 
-	private final static String SETAGENT = "NAME=?,RUNNING=?," + "IP=?";
+	private final static String SETAGENT = "name=?,running=?," + "ip=?";
 
 	private final static String INSERTSQL = "insert into  workload("
 			+ DerbyDatabase.COLUMNS + ") values (" + DerbyDatabase.PARAMETERS
@@ -573,7 +573,7 @@ public class DerbyDatabase {
 		ps.setString(1, objetos.get(0).toString());
 		ps.setString(2, objetos.get(3).toString());
 		ps.setString(3, testPlan);
-		//ps.setString(4, generation);
+		// ps.setString(4, generation);
 
 		ResultSet rs = ps.executeQuery();
 
@@ -663,7 +663,7 @@ public class DerbyDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM agent WHERE RUNNING='true'");
+				+ "SELECT count(*) FROM agent WHERE running='true'");
 
 		ResultSet rs = ps.executeQuery();
 
@@ -686,7 +686,7 @@ public class DerbyDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM agent WHERE RUNNING='final'");
+				+ "SELECT count(*) FROM agent WHERE running='final'");
 
 		ResultSet rs = ps.executeQuery();
 
@@ -761,7 +761,7 @@ public class DerbyDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM  agent WHERE NAME=?");
+				+ "SELECT count(*) FROM  agent WHERE name=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ResultSet rs = ps.executeQuery();
 
@@ -777,7 +777,7 @@ public class DerbyDatabase {
 			ps.executeUpdate();
 		} else {
 
-			ps = con.prepareStatement("UPDATE agent SET RUNNING=? WHERE NAME=? AND IP=?");
+			ps = con.prepareStatement("UPDATE agent SET running=? WHERE name=? AND ip=?");
 
 			ps.setString(1, objetos.get(1).toString());
 			ps.setString(2, objetos.get(0).toString());
@@ -832,6 +832,30 @@ public class DerbyDatabase {
 		}
 
 		return list;
+
+	}
+
+	public static int listBestWorkload(String testPlan, String type)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT USERS"
+						+ "  FROM  workload WHERE TESTPLAN=? AND TYPE=? ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, type);
+
+		ResultSet rs = ps.executeQuery();
+
+		int users = 0;
+
+		while (rs.next()) {
+			users = Integer.valueOf(rs.getString(1));
+		}
+
+		return users;
 
 	}
 

@@ -253,9 +253,10 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					generation = generation + 1;
 
 					List<WorkLoad> listBest = JMeterPluginsUtils
-							.getListWorkLoadFromPopulation(
+							.getListWorkLoadFromPopulationTestPlan(
 									population.getChromosomes(), this.tree,
-									generation);
+									generation, this.getName(),
+									Integer.valueOf(this.getThreadNumberMax()));
 
 					try {
 
