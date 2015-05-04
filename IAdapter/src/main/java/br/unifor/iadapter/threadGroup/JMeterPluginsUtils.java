@@ -496,9 +496,9 @@ public abstract class JMeterPluginsUtils {
 		Set<String> keys = responseMaxTimes.keySet();
 		for (String key : keys) {
 			List<Object> listInsert = new ArrayList<Object>();
-			System.out.println(key);
+			
 			String responseTime = responseMaxTimes.get(key);
-			System.out.println(responseTime);
+			
 			String[] list = key.split("##@");
 			String workloadName = list[0];
 			String sampleName = list[1];

@@ -1,5 +1,4 @@
 <!DOCTYPE HTML>
-
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -13,11 +12,13 @@
     			// For example... passing a name parameter of "name1" will return a value of "100", etc.
     			// page.htm?name1=100&name2=101&name3=102
 
-    			name="testplan";	
+    			name="testplan";
+    			nameIndividual="individual";	
     			var winURL = window.location.href;
 			var queryStringArray = winURL.split("?");
 			var queryStringParamArray = queryStringArray[1].split("&");
 			var nameValue = null;
+			var nameIndividualValue = null;
 
                 for ( var i=0; i<queryStringParamArray.length; i++ )
 		 {           
@@ -26,11 +27,19 @@
                       if ( name == queryStringNameValueArray[0] )
 		        {
 		            nameValue = queryStringNameValueArray[1];
+		        }
+		        
+		         if ( nameIndividual == queryStringNameValueArray[0] )
+		        {
+		            nameIndividualValue = queryStringNameValueArray[1];
 		        }                       
 	         }
 
-		    return "consulta.php?testplan="+nameValue;
+		    return "consultaSamples.php?testplan="+nameValue+"&individual="+nameIndividualValue;
 		}
+		
+		
+		
 	
 
 		$(document).ready(
@@ -42,10 +51,10 @@
 			var options = {
 	            chart: {
 	                renderTo: 'container',
-	                type: 'bar'
+	                type: 'column'
 	            },
 	            title: {
-	                text: 'Individuals',
+	                text: 'Project Requests',
 	                x: -20 //center
 	            },
 	            subtitle: {
@@ -93,11 +102,7 @@
 
 	        $.getJSON(getQuerystringNameValue(), function(json) {
 				options.xAxis.categories = json[0]['data'];
-	        	options.series[0] = json[1];
-	        	options.series[1] = json[2];
-                        options.series[2] = json[3];
-			options.series[3] = json[4];
-                        options.series[4] = json[5];
+	        	options.series[0] = json[1];	        	
 		        chart = new Highcharts.Chart(options);
 	        });
 	    });
@@ -110,7 +115,8 @@
         <script src="http://code.highcharts.com/modules/exporting.js"></script>
 	</head>
 	<body>
-		<a href="inicio.php" > <img src="iadapter.png" align="middle"></a>
+		<div class="centered"><a href="inicio.php" > <img src="iadapter.png" align="middle"></a></div>
 		<div id="container" style="min-width: 400px; height: 800px; margin: 0 auto"></div>
 	</body>
 </html>
+
