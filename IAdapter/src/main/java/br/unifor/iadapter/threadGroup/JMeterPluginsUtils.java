@@ -489,7 +489,7 @@ public abstract class JMeterPluginsUtils {
 			WorkLoadThreadGroup tg) throws ClassNotFoundException, SQLException {
 		for (WorkLoad workLoad : list) {
 			String responseTime = responseTimes.get(workLoad.getName());
-			String erros = totalErrors.get(workLoad);
+			String erros = totalErrors.get(workLoad.getName());
 			PercentileCounter counter = counters.get(workLoad.getName());
 			DerbyDatabase.updateResponseTime(responseTime, workLoad.getName(),
 					tg.getName(), String.valueOf(tg.getGeneration()), counter,

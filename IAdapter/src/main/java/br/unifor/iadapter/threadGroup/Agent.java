@@ -7,6 +7,15 @@ import java.util.List;
 
 public class Agent {
 
+	private String workload;
+	public String getWorkload() {
+		return workload;
+	}
+
+	public void setWorkload(String workload) {
+		this.workload = workload;
+	}
+
 	private String name;
 	private String ip;
 	private String running;

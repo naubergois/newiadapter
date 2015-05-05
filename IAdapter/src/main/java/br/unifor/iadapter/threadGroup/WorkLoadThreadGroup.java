@@ -374,6 +374,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			running = true;
 
 			Agent agent = new Agent(this);
+			//agent.setWorkload(this.currentTest);
 			agent.running();
 			WorkLoad workload = list.get(this.getCurrentTest());
 

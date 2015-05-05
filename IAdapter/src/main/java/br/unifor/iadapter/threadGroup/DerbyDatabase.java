@@ -220,7 +220,7 @@ public class DerbyDatabase {
 
 		PreparedStatement ps = con
 				.prepareStatement(""
-						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=?");
+						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=? AND ACTIVE='true'");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -234,7 +234,7 @@ public class DerbyDatabase {
 		if (count > 0) {
 
 			ps = con.prepareStatement(""
-					+ "SELECT RESPONSETIME,PERCENT90,PERCENT80,PERCENT70,TOTALERROR FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+					+ "SELECT RESPONSETIME,PERCENT90,PERCENT80,PERCENT70,TOTALERROR FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=? AND ACTIVE='true'");
 			ps.setString(1, workload);
 			ps.setString(2, testPlan);
 			ps.setString(3, generation);
@@ -273,7 +273,7 @@ public class DerbyDatabase {
 
 			ps = con.prepareStatement("" + "update workload set "
 
-			+ "TOTALERROR=? WHERE NAME=? and TESTPLAN=?");
+			+ "TOTALERROR=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
 			ps.setString(1, String.valueOf(totalErrorLong));
 			ps.setString(2, workload);
 			ps.setString(3, testPlan);
@@ -285,9 +285,10 @@ public class DerbyDatabase {
 
 				if (responseTimeLong > responseTimeDatabaseLong) {
 
-					ps = con.prepareStatement("" + "update workload set "
+					ps = con.prepareStatement(""
+							+ "update workload set "
 
-					+ "RESPONSETIME=? WHERE NAME=? and TESTPLAN=?");
+							+ "RESPONSETIME=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
 					ps.setString(1, responseTime);
 					ps.setString(2, workload);
 					ps.setString(3, testPlan);
@@ -303,9 +304,10 @@ public class DerbyDatabase {
 
 				if (responseTime90 > responseTimeDatabaseLongPercent90) {
 
-					ps = con.prepareStatement("" + "update workload set "
+					ps = con.prepareStatement(""
+							+ "update workload set "
 
-					+ "PERCENT90=? WHERE NAME=? and TESTPLAN=?");
+							+ "PERCENT90=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
 					ps.setString(1, String.valueOf(responseTime90));
 					ps.setString(2, workload);
 					ps.setString(3, testPlan);
@@ -314,9 +316,10 @@ public class DerbyDatabase {
 
 				if (responseTime80 > responseTimeDatabaseLongPercent80) {
 
-					ps = con.prepareStatement("" + "update workload set "
+					ps = con.prepareStatement(""
+							+ "update workload set "
 
-					+ "PERCENT80=? WHERE NAME=? and TESTPLAN=?");
+							+ "PERCENT80=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
 					ps.setString(1, String.valueOf(responseTime80));
 					ps.setString(2, workload);
 					ps.setString(3, testPlan);
@@ -325,9 +328,10 @@ public class DerbyDatabase {
 
 				if (responseTime70 > responseTimeDatabaseLongPercent70) {
 
-					ps = con.prepareStatement("" + "update workload set "
+					ps = con.prepareStatement(""
+							+ "update workload set "
 
-					+ "PERCENT70=? WHERE NAME=? and TESTPLAN=?");
+							+ "PERCENT70=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
 					ps.setString(1, String.valueOf(responseTime70));
 					ps.setString(2, workload);
 					ps.setString(3, testPlan);
@@ -353,7 +357,7 @@ public class DerbyDatabase {
 
 				PreparedStatement ps = con
 						.prepareStatement(""
-								+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=?");
+								+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=? AND ACTIVE='true'");
 				ps.setString(1, workload);
 				ps.setString(2, testPlan);
 				ps.setString(3, generation);
@@ -368,7 +372,7 @@ public class DerbyDatabase {
 
 					ps = con.prepareStatement("" + "update workload set "
 
-					+ "ERROR=? WHERE NAME=? and TESTPLAN=?");
+					+ "ERROR=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
 					ps.setString(1, error);
 					ps.setString(2, workload);
 					ps.setString(3, testPlan);
@@ -442,7 +446,7 @@ public class DerbyDatabase {
 
 		PreparedStatement ps = con
 				.prepareStatement(""
-						+ "SELECT error FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+						+ "SELECT error FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=? AND ACTIVE='true'");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -522,7 +526,7 @@ public class DerbyDatabase {
 
 		PreparedStatement ps = con
 				.prepareStatement(""
-						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=?");
+						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=? AND ACTIVE='true'");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -559,7 +563,7 @@ public class DerbyDatabase {
 			if ((fitDatabase >= 0) && (fitDatabase != 0.5)) {
 				if ((fit < 0) || (fit > fitDatabase) || (fit == 0.5)) {
 					ps = con.prepareStatement(""
-							+ "UPDATE workload SET FIT=? WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+							+ "UPDATE workload SET FIT=?,ACTIVE='FALSE' WHERE NAME=? AND TESTPLAN=? and GENERATION=? AND ACTIVE='true'");
 					ps.setString(1, String.valueOf(fit));
 					ps.setString(2, workload);
 					ps.setString(3, testPlan);
@@ -858,7 +862,7 @@ public class DerbyDatabase {
 				.prepareStatement(""
 						+ "SELECT "
 						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? ORDER BY FIT*1 DESC");
+						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? AND ACTIVE='true' ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
@@ -930,7 +934,7 @@ public class DerbyDatabase {
 				.prepareStatement(""
 						+ "SELECT "
 						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? ORDER BY FIT*1 DESC");
+						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? AND ACTIVE='true' ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
