@@ -19,7 +19,7 @@ $firstname = $_GET["testplan"];
 
 
 
-$query = sprintf("select NAME, RESPONSETIME, FIT,PERCENT90,PERCENT80,PERCENT70 from workload WHERE TESTPLAN='%s' ORDER BY FIT*1 DESC ",
+$query = sprintf("select NAME, RESPONSETIME, FIT,PERCENT90,PERCENT80,PERCENT70,TOTALERROR from workload WHERE TESTPLAN='%s' ORDER BY FIT*1 DESC ",
     mysql_real_escape_string($firstname));
 
 
@@ -50,6 +50,9 @@ $series5 = array();
 $series5['percent70'] = 'percent70';
 $series5['name'] = '70 percent line';
 
+$series6= array();
+$series6['totalError']='totalError';
+$series6['name']='Total Errors';
 
 
 while ($row = mysql_fetch_assoc($result)) {
@@ -60,7 +63,7 @@ while ($row = mysql_fetch_assoc($result)) {
     $series3['data'][] = $row['PERCENT90'];
     $series4['data'][] = $row['PERCENT80'];
     $series5['data'][] = $row['PERCENT70'];
-
+    $series6['data'][] = $row['TOTALERROR'];
 }
 
 
@@ -72,6 +75,7 @@ array_push($result1,$series2);
 array_push($result1,$series3);
 array_push($result1,$series4);
 array_push($result1,$series5);
+array_push($result1,$series6);
 
 
 print json_encode($result1, JSON_NUMERIC_CHECK);

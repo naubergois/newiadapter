@@ -39,6 +39,7 @@ import org.jgap.Chromosome;
 import org.jgap.Population;
 import org.jgap.impl.CrossoverOperator;
 import org.jgap.impl.MutationOperator;
+import org.mozilla.javascript.Context;
 
 import com.drew.metadata.Age;
 
@@ -218,7 +219,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					JMeterPluginsUtils.updateFit(list, this.getName(),
 							String.valueOf(this.getGeneration()),
 							this.getMaxTime());
-					list = DerbyDatabase.listWorkLoads(this.getName(),
+					list = DerbyDatabase.listWorkLoadsForNewGeneration(
+							this.getName(),
 							String.valueOf(this.getGeneration()));
 				} catch (ClassNotFoundException e1) {
 					// TODO Auto-generated catch block
@@ -301,6 +303,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 						file.delete();
 						this.generation = 0;
 						this.currentTest = 0;
+						
 					}
 
 				} catch (Exception e) {
@@ -374,7 +377,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			running = true;
 
 			Agent agent = new Agent(this);
-			//agent.setWorkload(this.currentTest);
+			// agent.setWorkload(this.currentTest);
 			agent.running();
 			WorkLoad workload = list.get(this.getCurrentTest());
 

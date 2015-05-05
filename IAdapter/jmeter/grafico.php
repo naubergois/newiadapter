@@ -98,6 +98,7 @@
                         options.series[2] = json[3];
 			options.series[3] = json[4];
                         options.series[4] = json[5];
+			options.series[5] = json[6];
 		        chart = new Highcharts.Chart(options);
 	        });
 	    });
@@ -111,6 +112,6 @@
 	</head>
 	<body>
 		<a href="inicio.php" > <img src="iadapter.png" align="middle"></a>
-		<div id="container" style="min-width: 400px; height: 800px; margin: 0 auto"></div>
+		<div id="container" style="min-width: 400px; height: 3800px; margin: 0 auto"></div>
 	</body>
 </html>

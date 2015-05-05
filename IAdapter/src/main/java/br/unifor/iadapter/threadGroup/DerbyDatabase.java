@@ -462,6 +462,31 @@ public class DerbyDatabase {
 
 	}
 
+	public static long selectTotalError(String workload, String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
+
+		long rst = 0;
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT TOTALERROR FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=? AND ACTIVE='true'");
+		ps.setString(1, workload);
+		ps.setString(2, testPlan);
+		ps.setString(3, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		long totalError = 0;
+		while (rs.next()) {
+			totalError = Long.valueOf(rs.getString(1));
+		}
+
+		return totalError;
+
+	}
+
 	public static int deleteTestPlan(String testPlan)
 			throws ClassNotFoundException, SQLException {
 
@@ -519,8 +544,9 @@ public class DerbyDatabase {
 		long responseTime = selectResponseTime(workload, testPlan, generation);
 		long responseTime90Percent = selectResponseTimePercent90(workload,
 				testPlan, generation);
+		
 		double fitDatabase = selectFit(workload, testPlan, generation);
-		String error = selectError(workload, testPlan, generation);
+		long totalError = selectTotalError(workload, testPlan, generation);
 
 		Connection con = singleton();
 
@@ -541,22 +567,12 @@ public class DerbyDatabase {
 
 			if ((responseTime < maxTime) && (responseTime90Percent < maxTime)) {
 
-				if (error.equals("true")) {
-
-					fit = 0.5;
-				} else {
-					fit = (long) (0.8 * responseTime90Percent + 0.2 * responseTime);
-				}
+				fit = (long) (0.8 * responseTime90Percent + 0.2 * responseTime)
+						- totalError;
 
 			} else {
 
-				if (error.equals("true")) {
-
-					fit = 0.5;
-				} else {
-
-					fit = Long.MIN_VALUE;
-				}
+				fit = Long.MIN_VALUE;
 
 			}
 
@@ -863,6 +879,32 @@ public class DerbyDatabase {
 						+ "SELECT "
 						+ COLUMNS
 						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? AND ACTIVE='true' ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = DerbyDatabase.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
+	public static List<WorkLoad> listWorkLoadsForNewGeneration(String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT "
+						+ COLUMNS
+						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
