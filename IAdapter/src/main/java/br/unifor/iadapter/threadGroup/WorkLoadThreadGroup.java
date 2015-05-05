@@ -147,6 +147,42 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	private WorkLoad workLoadaux;
 
+	public static void finishTest(Agent agent, WorkLoadThreadGroup tg,
+			String generation) {
+		agent.runningFinal();
+
+		while (!(tg.verifyThreadsStopped()))
+			;
+
+		while (JMeterContextService.getTotalThreads() > 0)
+			;
+
+		CSVReadStats.run();
+
+		List<WorkLoad> list = null;
+		try {
+			list = DerbyDatabase.listWorkLoads(tg.getName(),
+					String.valueOf(tg.getGeneration()));
+			JMeterPluginsUtils.updateResponseTime(CSVReadStats.getWorkloads(),
+					CSVReadStats.getPercentiles(),
+					CSVReadStats.getErrorsTotal(), list, tg);
+			JMeterPluginsUtils.updateSamples(CSVReadStats.getRequestsMaxTime(),
+					tg, String.valueOf(generation));
+			JMeterPluginsUtils.updateErrorValue(CSVReadStats.getErrors(), list,
+					tg);
+			JMeterPluginsUtils.updateFit(list, tg.getName(),
+					String.valueOf(tg.getGeneration()), tg.getMaxTime());
+
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		agent.delete();
+	}
+
 	@Override
 	public void threadFinished(JMeterThread thread) {
 
@@ -177,6 +213,11 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			this.setCurrentTest(this.getCurrentTest() + 1);
 			if (this.getCurrentTest() < size) {
 
+				WorkLoadThreadGroup.finishTest(agent, this,
+						String.valueOf(generation));
+
+				Agent.sinchronizeFinal();
+
 				final JMeterContext context = JMeterContextService.getContext();
 
 				try {
@@ -191,34 +232,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 			} else {
 
-				agent.runningFinal();
-
-				while (!(verifyThreadsStopped()))
-					;
-
-				while (JMeterContextService.getTotalThreads() > 0)
-					;
-
 				this.currentTest = 0;
+				WorkLoadThreadGroup.finishTest(agent, this,
+						String.valueOf(generation));
 
-				CSVReadStats.run();
+				agent.runningFinal();
 
 				List<WorkLoad> list = null;
 				try {
-					list = DerbyDatabase.listWorkLoads(this.getName(),
-							String.valueOf(this.getGeneration()));
-					JMeterPluginsUtils.updateResponseTime(
-							CSVReadStats.getWorkloads(),
-							CSVReadStats.getPercentiles(),
-							CSVReadStats.getErrorsTotal(), list, this);
-					JMeterPluginsUtils.updateSamples(
-							CSVReadStats.getRequestsMaxTime(), this,
-							String.valueOf(generation));
-					JMeterPluginsUtils.updateErrorValue(
-							CSVReadStats.getErrors(), list, this);
-					JMeterPluginsUtils.updateFit(list, this.getName(),
-							String.valueOf(this.getGeneration()),
-							this.getMaxTime());
 					list = DerbyDatabase.listWorkLoadsForNewGeneration(
 							this.getName(),
 							String.valueOf(this.getGeneration()));
@@ -303,7 +324,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 						file.delete();
 						this.generation = 0;
 						this.currentTest = 0;
-						
+
 					}
 
 				} catch (Exception e) {
@@ -351,7 +372,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		List<WorkLoad> list = null;
 		try {
-			list = DerbyDatabase.listWorkLoads(this.getName(),
+			list = DerbyDatabase.listWorkLoadsOrderName(this.getName(),
 					String.valueOf(this.getGeneration()));
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block

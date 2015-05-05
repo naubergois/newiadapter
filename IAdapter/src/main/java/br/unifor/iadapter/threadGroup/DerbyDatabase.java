@@ -296,48 +296,51 @@ public class DerbyDatabase {
 				}
 			}
 
-			long responseTime90 = counter.estimatePercentile(90);
-			long responseTime80 = counter.estimatePercentile(80);
-			long responseTime70 = counter.estimatePercentile(70);
+			if (counter != null) {
 
-			if (responseTime90 > 0) {
+				long responseTime90 = counter.estimatePercentile(90);
+				long responseTime80 = counter.estimatePercentile(80);
+				long responseTime70 = counter.estimatePercentile(70);
 
-				if (responseTime90 > responseTimeDatabaseLongPercent90) {
+				if (responseTime90 > 0) {
 
-					ps = con.prepareStatement(""
-							+ "update workload set "
+					if (responseTime90 > responseTimeDatabaseLongPercent90) {
 
-							+ "PERCENT90=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
-					ps.setString(1, String.valueOf(responseTime90));
-					ps.setString(2, workload);
-					ps.setString(3, testPlan);
-					ps.executeUpdate();
+						ps = con.prepareStatement(""
+								+ "update workload set "
+
+								+ "PERCENT90=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
+						ps.setString(1, String.valueOf(responseTime90));
+						ps.setString(2, workload);
+						ps.setString(3, testPlan);
+						ps.executeUpdate();
+					}
+
+					if (responseTime80 > responseTimeDatabaseLongPercent80) {
+
+						ps = con.prepareStatement(""
+								+ "update workload set "
+
+								+ "PERCENT80=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
+						ps.setString(1, String.valueOf(responseTime80));
+						ps.setString(2, workload);
+						ps.setString(3, testPlan);
+						ps.executeUpdate();
+					}
+
+					if (responseTime70 > responseTimeDatabaseLongPercent70) {
+
+						ps = con.prepareStatement(""
+								+ "update workload set "
+
+								+ "PERCENT70=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
+						ps.setString(1, String.valueOf(responseTime70));
+						ps.setString(2, workload);
+						ps.setString(3, testPlan);
+						ps.executeUpdate();
+					}
+
 				}
-
-				if (responseTime80 > responseTimeDatabaseLongPercent80) {
-
-					ps = con.prepareStatement(""
-							+ "update workload set "
-
-							+ "PERCENT80=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
-					ps.setString(1, String.valueOf(responseTime80));
-					ps.setString(2, workload);
-					ps.setString(3, testPlan);
-					ps.executeUpdate();
-				}
-
-				if (responseTime70 > responseTimeDatabaseLongPercent70) {
-
-					ps = con.prepareStatement(""
-							+ "update workload set "
-
-							+ "PERCENT70=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
-					ps.setString(1, String.valueOf(responseTime70));
-					ps.setString(2, workload);
-					ps.setString(3, testPlan);
-					ps.executeUpdate();
-				}
-
 			}
 
 		}
@@ -536,6 +539,23 @@ public class DerbyDatabase {
 
 	}
 
+	public static void updateActiveValue(String workload, String testPlan,
+			String generation, long maxTime) throws ClassNotFoundException,
+			SQLException {
+
+		Connection con = singleton();
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "UPDATE workload SET ACTIVE='false' WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+
+		ps.setString(2, workload);
+		ps.setString(3, testPlan);
+		ps.setString(4, generation);
+
+		ps.executeUpdate();
+
+	}
+
 	public static double updateFitValue(String workload, String testPlan,
 			String generation, long maxTime) throws ClassNotFoundException,
 			SQLException {
@@ -544,7 +564,7 @@ public class DerbyDatabase {
 		long responseTime = selectResponseTime(workload, testPlan, generation);
 		long responseTime90Percent = selectResponseTimePercent90(workload,
 				testPlan, generation);
-		
+
 		double fitDatabase = selectFit(workload, testPlan, generation);
 		long totalError = selectTotalError(workload, testPlan, generation);
 
@@ -552,7 +572,7 @@ public class DerbyDatabase {
 
 		PreparedStatement ps = con
 				.prepareStatement(""
-						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=? AND ACTIVE='true'");
+						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=? ");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -579,7 +599,7 @@ public class DerbyDatabase {
 			if ((fitDatabase >= 0) && (fitDatabase != 0.5)) {
 				if ((fit < 0) || (fit > fitDatabase) || (fit == 0.5)) {
 					ps = con.prepareStatement(""
-							+ "UPDATE workload SET FIT=?,ACTIVE='FALSE' WHERE NAME=? AND TESTPLAN=? and GENERATION=? AND ACTIVE='true'");
+							+ "UPDATE workload SET FIT=? WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 					ps.setString(1, String.valueOf(fit));
 					ps.setString(2, workload);
 					ps.setString(3, testPlan);
@@ -879,6 +899,34 @@ public class DerbyDatabase {
 						+ "SELECT "
 						+ COLUMNS
 						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? AND ACTIVE='true' ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = DerbyDatabase.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+	
+	
+
+	public static List<WorkLoad> listWorkLoadsOrderName(String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT "
+						+ COLUMNS
+						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? AND ACTIVE='true' ORDER BY NAME ");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 

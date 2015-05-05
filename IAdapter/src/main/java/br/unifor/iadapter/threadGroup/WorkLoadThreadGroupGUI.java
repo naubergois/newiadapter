@@ -68,7 +68,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			"Kind", "Users", "Response Time", "Error", "Fit", "Function1",
 			"Function2", "Function3", "Function4", "Function5", "Function6",
 			"Function7", "Function8", "Function9", "Function10", "Generation",
-			"Active","Percentile90","Percentile80","Percentile70","TotalError" };
+			"Active", "Percentile90", "Percentile80", "Percentile70",
+			"TotalError" };
 
 	public static final String[] columnIdentifiersAgent = new String[] {
 			"Name", "Running", "IP" };
@@ -83,7 +84,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class, String.class,
-			String.class, String.class,String.class,String.class,String.class };
+			String.class, String.class, String.class, String.class,
+			String.class };
 
 	public static final Class[] columnClassesAgent = new Class[] {
 			String.class, String.class, String.class };
@@ -92,7 +94,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	public static final String[] defaultValues = new String[] { "1", "1", "1",
 			"1", "1", "1", "None", "None", "None", "None", "None", "None",
-			"None", "None", "None", "None", "None", "None", "None" , "None"};
+			"None", "None", "None", "None", "None", "None", "None", "None" };
 
 	public static final String[] defaultValuesAgent = new String[] { "1", "1",
 			"1", "1" };
@@ -193,6 +195,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		JButton button4 = new JButton("Deletar");
 		buttons.add(button4);
 
+		JButton button5 = new JButton("Save Database");
+		buttons.add(button5);
+
 		button1.addActionListener(new AddRowWorkloadAction(this, grid,
 				wtableModel, null, null));
 		button2.addActionListener(new RefreshRowWorkloadAction(this));
@@ -201,6 +206,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 				wtableModel, null, null));
 
 		button4.addActionListener(new DeleteRowAction(this, grid, wtableModel,
+				null));
+
+		button5.addActionListener(new SaveRowAction(this, wtableModel, null,
 				null));
 		southPanel.add(buttons, BorderLayout.SOUTH);
 		southPanel.add(database, BorderLayout.SOUTH);
@@ -269,8 +277,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 							WorkLoadThreadGroup.DATA_PROPERTY);
 
 			try {
-				JMeterPluginsUtils.tableModelRowsToDerby(wtableModel, utg,
-						String.valueOf(utg.getGeneration()));
+				// JMeterPluginsUtils.tableModelRowsToDerby(wtableModel, utg,
+				// String.valueOf(utg.getGeneration()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -286,7 +294,6 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		super.configureTestElement(tg);
 	}
 
-	
 	@Override
 	public void configure(TestElement tg) {
 
@@ -363,6 +370,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		JButton button2 = new JButton("Refresh");
 		button2.addActionListener(new RefreshRowWorkloadAction(this));
+
 		buttons.add(button1);
 		buttons.add(button2);
 		panel.add(buttons, BorderLayout.SOUTH);
