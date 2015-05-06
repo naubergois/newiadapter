@@ -7,6 +7,10 @@ import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.jgap.Gene;
 import org.jgap.impl.IntegerGene;
 
+import br.unifor.iadapter.threadGroup.workload.StressWorkload;
+import br.unifor.iadapter.threadGroup.workload.WorkLoad;
+import br.unifor.iadapter.util.FindService;
+
 public class FactoryWorkLoad {
 
 	public static WorkLoad createWorkLoad(String type) {

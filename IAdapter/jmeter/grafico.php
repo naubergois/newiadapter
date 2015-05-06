@@ -112,6 +112,6 @@
 	</head>
 	<body>
 		<a href="inicio.php" > <img src="iadapter.png" align="middle"></a>
-		<div id="container" style="min-width: 400px; height: 3800px; margin: 0 auto"></div>
+		<div id="container" style="min-width: 400px; height: 1400px; margin: 0 auto"></div>
 	</body>
 </html>
