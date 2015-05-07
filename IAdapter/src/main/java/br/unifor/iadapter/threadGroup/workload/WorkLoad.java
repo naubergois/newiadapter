@@ -7,6 +7,16 @@ import br.unifor.iadapter.jmeter.GraphRowSumValues;
 
 public class WorkLoad {
 	
+	private String searchMethod;
+	
+	public String getSearchMethod() {
+		return searchMethod;
+	}
+
+	public void setSearchMethod(String searchMethod) {
+		this.searchMethod = searchMethod;
+	}
+
 	private long totalErrors;
 
 	public long getTotalErrors() {

@@ -137,8 +137,6 @@ public class WorkLoadSaver extends AbstractTestElement implements Serializable,
 	private HashMap<String, String> responseTimes = new HashMap<String, String>();
 
 	public void sampleOccurred(SampleEvent e) {
-		
-		
 
 		FileWriter file = new FileWriter();
 		file.setFilename("tempResults.csv");
@@ -161,22 +159,6 @@ public class WorkLoadSaver extends AbstractTestElement implements Serializable,
 		}
 
 		// processSample(e.getResult(), new Counter());
-	}
-
-	/**
-	 * Recurse the whole (sub)result hierarchy.
-	 *
-	 * @param s
-	 *            Sample result
-	 * @param c
-	 *            sample counter
-	 */
-	private void processSample(SampleResult s, Counter c) {
-		saveSample(s, c.num++);
-		SampleResult[] sr = s.getSubResults();
-		for (int i = 0; i < sr.length; i++) {
-			processSample(sr[i], c);
-		}
 	}
 
 	/**

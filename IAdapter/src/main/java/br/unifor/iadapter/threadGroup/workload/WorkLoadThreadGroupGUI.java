@@ -6,11 +6,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -66,6 +63,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	private JTextField maxtime;
 	private JTextField genNumber;
 	private JTextField bestInd;
+	private JTextField evolutionAlgorithm;
 	/**
      *
      */
@@ -80,7 +78,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			"Function2", "Function3", "Function4", "Function5", "Function6",
 			"Function7", "Function8", "Function9", "Function10", "Generation",
 			"Active", "Percentile90", "Percentile80", "Percentile70",
-			"TotalError" };
+			"TotalError", "SearchMethod" };
 
 	public static final String[] columnIdentifiersAgent = new String[] {
 			"Name", "Running", "IP" };
@@ -96,7 +94,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class, String.class,
-			String.class };
+			String.class, String.class };
 
 	public static final Class[] columnClassesAgent = new Class[] {
 			String.class, String.class, String.class };
@@ -105,7 +103,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	public static final String[] defaultValues = new String[] { "1", "1", "1",
 			"1", "1", "1", "None", "None", "None", "None", "None", "None",
-			"None", "None", "None", "None", "None", "None", "None", "None" };
+			"None", "None", "None", "None", "None", "None", "None", "None",
+			"None" };
 
 	public static final String[] defaultValuesAgent = new String[] { "1", "1",
 			"1", "1" };
@@ -142,6 +141,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		tabbedPane.addTab("Graph", createGraphPanel());
 		createTabAgent(tabbedPane);
 		createTabParameters(tabbedPane);
+		createLogPanel(tabbedPane);
 		add(tabbedPane, BorderLayout.CENTER);
 
 		createControllerPanel();
@@ -310,6 +310,14 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		return threadMax;
 	}
 
+	public JTextField getEvolutionAlgorithm() {
+		return evolutionAlgorithm;
+	}
+
+	public void setEvolutionAlgorithm(JTextField evolutionAlgorithm) {
+		this.evolutionAlgorithm = evolutionAlgorithm;
+	}
+
 	public void setThreadMax(JTextField threadMax) {
 		this.threadMax = threadMax;
 	}
@@ -351,6 +359,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			utg.setMaxTime(maxtime.getText());
 			utg.setGenNumber(genNumber.getText());
 			utg.setBestIndividuals(bestInd.getText());
+			utg.setEvolutionAlgorithm(evolutionAlgorithm.getText());
 
 			if (grid == null) {
 				createGrid();
@@ -386,6 +395,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		maxtime.setText(utg.getMaxTime());
 		genNumber.setText(utg.getGenNumber());
 		bestInd.setText(utg.getBestIndividuals());
+		evolutionAlgorithm.setText(utg.getEvolutionAlgorithm());
 
 		JMeterProperty threadValues = utg.getData();
 		if (!(threadValues instanceof NullProperty)) {
@@ -462,27 +472,40 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	}
 
-	public Component createTabParameters(JTabbedPane tab1) {
+	public Component createLogPanel(JTabbedPane tab1) {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		JScrollPane scroll = new JScrollPane(createGridLog());
 		scroll.setPreferredSize(scroll.getMinimumSize());
 		panel.add(scroll, BorderLayout.CENTER);
+		tab1.addTab("Log", panel);
+
+		return tab1;
+
+	}
+
+	public Component createTabParameters(JTabbedPane tab1) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
 
 		JPanel param = new JPanel();
+		param.setLayout(new GridLayout(0, 2));
 		threadMax = new JTextField("10", 5);
 		maxtime = new JTextField("30000", 5);
 		genNumber = new JTextField("3", 5);
 		bestInd = new JTextField("1", 5);
+		evolutionAlgorithm = new JTextField("GENETICALGORITHM", 15);
 		param.add(new JLabel("Thread Max Number"));
 		param.add(threadMax);
 		param.add(new JLabel("Max response time"));
 		param.add(maxtime);
 		param.add(new JLabel("Generations Number"));
 		param.add(genNumber);
-		param.add(new JLabel("BestforCross"));
+		param.add(new JLabel("Number of Best Individuals for CrossOver"));
 		param.add(bestInd);
-		panel.add(param, BorderLayout.SOUTH);
+		param.add(new JLabel("Evolution Algorithm"));
+		param.add(evolutionAlgorithm);
+		panel.add(param, BorderLayout.CENTER);
 
 		tab1.addTab("Parameters", panel);
 

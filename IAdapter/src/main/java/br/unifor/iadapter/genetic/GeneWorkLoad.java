@@ -45,7 +45,7 @@ public class GeneWorkLoad {
 		return cs;
 
 	}
-	
+
 	public static MutationOperator mutationPopulation(Population population,
 			List<Chromosome> list) throws InvalidConfigurationException {
 		MutationOperator cs = new MutationOperator(getConfiguration());
@@ -106,11 +106,9 @@ public class GeneWorkLoad {
 	public static List<Chromosome> selectBestIndividualsList(
 			Population population, int index)
 			throws InvalidConfigurationException {
-		
-		
-		
+
 		return population.determineFittestChromosomes(index);
-		
+
 	}
 
 	public static Population population(List<WorkLoad> list,
@@ -151,6 +149,21 @@ public class GeneWorkLoad {
 			conf.setFitnessFunction(new FunctionFitness());
 		}
 		return conf;
+	}
+
+	public static List<WorkLoad> createWorkLoadsFromChromossomeWithGuiWithTemperature(
+			int userNumbers, int temperature)
+			throws InvalidConfigurationException {
+		IChromosome[] list = createPopulation(userNumbers);
+		List<WorkLoad> workLoads = new ArrayList<WorkLoad>();
+		for (IChromosome iChromosome : list) {
+			Gene[] gene = iChromosome.getGenes();
+			WorkLoad workload = FactoryWorkLoad
+					.createWorkLoadTemperatureWithGui(gene, temperature);
+			workLoads.add(workload);
+		}
+		conf = null;
+		return workLoads;
 	}
 
 	public static List<WorkLoad> createWorkLoadsFromChromossomeWithGui(

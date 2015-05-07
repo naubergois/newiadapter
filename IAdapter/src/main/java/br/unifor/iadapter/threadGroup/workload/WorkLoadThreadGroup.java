@@ -41,6 +41,7 @@ import org.jgap.impl.MutationOperator;
 import br.unifor.iadapter.agent.Agent;
 import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.genetic.GeneWorkLoad;
+import br.unifor.iadapter.genetic.GeneticAlgorithm;
 import br.unifor.iadapter.threadGroup.AbstractSimpleThreadGroup;
 import br.unifor.iadapter.threadGroup.SingletonEngine;
 import br.unifor.iadapter.util.CSVReadStats;
@@ -68,6 +69,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	private static final long serialVersionUID = 1L;
 
 	private int generation = 1;
+	private int temperature = 0;
 
 	public int getGeneration() {
 		return generation;
@@ -188,6 +190,20 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		agent.delete();
 	}
 
+	public static List<WorkLoad> returnListAlgorithmGeneticWorkLoadsForNewGeneration(
+			WorkLoadThreadGroup tg) {
+		try {
+			return MySQLDatabase.listWorkLoadsForNewGeneration(tg.getName(),
+					String.valueOf(tg.getGeneration()));
+		} catch (ClassNotFoundException e1) {
+
+			log.error(e1.getMessage());
+		} catch (SQLException e1) {
+			log.error(e1.getMessage());
+		}
+		return null;
+	}
+
 	@Override
 	public void threadFinished(JMeterThread thread) {
 
@@ -206,11 +222,11 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				workLoads = MySQLDatabase.listWorkLoadsByGeneration(
 						this.getName(), String.valueOf(this.getGeneration()));
 			} catch (ClassNotFoundException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
+
+				log.error(e2.getMessage());
 			} catch (SQLException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
+
+				log.error(e2.getMessage());
 			}
 
 			int size = workLoads.size();
@@ -232,86 +248,43 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				agent.runningFinal();
 
-				List<WorkLoad> list = null;
-				try {
-					list = MySQLDatabase.listWorkLoadsForNewGeneration(
-							this.getName(),
-							String.valueOf(this.getGeneration()));
-				} catch (ClassNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				List<WorkLoad> list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(this);
+
+				List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(this,
+						list);
 
 				try {
 
-					Population population = GeneWorkLoad.population(list,
-							this.tree);
-
-					List<Chromosome> bestI = GeneWorkLoad
-							.selectBestIndividualsList(population,
-									Integer.valueOf(getBestIndividuals()));
-
-					CrossoverOperator operator = GeneWorkLoad
-							.crossOverPopulation(population, bestI);
-
-					MutationOperator operator1 = GeneWorkLoad
-							.mutationPopulation(population, bestI);
-
-					MySQLDatabase.insertLog(this.getName() + "Generation "
-							+ operator.getCrossOverRate());
-					MySQLDatabase.insertLog(this.getName() + "CrossOverRate "
-							+ operator.getCrossOverRate());
-					MySQLDatabase.insertLog(this.getName()
-							+ "CrossOverRatePercent"
-							+ operator.getCrossOverRatePercent());
-
-					generation = generation + 1;
-
-					List<WorkLoad> listBest = JMeterPluginsUtils
-							.getListWorkLoadFromPopulationTestPlan(
-									population.getChromosomes(), this.tree,
-									generation, this.getName(),
-									Integer.valueOf(this.getThreadNumberMax()));
-
-					try {
-
-						for (WorkLoad workLoad : listBest) {
-							MySQLDatabase.insertWorkLoads(
-									JMeterPluginsUtils.getObjectList(workLoad),
-									this.getName(),
-									String.valueOf(this.getGeneration()));
-						}
-
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
-					JMeterPluginsUtils.listWorkLoadToCollectionProperty(
-							listBest, WorkLoadThreadGroup.DATA_PROPERTY);
-
-					int generations = Integer.valueOf(getGenNumber());
-
-					agent.delete();
-
-					Agent.sinchronizeFinal();
-					if (getGeneration() <= generations) {
-						this.currentTest = 0;
-
-						startEngine();
-
-					} else {
-						File file = new File("tempResults.csv");
-						file.delete();
-						this.generation = 1;
-						this.currentTest = 0;
-
+					for (WorkLoad workLoad : listBest) {
+						MySQLDatabase.insertWorkLoads(
+								JMeterPluginsUtils.getObjectList(workLoad),
+								this.getName(),
+								String.valueOf(this.getGeneration()));
 					}
 
 				} catch (Exception e) {
 					e.printStackTrace();
+				}
+
+				JMeterPluginsUtils.listWorkLoadToCollectionProperty(listBest,
+						WorkLoadThreadGroup.DATA_PROPERTY);
+
+				int generations = Integer.valueOf(getGenNumber());
+
+				agent.delete();
+
+				Agent.sinchronizeFinal();
+				if (getGeneration() <= generations) {
+					this.currentTest = 0;
+
+					startEngine();
+
+				} else {
+					File file = new File("tempResults.csv");
+					file.delete();
+					this.generation = 1;
+					this.currentTest = 0;
+
 				}
 
 			}
@@ -348,6 +321,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	private static final String THREAD_IND = "threadind";
 
 	private static final String THREAD_GEN_NUMBER = "threadgennumber";
+
+	private static final String EVOLUTION_ALGORITHM = "workloadthreadgroup.evolutionalgorithm";
 
 	@Override
 	public void start(int groupCount, ListenerNotifier notifier,
@@ -618,6 +593,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	public void setBestIndividuals(String delay) {
 		setProperty(THREAD_IND, delay);
+	}
+
+	public String getEvolutionAlgorithm() {
+		return getPropertyAsString(EVOLUTION_ALGORITHM);
+	}
+
+	public void setEvolutionAlgorithm(String delay) {
+		setProperty(EVOLUTION_ALGORITHM, delay);
 	}
 
 	public String getGenNumber() {

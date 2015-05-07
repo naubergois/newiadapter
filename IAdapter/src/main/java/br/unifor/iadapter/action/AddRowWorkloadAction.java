@@ -16,6 +16,7 @@ import org.jgap.InvalidConfigurationException;
 import br.unifor.iadapter.genetic.GeneWorkLoad;
 import br.unifor.iadapter.threadGroup.FactoryWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
+import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroupGUI;
 import br.unifor.iadapter.util.FindService;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
@@ -40,26 +41,37 @@ public class AddRowWorkloadAction implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
+
 		if (grid.isEditing()) {
 			TableCellEditor cellEditor = grid.getCellEditor(
 					grid.getEditingRow(), grid.getEditingColumn());
 			cellEditor.stopCellEditing();
 		}
 
+		List<JMeterTreeNode> nodes = FindService
+				.searchWorkLoadThreadGroupWithGui();
+		WorkLoadThreadGroup tg = (WorkLoadThreadGroup) nodes.get(0)
+				.getTestElement();
+
+		int users = 10;
+
 		List<WorkLoad> workloadList = null;
-		try {
-			int users = 10;
+		if (tg.getEvolutionAlgorithm().equals("GENETICALGORITHM")) {
 			try {
-				users = Integer.valueOf(sender.getThreadMax().getText());
-			} catch (NumberFormatException e2) {
-				e2.printStackTrace();
+
+				try {
+					users = Integer.valueOf(sender.getThreadMax().getText());
+				} catch (NumberFormatException e2) {
+					e2.printStackTrace();
+				}
+				workloadList = GeneWorkLoad
+						.createWorkLoadsFromChromossomeWithGui(users, 1);
+				workloadList.addAll(FactoryWorkLoad.createWorkLoadNodes(users,
+						1));
+			} catch (InvalidConfigurationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(
-					users, 1);
-			workloadList.addAll(FactoryWorkLoad.createWorkLoadNodes(users, 1));
-		} catch (InvalidConfigurationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 		GuiPackage gp = GuiPackage.getInstance();
 		if (gp != null) {

@@ -70,7 +70,7 @@ public abstract class JMeterPluginsUtils {
 
 	public static Object[] getObjectList(WorkLoad workLoad) {
 
-		Object[] rowObject = new Object[22];
+		Object[] rowObject = new Object[23];
 		rowObject[0] = workLoad.getName();
 		rowObject[1] = workLoad.getType();
 		rowObject[2] = String.valueOf(workLoad.getNumThreads());
@@ -93,6 +93,7 @@ public abstract class JMeterPluginsUtils {
 		rowObject[19] = String.valueOf(workLoad.getPercentile80());
 		rowObject[20] = String.valueOf(workLoad.getPercentile70());
 		rowObject[21] = String.valueOf(workLoad.getTotalErrors());
+		rowObject[22] = String.valueOf(workLoad.getSearchMethod());
 		return rowObject;
 	}
 
@@ -125,6 +126,7 @@ public abstract class JMeterPluginsUtils {
 			workload.setPercentile80(Integer.valueOf(object.get(19).toString()));
 			workload.setPercentile70(Integer.valueOf(object.get(20).toString()));
 			workload.setTotalErrors(Integer.valueOf(object.get(21).toString()));
+			workload.setSearchMethod(object.get(21).toString());
 			return workload;
 		}
 		return null;
@@ -218,6 +220,7 @@ public abstract class JMeterPluginsUtils {
 					workloadMutation.setPercentile70(0);
 					workloadMutation.setPercentile80(0);
 					workloadMutation.setPercentile90(0);
+					workloadMutation.setSearchMethod("GENETICALGORITHM");
 					workloadMutation.setTotalErrors(0);
 					listAux.add(workloadMutation);
 
@@ -322,6 +325,8 @@ public abstract class JMeterPluginsUtils {
 
 		workload.setActive(true);
 
+		workload.setSearchMethod("GENETICALGORITHM");
+
 		workload.setName("G" + generation + ":" + workload.getType() + "-"
 				+ workload.getNumThreads() + "-" + workload.getFunction1()
 				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
@@ -368,7 +373,6 @@ public abstract class JMeterPluginsUtils {
 
 	}
 
-	
 	public static CollectionProperty tableModelRowsToCollectionProperty(
 			PowerTableModel model, String propname) {
 		CollectionProperty rows = new CollectionProperty(propname,
@@ -592,6 +596,7 @@ public abstract class JMeterPluginsUtils {
 			rowObject.add(String.valueOf(workload.getPercentile80()));
 			rowObject.add(String.valueOf(workload.getPercentile70()));
 			rowObject.add(String.valueOf(workload.getTotalErrors()));
+			rowObject.add(String.valueOf(workload.getSearchMethod()));
 			model.addRow(rowObject.toArray());
 		}
 		model.fireTableDataChanged();

@@ -41,7 +41,8 @@ public class MySQLDatabase {
 			+ "USERS,RESPONSETIME,ERROR,FIT,"
 			+ "FUNCTION1,FUNCTION2,FUNCTION3,FUNCTION4,"
 			+ "FUNCTION5,FUNCTION6,FUNCTION7,FUNCTION8,"
-			+ "FUNCTION9,FUNCTION10,TESTPLAN,GENERATION,ACTIVE,PERCENT90,PERCENT80,PERCENT70,TOTALERROR";
+			+ "FUNCTION9,FUNCTION10,TESTPLAN,GENERATION,"
+			+ "ACTIVE,PERCENT90,PERCENT80,PERCENT70,TOTALERROR,SEARCHMETHOD";
 
 	private final static String COLUMNSAMPLES = "LABEL,RESPONSETIME,"
 			+ "MESSAGE,INDIVIDUAL,GENERATION,TESTPLAN";
@@ -52,7 +53,7 @@ public class MySQLDatabase {
 
 	private final static String COLUMNSAGENT = "name,running," + "ip";
 
-	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
 
 	private final static String PARAMETERSSAMPLE = "?,?,?,?,?,?";
 
@@ -62,7 +63,8 @@ public class MySQLDatabase {
 			+ "USERS=?,RESPONSETIME=?,ERROR=?,FIT=?,FUNCTION1=?,"
 			+ "FUNCTION2=?,FUNCTION3=?,FUNCTION4=?,FUNCTION5=?,"
 			+ "FUNCTION6=?,FUNCTION7=?,FUNCTION8=?,FUNCTION9=?,"
-			+ "FUNCTION10=?,TESTPLAN=?,GENERATION=?,ACTIVE=?,PERCENT90=?,PERCENT80=?,PERCENT70=?,TOTALERROR=?";
+			+ "FUNCTION10=?,TESTPLAN=?,GENERATION=?,ACTIVE=?,PERCENT90=?,PERCENT80=?,"
+			+ "PERCENT70=?,TOTALERROR=?,SEARCHMETHOD=?";
 
 	private final static String SETAGENT = "name=?,running=?," + "ip=?";
 
@@ -80,8 +82,8 @@ public class MySQLDatabase {
 	public static PreparedStatement setParametersWhere(PreparedStatement ps,
 			List objetos, String where, String testPlan) throws SQLException {
 		ps = setParameters(ps, objetos, testPlan);
-		ps.setString(24, where);
-		ps.setString(25, testPlan);
+		ps.setString(25, where);
+		ps.setString(26, testPlan);
 		return ps;
 	}
 
@@ -110,6 +112,7 @@ public class MySQLDatabase {
 		ps.setString(21, String.valueOf(objetos.get(19)));
 		ps.setString(22, String.valueOf(objetos.get(20)));
 		ps.setString(23, String.valueOf(objetos.get(21)));
+		ps.setString(24, String.valueOf(objetos.get(22)));
 		return ps;
 	}
 
@@ -965,11 +968,9 @@ public class MySQLDatabase {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT "
-						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? ORDER BY FIT*1 DESC");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
+				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? "
+				+ "AND SEARCHMETHOD='GENETICALGORITHM' ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
@@ -1095,6 +1096,9 @@ public class MySQLDatabase {
 		}
 		if (rs.getString(23) != null) {
 			workload.setTotalErrors(Long.valueOf(rs.getString(23)));
+		}
+		if (rs.getString(24) != null) {
+			workload.setSearchMethod(rs.getString(24));
 		}
 		return workload;
 	}
