@@ -17,10 +17,13 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.control.gui.LoopControlPanel;
@@ -78,7 +81,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			"Function2", "Function3", "Function4", "Function5", "Function6",
 			"Function7", "Function8", "Function9", "Function10", "Generation",
 			"Active", "Percentile90", "Percentile80", "Percentile70",
-			"TotalError", "SearchMethod" };
+			"TotalError", "SearchMethod", "USER1", "USER2", "USER3", "USER4",
+			"USER5", "USER6", "USER7", "USER8", "USER9", "USER10" };
 
 	public static final String[] columnIdentifiersAgent = new String[] {
 			"Name", "Running", "IP" };
@@ -94,7 +98,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class, String.class,
-			String.class, String.class };
+			String.class, String.class, String.class, String.class,
+			String.class, String.class, String.class, String.class,
+			String.class, String.class, String.class, String.class };
 
 	public static final Class[] columnClassesAgent = new Class[] {
 			String.class, String.class, String.class };
@@ -104,7 +110,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	public static final String[] defaultValues = new String[] { "1", "1", "1",
 			"1", "1", "1", "None", "None", "None", "None", "None", "None",
 			"None", "None", "None", "None", "None", "None", "None", "None",
-			"None" };
+			"None", "None", "None", "None", "None", "None", "None", "None",
+			"None", "None", "None" };
 
 	public static final String[] defaultValuesAgent = new String[] { "1", "1",
 			"1", "1" };
@@ -168,9 +175,14 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		grid.getDefaultEditor(String.class).addCellEditorListener(this);
 		createTableModel();
 		grid.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		grid.setMinimumSize(new Dimension(200, 100));
+		grid.setMinimumSize(new Dimension(400, 100));
+		grid.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		grid.addMouseListener(new WorkLoadTableClicked(grid, this, wtableModel,
 				chart));
+
+		TableColumnModel tcm = grid.getColumnModel();
+		TableColumn tc = tcm.getColumn(1);
+		tc.setWidth(tc.getWidth() + 25);
 
 		return grid;
 	}
@@ -216,7 +228,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		JPanel panel = new JPanel(new BorderLayout(5, 5));
 
 		JScrollPane scroll = new JScrollPane(createGrid());
-		scroll.setPreferredSize(scroll.getMinimumSize());
+		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+		scroll.setPreferredSize(scroll.getMaximumSize());
 		panel.add(scroll, BorderLayout.CENTER);
 		buttons = new JPanel();
 		buttons.setLayout(new FlowLayout());

@@ -6,9 +6,162 @@ import org.apache.log.Logger;
 import br.unifor.iadapter.jmeter.GraphRowSumValues;
 
 public class WorkLoad {
-	
+
+	public void calcUsers() {
+
+		Integer[] arrays = new Integer[10];
+
+		arrays[0] = 0;
+		arrays[1] = 0;
+		arrays[2] = 0;
+		arrays[3] = 0;
+		arrays[4] = 0;
+		arrays[5] = 0;
+		arrays[6] = 0;
+		arrays[7] = 0;
+		arrays[8] = 0;
+		arrays[9] = 0;
+
+		int count = 1;
+		int count2 = 1;
+
+		while (count <= this.getNumThreads()) {
+
+			if (count > this.getNumThreads())
+				break;
+
+			String nameWorkloadController = WorkLoadThreadGroup
+					.getFunctionNameByID(this, count2 % 10);
+
+			if ((nameWorkloadController != null)
+					&& (!(nameWorkloadController.equals("None")))) {
+
+				arrays[count2 % 10] += 1;
+				count++;
+
+			} else {
+				arrays[count2 % 10] = 0;
+			}
+
+			count2++;
+
+		}
+
+		this.setUsers1(arrays[0]);
+		this.setUsers2(arrays[1]);
+		this.setUsers3(arrays[2]);
+		this.setUsers4(arrays[3]);
+		this.setUsers5(arrays[4]);
+		this.setUsers6(arrays[5]);
+		this.setUsers7(arrays[6]);
+		this.setUsers8(arrays[7]);
+		this.setUsers9(arrays[8]);
+		this.setUsers10(arrays[9]);
+
+	}
+
+	private int users1;
+
+	private int users2;
+
+	private int users3;
+
+	private int users4;
+
+	private int users5;
+
+	private int users6;
+
+	private int users7;
+
+	private int users8;
+
+	private int users9;
+
+	private int users10;
+
+	public int getUsers1() {
+		return users1;
+	}
+
+	public void setUsers1(int users1) {
+		this.users1 = users1;
+	}
+
+	public int getUsers2() {
+		return users2;
+	}
+
+	public void setUsers2(int users2) {
+		this.users2 = users2;
+	}
+
+	public int getUsers3() {
+		return users3;
+	}
+
+	public void setUsers3(int users3) {
+		this.users3 = users3;
+	}
+
+	public int getUsers4() {
+		return users4;
+	}
+
+	public void setUsers4(int users4) {
+		this.users4 = users4;
+	}
+
+	public int getUsers5() {
+		return users5;
+	}
+
+	public void setUsers5(int users5) {
+		this.users5 = users5;
+	}
+
+	public int getUsers6() {
+		return users6;
+	}
+
+	public void setUsers6(int users6) {
+		this.users6 = users6;
+	}
+
+	public int getUsers7() {
+		return users7;
+	}
+
+	public void setUsers7(int users7) {
+		this.users7 = users7;
+	}
+
+	public int getUsers8() {
+		return users8;
+	}
+
+	public void setUsers8(int users8) {
+		this.users8 = users8;
+	}
+
+	public int getUsers9() {
+		return users9;
+	}
+
+	public void setUsers9(int users9) {
+		this.users9 = users9;
+	}
+
+	public int getUsers10() {
+		return users10;
+	}
+
+	public void setUsers10(int users10) {
+		this.users10 = users10;
+	}
+
 	private String searchMethod;
-	
+
 	public String getSearchMethod() {
 		return searchMethod;
 	}

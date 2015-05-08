@@ -70,7 +70,7 @@ public abstract class JMeterPluginsUtils {
 
 	public static Object[] getObjectList(WorkLoad workLoad) {
 
-		Object[] rowObject = new Object[23];
+		Object[] rowObject = new Object[33];
 		rowObject[0] = workLoad.getName();
 		rowObject[1] = workLoad.getType();
 		rowObject[2] = String.valueOf(workLoad.getNumThreads());
@@ -94,6 +94,16 @@ public abstract class JMeterPluginsUtils {
 		rowObject[20] = String.valueOf(workLoad.getPercentile70());
 		rowObject[21] = String.valueOf(workLoad.getTotalErrors());
 		rowObject[22] = String.valueOf(workLoad.getSearchMethod());
+		rowObject[23] = String.valueOf(workLoad.getUsers1());
+		rowObject[24] = String.valueOf(workLoad.getUsers2());
+		rowObject[25] = String.valueOf(workLoad.getUsers3());
+		rowObject[26] = String.valueOf(workLoad.getUsers4());
+		rowObject[27] = String.valueOf(workLoad.getUsers5());
+		rowObject[28] = String.valueOf(workLoad.getUsers6());
+		rowObject[29] = String.valueOf(workLoad.getUsers7());
+		rowObject[30] = String.valueOf(workLoad.getUsers8());
+		rowObject[31] = String.valueOf(workLoad.getUsers9());
+		rowObject[32] = String.valueOf(workLoad.getUsers10());
 		return rowObject;
 	}
 
@@ -126,7 +136,18 @@ public abstract class JMeterPluginsUtils {
 			workload.setPercentile80(Integer.valueOf(object.get(19).toString()));
 			workload.setPercentile70(Integer.valueOf(object.get(20).toString()));
 			workload.setTotalErrors(Integer.valueOf(object.get(21).toString()));
-			workload.setSearchMethod(object.get(21).toString());
+			workload.setSearchMethod(object.get(22).toString());
+			workload.setUsers1(Integer.valueOf(object.get(23).toString()));
+			workload.setUsers2(Integer.valueOf(object.get(24).toString()));
+			workload.setUsers3(Integer.valueOf(object.get(25).toString()));
+			workload.setUsers4(Integer.valueOf(object.get(26).toString()));
+			workload.setUsers5(Integer.valueOf(object.get(27).toString()));
+			workload.setUsers6(Integer.valueOf(object.get(28).toString()));
+			workload.setUsers7(Integer.valueOf(object.get(29).toString()));
+			workload.setUsers8(Integer.valueOf(object.get(30).toString()));
+			workload.setUsers9(Integer.valueOf(object.get(31).toString()));
+			workload.setUsers10(Integer.valueOf(object.get(32).toString()));
+
 			return workload;
 		}
 		return null;
@@ -222,6 +243,16 @@ public abstract class JMeterPluginsUtils {
 					workloadMutation.setPercentile90(0);
 					workloadMutation.setSearchMethod("GENETICALGORITHM");
 					workloadMutation.setTotalErrors(0);
+					workloadMutation.setUsers1(0);
+					workloadMutation.setUsers2(0);
+					workloadMutation.setUsers3(0);
+					workloadMutation.setUsers4(0);
+					workloadMutation.setUsers5(0);
+					workloadMutation.setUsers6(0);
+					workloadMutation.setUsers7(0);
+					workloadMutation.setUsers8(0);
+					workloadMutation.setUsers9(0);
+					workloadMutation.setUsers10(0);
 					listAux.add(workloadMutation);
 
 				}
@@ -333,7 +364,12 @@ public abstract class JMeterPluginsUtils {
 				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()
 				+ "-" + workload.getFunction6() + "-" + workload.getFunction7()
 				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
-				+ "-" + workload.getFunction10());
+				+ "-" + workload.getFunction10() + workload.getUsers1() + "-"
+				+ workload.getUsers2() + "-" + workload.getUsers3() + "-"
+				+ workload.getUsers4() + "-" + workload.getUsers5() + "-"
+				+ workload.getUsers6() + "-" + workload.getUsers7() + "-"
+				+ workload.getUsers8() + "-" + workload.getUsers9() + "-"
+				+ workload.getUsers10());
 
 		return workload;
 	}
@@ -597,6 +633,16 @@ public abstract class JMeterPluginsUtils {
 			rowObject.add(String.valueOf(workload.getPercentile70()));
 			rowObject.add(String.valueOf(workload.getTotalErrors()));
 			rowObject.add(String.valueOf(workload.getSearchMethod()));
+			rowObject.add(String.valueOf(workload.getUsers1()));
+			rowObject.add(String.valueOf(workload.getUsers2()));
+			rowObject.add(String.valueOf(workload.getUsers3()));
+			rowObject.add(String.valueOf(workload.getUsers4()));
+			rowObject.add(String.valueOf(workload.getUsers5()));
+			rowObject.add(String.valueOf(workload.getUsers6()));
+			rowObject.add(String.valueOf(workload.getUsers7()));
+			rowObject.add(String.valueOf(workload.getUsers8()));
+			rowObject.add(String.valueOf(workload.getUsers9()));
+			rowObject.add(String.valueOf(workload.getUsers10()));
 			model.addRow(rowObject.toArray());
 		}
 		model.fireTableDataChanged();

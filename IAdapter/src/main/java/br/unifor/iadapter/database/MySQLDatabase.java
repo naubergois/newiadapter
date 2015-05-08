@@ -42,7 +42,9 @@ public class MySQLDatabase {
 			+ "FUNCTION1,FUNCTION2,FUNCTION3,FUNCTION4,"
 			+ "FUNCTION5,FUNCTION6,FUNCTION7,FUNCTION8,"
 			+ "FUNCTION9,FUNCTION10,TESTPLAN,GENERATION,"
-			+ "ACTIVE,PERCENT90,PERCENT80,PERCENT70,TOTALERROR,SEARCHMETHOD";
+			+ "ACTIVE,PERCENT90,PERCENT80,PERCENT70,TOTALERROR,"
+			+ "SEARCHMETHOD,USER1,USER2,USER3,USER4,USER5,USER6"
+			+ ",USER7,USER8,USER9,USER10";
 
 	private final static String COLUMNSAMPLES = "LABEL,RESPONSETIME,"
 			+ "MESSAGE,INDIVIDUAL,GENERATION,TESTPLAN";
@@ -53,7 +55,7 @@ public class MySQLDatabase {
 
 	private final static String COLUMNSAGENT = "name,running," + "ip";
 
-	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
 
 	private final static String PARAMETERSSAMPLE = "?,?,?,?,?,?";
 
@@ -64,7 +66,8 @@ public class MySQLDatabase {
 			+ "FUNCTION2=?,FUNCTION3=?,FUNCTION4=?,FUNCTION5=?,"
 			+ "FUNCTION6=?,FUNCTION7=?,FUNCTION8=?,FUNCTION9=?,"
 			+ "FUNCTION10=?,TESTPLAN=?,GENERATION=?,ACTIVE=?,PERCENT90=?,PERCENT80=?,"
-			+ "PERCENT70=?,TOTALERROR=?,SEARCHMETHOD=?";
+			+ "PERCENT70=?,TOTALERROR=?,SEARCHMETHOD=?,USER1=?,USER2=?,"
+			+ "USER3=?,USER4=?,USER5=?,USER6=?,USER7=?,USER8=?,USER9=?,USER10=?";
 
 	private final static String SETAGENT = "name=?,running=?," + "ip=?";
 
@@ -82,8 +85,8 @@ public class MySQLDatabase {
 	public static PreparedStatement setParametersWhere(PreparedStatement ps,
 			List objetos, String where, String testPlan) throws SQLException {
 		ps = setParameters(ps, objetos, testPlan);
-		ps.setString(25, where);
-		ps.setString(26, testPlan);
+		ps.setString(35, where);
+		ps.setString(36, testPlan);
 		return ps;
 	}
 
@@ -113,6 +116,16 @@ public class MySQLDatabase {
 		ps.setString(22, String.valueOf(objetos.get(20)));
 		ps.setString(23, String.valueOf(objetos.get(21)));
 		ps.setString(24, String.valueOf(objetos.get(22)));
+		ps.setString(25, String.valueOf(objetos.get(23)));
+		ps.setString(26, String.valueOf(objetos.get(24)));
+		ps.setString(27, String.valueOf(objetos.get(25)));
+		ps.setString(28, String.valueOf(objetos.get(26)));
+		ps.setString(29, String.valueOf(objetos.get(27)));
+		ps.setString(30, String.valueOf(objetos.get(28)));
+		ps.setString(31, String.valueOf(objetos.get(29)));
+		ps.setString(32, String.valueOf(objetos.get(30)));
+		ps.setString(33, String.valueOf(objetos.get(31)));
+		ps.setString(34, String.valueOf(objetos.get(32)));
 		return ps;
 	}
 
@@ -1099,6 +1112,36 @@ public class MySQLDatabase {
 		}
 		if (rs.getString(24) != null) {
 			workload.setSearchMethod(rs.getString(24));
+		}
+		if (rs.getString(25) != null) {
+			workload.setUsers1(Integer.valueOf(rs.getString(25)));
+		}
+		if (rs.getString(26) != null) {
+			workload.setUsers2(Integer.valueOf(rs.getString(26)));
+		}
+		if (rs.getString(27) != null) {
+			workload.setUsers3(Integer.valueOf(rs.getString(27)));
+		}
+		if (rs.getString(28) != null) {
+			workload.setUsers4(Integer.valueOf(rs.getString(28)));
+		}
+		if (rs.getString(29) != null) {
+			workload.setUsers5(Integer.valueOf(rs.getString(29)));
+		}
+		if (rs.getString(30) != null) {
+			workload.setUsers6(Integer.valueOf(rs.getString(30)));
+		}
+		if (rs.getString(31) != null) {
+			workload.setUsers7(Integer.valueOf(rs.getString(31)));
+		}
+		if (rs.getString(32) != null) {
+			workload.setUsers8(Integer.valueOf(rs.getString(32)));
+		}
+		if (rs.getString(33) != null) {
+			workload.setUsers9(Integer.valueOf(rs.getString(33)));
+		}
+		if (rs.getString(34) != null) {
+			workload.setUsers10(Integer.valueOf(rs.getString(33)));
 		}
 		return workload;
 	}

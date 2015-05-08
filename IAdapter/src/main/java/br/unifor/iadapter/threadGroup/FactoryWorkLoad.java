@@ -27,6 +27,7 @@ public class FactoryWorkLoad {
 			workload.setType(WorkLoad.getTypes()[1]);
 
 		}
+	
 		return workload;
 
 	}
@@ -106,6 +107,7 @@ public class FactoryWorkLoad {
 
 		workload.setGeneration(temperature);
 		workload.setActive(true);
+		workload.calcUsers();
 		return workload;
 	}
 
@@ -158,6 +160,7 @@ public class FactoryWorkLoad {
 		workload.setGeneration(generation);
 		workload.setSearchMethod("GENETICALGORITHM");
 		workload.setActive(true);
+		workload.calcUsers();
 		return workload;
 	}
 
@@ -221,6 +224,7 @@ public class FactoryWorkLoad {
 						workload.setActive(true);
 						workload.setSearchMethod("GENETICALGORITHM");
 						returnList.add(workload);
+						workload.calcUsers();
 
 					}
 
