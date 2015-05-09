@@ -11,6 +11,8 @@ import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 
 public class SimulateAnnealing {
 
+	private static int tries;
+
 	// temp is users
 	public static int sa(int users, WorkLoad place, WorkLoad newPlace,
 			int maxUsers, List<WorkLoad> list, int generation,
@@ -24,13 +26,20 @@ public class SimulateAnnealing {
 				} else {
 					Random random = new Random();
 					double randomDouble = random.nextDouble();
+					SimulateAnnealing.tries += 1;
+					if (SimulateAnnealing.tries > 3) {
+						newUsers -= 10;
+						SimulateAnnealing.tries = 0;
+					}
 					double exponential = Math.exp(-1 * (deltaC / users));
 					if (randomDouble > exponential) {
 						place = newPlace;
-						newUsers -= 10;
-
 					}
 
+				}
+			} else {
+				if (newPlace != null) {
+					place = newPlace;
 				}
 			}
 

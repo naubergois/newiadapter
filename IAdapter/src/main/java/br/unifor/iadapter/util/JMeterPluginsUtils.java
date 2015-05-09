@@ -219,7 +219,7 @@ public abstract class JMeterPluginsUtils {
 				int generationWorkLoad = Integer.valueOf(workLoad
 						.getGeneration());
 				if ((workLoad.getNumThreads() <= users)
-						&& (generationWorkLoad >= generation)) {
+						&& (generationWorkLoad < generation)) {
 					WorkLoad workloadMutation = new WorkLoad();
 					int newUsers = (users + randInt(users, maxUsers)) / 2;
 					workloadMutation.setNumThreads(newUsers);
