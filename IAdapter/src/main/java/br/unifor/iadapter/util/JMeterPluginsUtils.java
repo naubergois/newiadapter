@@ -207,7 +207,7 @@ public abstract class JMeterPluginsUtils {
 		}
 
 		List<WorkLoad> listAux = new ArrayList<WorkLoad>();
-		int counter = 0;
+		
 
 		List<WorkLoad> listRemove = new ArrayList<WorkLoad>();
 
@@ -215,11 +215,14 @@ public abstract class JMeterPluginsUtils {
 			try {
 				int users = MySQLDatabase.listBestWorkloadGenetic(testPlan,
 						workLoad.getType());
+				System.out.print(users);
+				System.out.print(workLoad.getType());
 
 				int generationWorkLoad = Integer.valueOf(workLoad
 						.getGeneration());
+				System.out.print("g" + generationWorkLoad);
 				if ((workLoad.getNumThreads() <= users)
-						&& (generationWorkLoad < generation)) {
+						&& (generationWorkLoad >= generation)) {
 					WorkLoad workloadMutation = new WorkLoad();
 					int newUsers = (users + randInt(users, maxUsers)) / 2;
 					workloadMutation.setNumThreads(newUsers);
@@ -248,16 +251,8 @@ public abstract class JMeterPluginsUtils {
 					workloadMutation.setSearchMethod("GENETICALGORITHM");
 
 					workloadMutation.setTotalErrors(0);
-					workloadMutation.setUsers1(0);
-					workloadMutation.setUsers2(0);
-					workloadMutation.setUsers3(0);
-					workloadMutation.setUsers4(0);
-					workloadMutation.setUsers5(0);
-					workloadMutation.setUsers6(0);
-					workloadMutation.setUsers7(0);
-					workloadMutation.setUsers8(0);
-					workloadMutation.setUsers9(0);
-					workloadMutation.setUsers10(0);
+					workloadMutation.calcUsers();
+
 					listAux.add(workloadMutation);
 					listRemove.add(workLoad);
 

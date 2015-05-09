@@ -103,6 +103,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	private WorkLoad workloadCurrent;
 	private WorkLoad workloadCurrentSA;
 
+	public WorkLoad getWorkloadCurrentSA() {
+		return workloadCurrentSA;
+	}
+
+	public void setWorkloadCurrentSA(WorkLoad workloadCurrentSA) {
+		this.workloadCurrentSA = workloadCurrentSA;
+	}
+
 	private List<WorkLoad> listWorkLoads;
 
 	public List<WorkLoad> getListWorkLoads() {
@@ -281,31 +289,38 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				List<WorkLoad> listNewSA = new ArrayList<WorkLoad>();
 
-				if (listSA.size()>0){
-				this.temperature = SimulateAnnealing.sa(this.temperature,
-						this.workloadCurrentSA, listSA.get(0),
-						Integer.valueOf(getThreadNumberMax()), listNewSA,
-						this.generation, this, listElement);
+				if (listSA.size() > 0) {
+					this.temperature = SimulateAnnealing.sa(this.temperature,
+							listSA.get(0),
+							Integer.valueOf(getThreadNumberMax()), listNewSA,
+							this.generation, this, listElement);
 				}
 
 				try {
+					int generations = Integer.valueOf(getGenNumber());
+					if (getGeneration() <= generations) {
 
-					for (WorkLoad workLoad : listBest) {
-						MySQLDatabase.insertWorkLoads(
-								JMeterPluginsUtils.getObjectList(workLoad),
-								this.getName(),
-								String.valueOf(this.getGeneration()));
-					}
-					
-					if (listSA.size()>0){
-						
-						for (WorkLoad workLoad : listNewSA) {
+						for (WorkLoad workLoad : listBest) {
 							MySQLDatabase.insertWorkLoads(
 									JMeterPluginsUtils.getObjectList(workLoad),
 									this.getName(),
 									String.valueOf(this.getGeneration()));
 						}
-						
+					}
+					int minTempInt = Integer.valueOf(getMinTemp());
+
+					if (minTempInt <= temperature) {
+						if (listSA.size() > 0) {
+
+							for (WorkLoad workLoad : listNewSA) {
+								MySQLDatabase.insertWorkLoads(
+										JMeterPluginsUtils
+												.getObjectList(workLoad), this
+												.getName(), String.valueOf(this
+												.getGeneration()));
+							}
+
+						}
 					}
 
 				} catch (Exception e) {
@@ -316,11 +331,13 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 						WorkLoadThreadGroup.DATA_PROPERTY);
 
 				int generations = Integer.valueOf(getGenNumber());
+				int minTempInt = Integer.valueOf(getMinTemp());
 
 				agent.delete();
 
 				Agent.sinchronizeFinal();
-				if (getGeneration() <= generations) {
+				if ((getGeneration() <= generations)
+						|| (minTempInt <= temperature)) {
 					this.currentTest = 0;
 
 					startEngine();
@@ -368,7 +385,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	private static final String THREAD_GEN_NUMBER = "threadgennumber";
 
-	private static final String EVOLUTION_ALGORITHM = "workloadthreadgroup.evolutionalgorithm";
+	private static final String MIN_TEMP = "workloadthreadgroup.mintemp";
 
 	@Override
 	public void start(int groupCount, ListenerNotifier notifier,
@@ -641,12 +658,12 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		setProperty(THREAD_IND, delay);
 	}
 
-	public String getEvolutionAlgorithm() {
-		return getPropertyAsString(EVOLUTION_ALGORITHM);
+	public String getMinTemp() {
+		return getPropertyAsString(MIN_TEMP);
 	}
 
-	public void setEvolutionAlgorithm(String delay) {
-		setProperty(EVOLUTION_ALGORITHM, delay);
+	public void setMinTemp(String delay) {
+		setProperty(MIN_TEMP, delay);
 	}
 
 	public String getGenNumber() {

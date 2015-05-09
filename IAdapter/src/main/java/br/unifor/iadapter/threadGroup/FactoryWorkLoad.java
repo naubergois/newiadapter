@@ -139,7 +139,7 @@ public class FactoryWorkLoad {
 		workload.setSearchMethod("SA");
 		workload.setGeneration(generation);
 		workload.setActive(true);
-		// workload.calcUsers();
+		workload.calcUsers();
 		return workload;
 	}
 

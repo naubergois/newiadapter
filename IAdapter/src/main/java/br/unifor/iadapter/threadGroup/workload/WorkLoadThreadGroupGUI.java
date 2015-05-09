@@ -67,7 +67,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	private JTextField maxtime;
 	private JTextField genNumber;
 	private JTextField bestInd;
-	private JTextField evolutionAlgorithm;
+	private JTextField minTemp;
 	/**
      *
      */
@@ -329,12 +329,12 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		return threadMax;
 	}
 
-	public JTextField getEvolutionAlgorithm() {
-		return evolutionAlgorithm;
+	public JTextField getMinTemp() {
+		return minTemp;
 	}
 
-	public void setEvolutionAlgorithm(JTextField evolutionAlgorithm) {
-		this.evolutionAlgorithm = evolutionAlgorithm;
+	public void setMinTemp(JTextField minTemp) {
+		this.minTemp = minTemp;
 	}
 
 	public void setThreadMax(JTextField threadMax) {
@@ -378,7 +378,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			utg.setMaxTime(maxtime.getText());
 			utg.setGenNumber(genNumber.getText());
 			utg.setBestIndividuals(bestInd.getText());
-			utg.setEvolutionAlgorithm(evolutionAlgorithm.getText());
+			utg.setMinTemp(minTemp.getText());
 
 			if (grid == null) {
 				createGrid();
@@ -414,7 +414,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		maxtime.setText(utg.getMaxTime());
 		genNumber.setText(utg.getGenNumber());
 		bestInd.setText(utg.getBestIndividuals());
-		evolutionAlgorithm.setText(utg.getEvolutionAlgorithm());
+		minTemp.setText(utg.getMinTemp());
 
 		JMeterProperty threadValues = utg.getData();
 		if (!(threadValues instanceof NullProperty)) {
@@ -513,7 +513,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		maxtime = new JTextField("30000", 5);
 		genNumber = new JTextField("3", 5);
 		bestInd = new JTextField("1", 5);
-		evolutionAlgorithm = new JTextField("GENETICALGORITHM", 15);
+		minTemp = new JTextField("0", 15);
 		param.add(new JLabel("Thread Max Number"));
 		param.add(threadMax);
 		param.add(new JLabel("Max response time"));
@@ -523,7 +523,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		param.add(new JLabel("Number of Best Individuals for CrossOver"));
 		param.add(bestInd);
 		param.add(new JLabel("Evolution Algorithm"));
-		param.add(evolutionAlgorithm);
+		param.add(minTemp);
 		panel.add(param, BorderLayout.CENTER);
 
 		tab1.addTab("Parameters", panel);

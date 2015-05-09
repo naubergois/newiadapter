@@ -14,15 +14,16 @@ public class SimulateAnnealing {
 	private static int tries;
 
 	// temp is users
-	public static int sa(int users, WorkLoad place, WorkLoad newPlace,
-			int maxUsers, List<WorkLoad> list, int generation,
-			WorkLoadThreadGroup tg, List<TestElement> nodes) {
+	public static int sa(int users, WorkLoad newPlace, int maxUsers,
+			List<WorkLoad> list, int generation, WorkLoadThreadGroup tg,
+			List<TestElement> nodes) {
 		int newUsers = users;
+		WorkLoad place = tg.getWorkloadCurrentSA();
 		if (users > 0) {
 			if ((place != null) && (newPlace != null)) {
 				double deltaC = newPlace.getFit() - place.getFit();
 				if (deltaC > 0) {
-					place = newPlace;
+					tg.setWorkloadCurrentSA(newPlace);
 				} else {
 					Random random = new Random();
 					double randomDouble = random.nextDouble();
@@ -33,19 +34,20 @@ public class SimulateAnnealing {
 					}
 					double exponential = Math.exp(-1 * (deltaC / users));
 					if (randomDouble > exponential) {
-						place = newPlace;
+						tg.setWorkloadCurrentSA(newPlace);
 					}
 
 				}
 			} else {
 				if (newPlace != null) {
-					place = newPlace;
+					tg.setWorkloadCurrentSA(newPlace);
 				}
+
 			}
 
 		}
 		for (int i = 0; i < 2; i++) {
-			WorkLoad workLoad = pertub(users, tg, nodes, generation);
+			WorkLoad workLoad = pertub(newUsers, tg, nodes, generation);
 			list.add(workLoad);
 		}
 

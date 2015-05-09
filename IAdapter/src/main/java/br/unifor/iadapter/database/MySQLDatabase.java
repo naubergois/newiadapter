@@ -1063,7 +1063,7 @@ public class MySQLDatabase {
 
 		int users = 0;
 
-		while (rs.next()) {
+		if (rs.next()) {
 			users = Integer.valueOf(rs.getString(1));
 		}
 
