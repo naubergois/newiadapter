@@ -2,6 +2,7 @@ package br.unifor.iadapter.threadGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.jgap.Gene;
@@ -27,7 +28,7 @@ public class FactoryWorkLoad {
 			workload.setType(WorkLoad.getTypes()[1]);
 
 		}
-	
+
 		return workload;
 
 	}
@@ -58,56 +59,87 @@ public class FactoryWorkLoad {
 		}
 	}
 
-	public static WorkLoad createWorkLoadTemperatureWithGui(Gene[] genes,
-			int temperature) {
+	public static WorkLoad createWorkLoadTemperatureWithGui(int generation,
+			int maxUsers) {
 		WorkLoad workload = null;
 
 		List<JMeterTreeNode> nodes = FindService
 				.searchWorkLoadControllerWithGui();
+		Random random = new Random();
 
-		IntegerGene gene = (IntegerGene) genes[0];
-		IntegerGene gene1 = (IntegerGene) genes[1];
-		IntegerGene gene2 = (IntegerGene) genes[2];
-		IntegerGene gene3 = (IntegerGene) genes[3];
-		IntegerGene gene4 = (IntegerGene) genes[4];
-		IntegerGene gene5 = (IntegerGene) genes[5];
-		IntegerGene gene6 = (IntegerGene) genes[6];
-		IntegerGene gene7 = (IntegerGene) genes[7];
-		IntegerGene gene8 = (IntegerGene) genes[8];
-		IntegerGene gene9 = (IntegerGene) genes[9];
-		IntegerGene gene10 = (IntegerGene) genes[10];
-		IntegerGene gene11 = (IntegerGene) genes[11];
-		if (gene.intValue() == 0) {
+		Integer random1 = random.nextInt(WorkLoad.getTypes().length);
+		Integer random2 = 0;
+
+		random2 = random.nextInt((int) nodes.size() + 1);
+
+		Integer random3 = 0;
+
+		random3 = random.nextInt((int) nodes.size() + 1);
+
+		Integer random4 = 0;
+
+		random4 = random.nextInt((int) nodes.size() + 1);
+
+		Integer random5 = 0;
+
+		random5 = random.nextInt((int) nodes.size() + 1);
+
+		Integer random6 = 0;
+
+		random6 = random.nextInt((int) nodes.size() + 1);
+
+		Integer random7 = 0;
+
+		random7 = random.nextInt((int) nodes.size() + 1);
+
+		Integer random8 = 0;
+
+		random8 = random.nextInt((int) nodes.size() + 1);
+
+		Integer random9 = 0;
+
+		random9 = random.nextInt((int) nodes.size() + 1);
+
+		Integer random10 = 0;
+
+		random10 = random.nextInt((int) nodes.size() + 1);
+
+		Integer random11 = 0;
+
+		random11 = random.nextInt((int) nodes.size() + 1);
+
+		if (random1 == 0) {
 			workload = createWorkLoad(WorkLoad.getTypes()[0]);
 
 		}
-		if (gene.intValue() == 1) {
+		if (random1 == 1) {
 			workload = createWorkLoad(WorkLoad.getTypes()[1]);
 
 		}
 
-		workload.setFunction1(getName(nodes, gene2));
-		workload.setFunction2(getName(nodes, gene3));
-		workload.setFunction3(getName(nodes, gene4));
-		workload.setFunction4(getName(nodes, gene5));
-		workload.setFunction5(getName(nodes, gene6));
-		workload.setFunction6(getName(nodes, gene7));
-		workload.setFunction7(getName(nodes, gene8));
-		workload.setFunction8(getName(nodes, gene9));
-		workload.setFunction9(getName(nodes, gene10));
-		workload.setFunction10(getName(nodes, gene11));
-		workload.setNumThreads(temperature);
-		workload.setName(workload.getType() + "-" + workload.getNumThreads()
-				+ "-" + workload.getFunction1() + "-" + workload.getFunction2()
-				+ "-" + workload.getFunction3() + "-" + workload.getFunction4()
-				+ "-" + workload.getFunction5() + "-" + workload.getFunction6()
-				+ "-" + workload.getFunction7() + "-" + workload.getFunction8()
-				+ "-" + workload.getFunction9() + "-"
-				+ workload.getFunction10());
+		workload.setFunction1(getName(nodes, random2));
+		workload.setFunction2(getName(nodes, random3));
+		workload.setFunction3(getName(nodes, random4));
+		workload.setFunction4(getName(nodes, random5));
+		workload.setFunction5(getName(nodes, random6));
+		workload.setFunction6(getName(nodes, random7));
+		workload.setFunction7(getName(nodes, random8));
+		workload.setFunction8(getName(nodes, random9));
+		workload.setFunction9(getName(nodes, random10));
+		workload.setFunction10(getName(nodes, random11));
+		workload.setNumThreads(maxUsers);
+		workload.setName("SA:" + workload.getType() + "-"
+				+ workload.getNumThreads() + "-" + workload.getFunction1()
+				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
+				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()
+				+ "-" + workload.getFunction6() + "-" + workload.getFunction7()
+				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
+				+ "-" + workload.getFunction10());
 
-		workload.setGeneration(temperature);
+		workload.setSearchMethod("SA");
+		workload.setGeneration(generation);
 		workload.setActive(true);
-		workload.calcUsers();
+		// workload.calcUsers();
 		return workload;
 	}
 
@@ -173,9 +205,9 @@ public class FactoryWorkLoad {
 		String[] types = WorkLoad.getTypes();
 		if ((nodes.size() > 0) && (types.length > 0) && (maxThreads > 0)) {
 
-			int rest = maxThreads % 20;
+			int rest = maxThreads / 20;
 
-			if (rest <= 0) {
+			if (rest < 20) {
 				rest = 20;
 			}
 

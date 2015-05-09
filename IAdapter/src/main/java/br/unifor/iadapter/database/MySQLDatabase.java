@@ -1000,6 +1000,31 @@ public class MySQLDatabase {
 
 	}
 
+	public static List<WorkLoad> listWorkLoadsSAForNewGeneration(
+			String testPlan, String generation) throws ClassNotFoundException,
+			SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
+				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? "
+				+ "AND SEARCHMETHOD='SA' ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = MySQLDatabase.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
 	public static List<WorkLoad> listAllWorkLoads(String testPlan)
 			throws ClassNotFoundException, SQLException {
 
@@ -1022,7 +1047,7 @@ public class MySQLDatabase {
 
 	}
 
-	public static int listBestWorkload(String testPlan, String type)
+	public static int listBestWorkloadGenetic(String testPlan, String type)
 			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
@@ -1030,7 +1055,7 @@ public class MySQLDatabase {
 		PreparedStatement ps = con
 				.prepareStatement(""
 						+ "SELECT USERS"
-						+ "  FROM  workload WHERE TESTPLAN=? AND TYPE=? ORDER BY FIT*1 DESC");
+						+ "  FROM  workload WHERE TESTPLAN=? AND SEARCHMETHOD='GENETICALGORITHM' AND TYPE=? ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, type);
 

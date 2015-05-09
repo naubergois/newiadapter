@@ -56,23 +56,26 @@ public class AddRowWorkloadAction implements ActionListener {
 		int users = 10;
 
 		List<WorkLoad> workloadList = null;
-		if (tg.getEvolutionAlgorithm().equals("GENETICALGORITHM")) {
-			try {
 
-				try {
-					users = Integer.valueOf(sender.getThreadMax().getText());
-				} catch (NumberFormatException e2) {
-					e2.printStackTrace();
-				}
-				workloadList = GeneWorkLoad
-						.createWorkLoadsFromChromossomeWithGui(users, 1);
-				workloadList.addAll(FactoryWorkLoad.createWorkLoadNodes(users,
-						1));
-			} catch (InvalidConfigurationException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+		try {
+
+			try {
+				users = Integer.valueOf(sender.getThreadMax().getText());
+			} catch (NumberFormatException e2) {
+				e2.printStackTrace();
 			}
+			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(
+					users, 1);
+			workloadList.addAll(FactoryWorkLoad.createWorkLoadNodes(users, 1));
+			workloadList.add(FactoryWorkLoad.createWorkLoadTemperatureWithGui(1, users));
+			workloadList.add(FactoryWorkLoad.createWorkLoadTemperatureWithGui(1, users));
+		} catch (InvalidConfigurationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+		
+		
+
 		GuiPackage gp = GuiPackage.getInstance();
 		if (gp != null) {
 

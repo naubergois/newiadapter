@@ -61,6 +61,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	private static final long serialVersionUID = 1L;
 	public static final String WIKIPAGE = "WorkLoadThreadGroup";
 	private static final Logger log = LoggingManager.getLoggerForClass();
+	private static WorkLoad saCurrentWorkLoad;
 
 	private JTextField threadMax;
 	private JTextField maxtime;
@@ -175,14 +176,18 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		grid.getDefaultEditor(String.class).addCellEditorListener(this);
 		createTableModel();
 		grid.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		grid.setMinimumSize(new Dimension(400, 100));
-		grid.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		// grid.setMinimumSize(new Dimension(400, 400));
+		grid.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		grid.setPreferredScrollableViewportSize(new Dimension(800, 800));
+		grid.setSize(800, 800);
+		grid.getColumnModel().getColumn(0).setWidth(100);
+
 		grid.addMouseListener(new WorkLoadTableClicked(grid, this, wtableModel,
 				chart));
 
-		TableColumnModel tcm = grid.getColumnModel();
-		TableColumn tc = tcm.getColumn(1);
-		tc.setWidth(tc.getWidth() + 25);
+		// TableColumnModel tcm = grid.getColumnModel();
+		// TableColumn tc = tcm.getColumn(1);
+		// tc.setWidth(tc.getWidth() + 25);
 
 		return grid;
 	}

@@ -25,38 +25,48 @@ public class WorkLoad {
 		int count = 1;
 		int count2 = 1;
 
-		while (count <= this.getNumThreads()) {
+		if (this.getNumThreads() > 0) {
 
-			if (count > this.getNumThreads())
-				break;
+			while (count <= this.getNumThreads()) {
 
-			String nameWorkloadController = WorkLoadThreadGroup
-					.getFunctionNameByID(this, count2 % 10);
+				if (count > this.getNumThreads())
+					break;
 
-			if ((nameWorkloadController != null)
-					&& (!(nameWorkloadController.equals("None")))) {
+				String nameWorkloadController = WorkLoadThreadGroup
+						.getFunctionNameByID(this, count2 % 10);
 
-				arrays[count2 % 10] += 1;
-				count++;
+				if ((nameWorkloadController != null)
+						&& (!(nameWorkloadController.equals("None")))) {
 
-			} else {
-				arrays[count2 % 10] = 0;
+					arrays[count2 % 10] += 1;
+					count++;
+
+				} else {
+					int rest = count2 % 10;
+					if (rest > 9) {
+						rest = 9;
+					}
+					if (rest < 0) {
+						rest = 0;
+					}
+					arrays[rest] = 0;
+				}
+
+				count2++;
+
 			}
 
-			count2++;
-
+			this.setUsers1(arrays[0]);
+			this.setUsers2(arrays[1]);
+			this.setUsers3(arrays[2]);
+			this.setUsers4(arrays[3]);
+			this.setUsers5(arrays[4]);
+			this.setUsers6(arrays[5]);
+			this.setUsers7(arrays[6]);
+			this.setUsers8(arrays[7]);
+			this.setUsers9(arrays[8]);
+			this.setUsers10(arrays[9]);
 		}
-
-		this.setUsers1(arrays[0]);
-		this.setUsers2(arrays[1]);
-		this.setUsers3(arrays[2]);
-		this.setUsers4(arrays[3]);
-		this.setUsers5(arrays[4]);
-		this.setUsers6(arrays[5]);
-		this.setUsers7(arrays[6]);
-		this.setUsers8(arrays[7]);
-		this.setUsers9(arrays[8]);
-		this.setUsers10(arrays[9]);
 
 	}
 

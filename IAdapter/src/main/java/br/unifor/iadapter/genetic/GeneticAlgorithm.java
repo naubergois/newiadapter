@@ -38,7 +38,7 @@ public class GeneticAlgorithm {
 			MySQLDatabase.insertLog(tg.getName() + "CrossOverRatePercent"
 					+ operator.getCrossOverRatePercent());
 
-			tg.setGeneration(tg.getGeneration() + 1);
+			
 
 			return JMeterPluginsUtils.getListWorkLoadFromPopulationTestPlan(
 					population.getChromosomes(), tg.getTree(),

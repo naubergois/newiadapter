@@ -151,18 +151,17 @@ public class GeneWorkLoad {
 		return conf;
 	}
 
-	public static List<WorkLoad> createWorkLoadsFromChromossomeWithGuiWithTemperature(
-			int userNumbers, int temperature)
-			throws InvalidConfigurationException {
-		IChromosome[] list = createPopulation(userNumbers);
+	public static List<WorkLoad> createWorkLoadsSAWithGui(int userNumbers,
+			int generation) throws InvalidConfigurationException {
+
 		List<WorkLoad> workLoads = new ArrayList<WorkLoad>();
-		for (IChromosome iChromosome : list) {
-			Gene[] gene = iChromosome.getGenes();
+		for (int i = 0; i <= 10; i++) {
+
 			WorkLoad workload = FactoryWorkLoad
-					.createWorkLoadTemperatureWithGui(gene, temperature);
+					.createWorkLoadTemperatureWithGui(generation, userNumbers);
 			workLoads.add(workload);
 		}
-		conf = null;
+
 		return workLoads;
 	}
 

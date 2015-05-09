@@ -207,10 +207,13 @@ public abstract class JMeterPluginsUtils {
 		}
 
 		List<WorkLoad> listAux = new ArrayList<WorkLoad>();
+		int counter = 0;
+
+		List<WorkLoad> listRemove = new ArrayList<WorkLoad>();
 
 		for (WorkLoad workLoad : list) {
 			try {
-				int users = MySQLDatabase.listBestWorkload(testPlan,
+				int users = MySQLDatabase.listBestWorkloadGenetic(testPlan,
 						workLoad.getType());
 
 				int generationWorkLoad = Integer.valueOf(workLoad
@@ -241,7 +244,9 @@ public abstract class JMeterPluginsUtils {
 					workloadMutation.setPercentile70(0);
 					workloadMutation.setPercentile80(0);
 					workloadMutation.setPercentile90(0);
+
 					workloadMutation.setSearchMethod("GENETICALGORITHM");
+
 					workloadMutation.setTotalErrors(0);
 					workloadMutation.setUsers1(0);
 					workloadMutation.setUsers2(0);
@@ -254,6 +259,7 @@ public abstract class JMeterPluginsUtils {
 					workloadMutation.setUsers9(0);
 					workloadMutation.setUsers10(0);
 					listAux.add(workloadMutation);
+					listRemove.add(workLoad);
 
 				}
 			} catch (ClassNotFoundException e) {
@@ -265,6 +271,7 @@ public abstract class JMeterPluginsUtils {
 			}
 		}
 
+		list.removeAll(listRemove);
 		list.addAll(listAux);
 
 		return list;

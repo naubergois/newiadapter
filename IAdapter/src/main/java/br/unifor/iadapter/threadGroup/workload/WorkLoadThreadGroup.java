@@ -42,6 +42,7 @@ import br.unifor.iadapter.agent.Agent;
 import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.genetic.GeneWorkLoad;
 import br.unifor.iadapter.genetic.GeneticAlgorithm;
+import br.unifor.iadapter.sa.SimulateAnnealing;
 import br.unifor.iadapter.threadGroup.AbstractSimpleThreadGroup;
 import br.unifor.iadapter.threadGroup.SingletonEngine;
 import br.unifor.iadapter.util.CSVReadStats;
@@ -100,6 +101,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	}
 
 	private WorkLoad workloadCurrent;
+	private WorkLoad workloadCurrentSA;
 
 	private List<WorkLoad> listWorkLoads;
 
@@ -204,8 +206,25 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		return null;
 	}
 
+	public static List<WorkLoad> returnListSAWorkLoadsForNewGeneration(
+			WorkLoadThreadGroup tg) {
+		try {
+			return MySQLDatabase.listWorkLoadsSAForNewGeneration(tg.getName(),
+					String.valueOf(tg.getGeneration()));
+		} catch (ClassNotFoundException e1) {
+
+			log.error(e1.getMessage());
+		} catch (SQLException e1) {
+			log.error(e1.getMessage());
+		}
+		return null;
+	}
+
 	@Override
 	public void threadFinished(JMeterThread thread) {
+		if (this.temperature == 0) {
+			this.temperature = Integer.valueOf(getThreadNumberMax());
+		}
 
 		this.allThreads.remove(thread);
 
@@ -250,8 +269,24 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				List<WorkLoad> list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(this);
 
+				List<WorkLoad> listSA = returnListSAWorkLoadsForNewGeneration(this);
+
+				this.setGeneration(this.getGeneration() + 1);
+
 				List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(this,
 						list);
+
+				List<TestElement> listElement = FindService
+						.searchWorkLoadControllerWithNoGui(this.tree);
+
+				List<WorkLoad> listNewSA = new ArrayList<WorkLoad>();
+
+				if (listSA.size()>0){
+				this.temperature = SimulateAnnealing.sa(this.temperature,
+						this.workloadCurrentSA, listSA.get(0),
+						Integer.valueOf(getThreadNumberMax()), listNewSA,
+						this.generation, this, listElement);
+				}
 
 				try {
 
@@ -260,6 +295,17 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 								JMeterPluginsUtils.getObjectList(workLoad),
 								this.getName(),
 								String.valueOf(this.getGeneration()));
+					}
+					
+					if (listSA.size()>0){
+						
+						for (WorkLoad workLoad : listNewSA) {
+							MySQLDatabase.insertWorkLoads(
+									JMeterPluginsUtils.getObjectList(workLoad),
+									this.getName(),
+									String.valueOf(this.getGeneration()));
+						}
+						
 					}
 
 				} catch (Exception e) {
