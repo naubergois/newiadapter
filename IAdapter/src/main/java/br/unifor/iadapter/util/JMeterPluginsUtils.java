@@ -45,14 +45,11 @@ import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
 import org.jgap.Chromosome;
-import org.jgap.Gene;
 import org.jgap.Population;
-import org.jgap.impl.IntegerGene;
 
 import br.unifor.iadapter.agent.Agent;
 import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.percentiles.PercentileCounter;
-import br.unifor.iadapter.threadGroup.FactoryWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 
@@ -68,90 +65,7 @@ public abstract class JMeterPluginsUtils {
 		return prefixPlugins ? PLUGINS_PREFIX + label : label;
 	}
 
-	public static Object[] getObjectList(WorkLoad workLoad) {
-
-		Object[] rowObject = new Object[33];
-		rowObject[0] = workLoad.getName();
-		rowObject[1] = workLoad.getType();
-		rowObject[2] = String.valueOf(workLoad.getNumThreads());
-		rowObject[3] = String.valueOf(workLoad.getWorstResponseTime());
-		rowObject[4] = String.valueOf(workLoad.isError());
-		rowObject[5] = String.valueOf(workLoad.getFit());
-		rowObject[6] = String.valueOf(workLoad.getFunction1());
-		rowObject[7] = String.valueOf(workLoad.getFunction2());
-		rowObject[8] = String.valueOf(workLoad.getFunction3());
-		rowObject[9] = String.valueOf(workLoad.getFunction4());
-		rowObject[10] = String.valueOf(workLoad.getFunction5());
-		rowObject[11] = String.valueOf(workLoad.getFunction6());
-		rowObject[12] = String.valueOf(workLoad.getFunction7());
-		rowObject[13] = String.valueOf(workLoad.getFunction8());
-		rowObject[14] = String.valueOf(workLoad.getFunction9());
-		rowObject[15] = String.valueOf(workLoad.getFunction10());
-		rowObject[16] = String.valueOf(workLoad.getGeneration());
-		rowObject[17] = String.valueOf(workLoad.isActive());
-		rowObject[18] = String.valueOf(workLoad.getPercentile90());
-		rowObject[19] = String.valueOf(workLoad.getPercentile80());
-		rowObject[20] = String.valueOf(workLoad.getPercentile70());
-		rowObject[21] = String.valueOf(workLoad.getTotalErrors());
-		rowObject[22] = String.valueOf(workLoad.getSearchMethod());
-		rowObject[23] = String.valueOf(workLoad.getUsers1());
-		rowObject[24] = String.valueOf(workLoad.getUsers2());
-		rowObject[25] = String.valueOf(workLoad.getUsers3());
-		rowObject[26] = String.valueOf(workLoad.getUsers4());
-		rowObject[27] = String.valueOf(workLoad.getUsers5());
-		rowObject[28] = String.valueOf(workLoad.getUsers6());
-		rowObject[29] = String.valueOf(workLoad.getUsers7());
-		rowObject[30] = String.valueOf(workLoad.getUsers8());
-		rowObject[31] = String.valueOf(workLoad.getUsers9());
-		rowObject[32] = String.valueOf(workLoad.getUsers10());
-		return rowObject;
-	}
-
-	public static WorkLoad getWorkLoad(ArrayList object) {
-
-		if (object != null) {
-
-			String type = object.get(1).toString();
-			WorkLoad workload = FactoryWorkLoad.createWorkLoad(type);
-			workload.setNumThreads(Integer.valueOf(object.get(2).toString()));
-			workload.setName((object.get(0).toString()));
-			workload.setType((type));
-			workload.setWorstResponseTime(Long
-					.valueOf(object.get(3).toString()));
-			workload.setError(Boolean.valueOf(object.get(4).toString()));
-			workload.setFit(Double.valueOf(object.get(5).toString()));
-			workload.setFunction1(object.get(6).toString());
-			workload.setFunction2(object.get(7).toString());
-			workload.setFunction3(object.get(8).toString());
-			workload.setFunction4(object.get(9).toString());
-			workload.setFunction5(object.get(10).toString());
-			workload.setFunction6(object.get(11).toString());
-			workload.setFunction7(object.get(12).toString());
-			workload.setFunction8(object.get(13).toString());
-			workload.setFunction9(object.get(14).toString());
-			workload.setFunction10(object.get(15).toString());
-			workload.setGeneration(Integer.valueOf(object.get(16).toString()));
-			workload.setActive(Boolean.valueOf(object.get(17).toString()));
-			workload.setPercentile90(Integer.valueOf(object.get(18).toString()));
-			workload.setPercentile80(Integer.valueOf(object.get(19).toString()));
-			workload.setPercentile70(Integer.valueOf(object.get(20).toString()));
-			workload.setTotalErrors(Integer.valueOf(object.get(21).toString()));
-			workload.setSearchMethod(object.get(22).toString());
-			workload.setUsers1(Integer.valueOf(object.get(23).toString()));
-			workload.setUsers2(Integer.valueOf(object.get(24).toString()));
-			workload.setUsers3(Integer.valueOf(object.get(25).toString()));
-			workload.setUsers4(Integer.valueOf(object.get(26).toString()));
-			workload.setUsers5(Integer.valueOf(object.get(27).toString()));
-			workload.setUsers6(Integer.valueOf(object.get(28).toString()));
-			workload.setUsers7(Integer.valueOf(object.get(29).toString()));
-			workload.setUsers8(Integer.valueOf(object.get(30).toString()));
-			workload.setUsers9(Integer.valueOf(object.get(31).toString()));
-			workload.setUsers10(Integer.valueOf(object.get(32).toString()));
-
-			return workload;
-		}
-		return null;
-	}
+	
 
 	public static List<WorkLoad> getListWorkLoadFromPopulation(
 			Population population, ListedHashTree tree, int generation) {
@@ -160,8 +74,8 @@ public abstract class JMeterPluginsUtils {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 		List<Chromosome> listC = population.getChromosomes();
 		for (Chromosome chromosome : listC) {
-			list.add(getWorkLoadFromChromosome(chromosome, listElement,
-					generation));
+			list.add(WorkLoadUtil.getWorkLoadFromChromosome(chromosome,
+					listElement, generation));
 		}
 
 		return list;
@@ -174,8 +88,8 @@ public abstract class JMeterPluginsUtils {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (Chromosome chromosome : listC) {
-			list.add(getWorkLoadFromChromosome(chromosome, listElement,
-					generation));
+			list.add(WorkLoadUtil.getWorkLoadFromChromosome(chromosome,
+					listElement, generation));
 		}
 
 		return list;
@@ -202,12 +116,11 @@ public abstract class JMeterPluginsUtils {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (Chromosome chromosome : listC) {
-			list.add(getWorkLoadFromChromosome(chromosome, listElement,
-					generation));
+			list.add(WorkLoadUtil.getWorkLoadFromChromosome(chromosome,
+					listElement, generation));
 		}
 
 		List<WorkLoad> listAux = new ArrayList<WorkLoad>();
-		
 
 		List<WorkLoad> listRemove = new ArrayList<WorkLoad>();
 
@@ -215,44 +128,14 @@ public abstract class JMeterPluginsUtils {
 			try {
 				int users = MySQLDatabase.listBestWorkloadGenetic(testPlan,
 						workLoad.getType());
-				System.out.print(users);
-				System.out.print(workLoad.getType());
 
 				int generationWorkLoad = Integer.valueOf(workLoad
 						.getGeneration());
-				System.out.print("g" + generationWorkLoad);
+
 				if ((workLoad.getNumThreads() <= users)
 						&& (generationWorkLoad >= generation)) {
-					WorkLoad workloadMutation = new WorkLoad();
-					int newUsers = (users + randInt(users, maxUsers)) / 2;
-					workloadMutation.setNumThreads(newUsers);
-					workloadMutation.setName("Mutation-" + newUsers + "-"
-							+ workLoad.getName());
-					workloadMutation.setType(workLoad.getType());
-					workloadMutation.setActive(workLoad.isActive());
-					workloadMutation.setEndRampUp(workLoad.getEndRampUp());
-					workloadMutation.setError(workLoad.isError());
-					workloadMutation.setFlightTime(workLoad.getFlightTime());
-					workloadMutation.setFunction1(workLoad.getFunction1());
-					workloadMutation.setFunction2(workLoad.getFunction2());
-					workloadMutation.setFunction3(workLoad.getFunction3());
-					workloadMutation.setFunction4(workLoad.getFunction4());
-					workloadMutation.setFunction5(workLoad.getFunction5());
-					workloadMutation.setFunction6(workLoad.getFunction6());
-					workloadMutation.setFunction7(workLoad.getFunction7());
-					workloadMutation.setFunction8(workLoad.getFunction8());
-					workloadMutation.setFunction9(workLoad.getFunction9());
-					workloadMutation.setFunction10(workLoad.getFunction10());
-					workloadMutation.setGeneration(workLoad.getGeneration());
-					workloadMutation.setPercentile70(0);
-					workloadMutation.setPercentile80(0);
-					workloadMutation.setPercentile90(0);
-
-					workloadMutation.setSearchMethod("GENETICALGORITHM");
-
-					workloadMutation.setTotalErrors(0);
-					workloadMutation.calcUsers();
-
+					WorkLoad workloadMutation = WorkLoadUtil.mutant(workLoad,
+							users, maxUsers);
 					listAux.add(workloadMutation);
 					listRemove.add(workLoad);
 
@@ -271,109 +154,6 @@ public abstract class JMeterPluginsUtils {
 
 		return list;
 
-	}
-
-	public static WorkLoad getWorkLoadFromChromosome(Chromosome chromosome,
-			List<TestElement> list, int generation) {
-		Gene[] gene = chromosome.getGenes();
-		String type = WorkLoad.getTypes()[((IntegerGene) gene[0]).intValue()];
-
-		WorkLoad workload = FactoryWorkLoad.createWorkLoad(type);
-		workload.setNumThreads(((IntegerGene) gene[1]).intValue());
-		workload.setType(type);
-		workload.setFit(0);
-
-		int index = ((IntegerGene) gene[2]).intValue();
-		if (index == -1) {
-			workload.setFunction1("None");
-		} else {
-			workload.setFunction1(list.get(((IntegerGene) gene[2]).intValue())
-					.getName());
-		}
-		index = ((IntegerGene) gene[3]).intValue();
-		if (index == -1) {
-			workload.setFunction2("None");
-		} else {
-			workload.setFunction2(list.get(((IntegerGene) gene[3]).intValue())
-					.getName());
-		}
-		index = ((IntegerGene) gene[4]).intValue();
-		if (index == -1) {
-			workload.setFunction3("None");
-		} else {
-			workload.setFunction3(list.get(((IntegerGene) gene[4]).intValue())
-					.getName());
-		}
-		index = ((IntegerGene) gene[5]).intValue();
-		if (index == -1) {
-			workload.setFunction4("None");
-		} else {
-			workload.setFunction4(list.get(((IntegerGene) gene[5]).intValue())
-					.getName());
-		}
-		index = ((IntegerGene) gene[6]).intValue();
-		if (index == -1) {
-			workload.setFunction5("None");
-		} else {
-			workload.setFunction5(list.get(((IntegerGene) gene[6]).intValue())
-					.getName());
-		}
-		index = ((IntegerGene) gene[7]).intValue();
-		if (index == -1) {
-			workload.setFunction6("None");
-		} else {
-			workload.setFunction6(list.get(((IntegerGene) gene[7]).intValue())
-					.getName());
-		}
-		index = ((IntegerGene) gene[8]).intValue();
-		if (index == -1) {
-			workload.setFunction7("None");
-		} else {
-			workload.setFunction7(list.get(((IntegerGene) gene[8]).intValue())
-					.getName());
-		}
-		index = ((IntegerGene) gene[9]).intValue();
-		if (index == -1) {
-			workload.setFunction8("None");
-		} else {
-			workload.setFunction8(list.get(((IntegerGene) gene[9]).intValue())
-					.getName());
-		}
-		index = ((IntegerGene) gene[10]).intValue();
-		if (index == -1) {
-			workload.setFunction9("None");
-		} else {
-			workload.setFunction9(list.get(((IntegerGene) gene[10]).intValue())
-					.getName());
-		}
-		index = ((IntegerGene) gene[11]).intValue();
-		if (index == -1) {
-			workload.setFunction10("None");
-		} else {
-			workload.setFunction10(list
-					.get(((IntegerGene) gene[11]).intValue()).getName());
-		}
-
-		workload.setGeneration(generation);
-
-		workload.setActive(true);
-
-		workload.setSearchMethod("GENETICALGORITHM");
-
-		workload.setName("G" + generation + ":" + workload.getType() + "-"
-				+ workload.getNumThreads() + "-" + workload.getFunction1()
-				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
-				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()
-				+ "-" + workload.getFunction6() + "-" + workload.getFunction7()
-				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
-				+ "-" + workload.getFunction10() + workload.getUsers1() + "-"
-				+ workload.getUsers2() + "-" + workload.getUsers3() + "-"
-				+ workload.getUsers4() + "-" + workload.getUsers5() + "-"
-				+ workload.getUsers6() + "-" + workload.getUsers7() + "-"
-				+ workload.getUsers8() + "-" + workload.getUsers9() + "-"
-				+ workload.getUsers10());
-
-		return workload;
 	}
 
 	public static String getStackTrace(Exception ex) {
@@ -441,7 +221,7 @@ public abstract class JMeterPluginsUtils {
 		CollectionProperty rows = new CollectionProperty(propname,
 				new ArrayList<Object>());
 		for (int row = 0; row < model.size(); row++) {
-			Object[] item = getObjectList(model.get(row));
+			Object[] item = WorkLoadUtil.getObjectList(model.get(row));
 			if (item != null) {
 				for (int i = 0; i < item.length; i++) {
 					String object = String.valueOf(item[i]);
@@ -594,7 +374,7 @@ public abstract class JMeterPluginsUtils {
 			for (int rowN = 0; rowN < prop.size(); rowN++) {
 				ArrayList<String> rowObject = (ArrayList<String>) prop
 						.get(rowN).getObjectValue();
-				WorkLoad workload = JMeterPluginsUtils.getWorkLoad(rowObject);
+				WorkLoad workload = WorkLoadUtil.getWorkLoad(rowObject);
 				workLoadList.add(workload);
 
 			}
@@ -604,52 +384,7 @@ public abstract class JMeterPluginsUtils {
 
 	}
 
-	public static void modelFromDerbyGui(PowerTableModel model, String testPlan)
-			throws ClassNotFoundException, SQLException {
-
-		List<WorkLoad> list = MySQLDatabase.listAllWorkLoads(testPlan);
-		model.clearData();
-		for (int rowN = 0; rowN < list.size(); rowN++) {
-			WorkLoad workload = list.get(rowN);
-			ArrayList<String> rowObject = new ArrayList<String>();
-			rowObject.add(workload.getName());
-			rowObject.add(workload.getType());
-			rowObject.add(String.valueOf(workload.getNumThreads()));
-			rowObject.add(String.valueOf(workload.getWorstResponseTime()));
-			rowObject.add(String.valueOf(workload.isError()));
-			rowObject.add(String.valueOf(workload.getFit()));
-			rowObject.add(workload.getFunction1());
-			rowObject.add(workload.getFunction2());
-			rowObject.add(workload.getFunction3());
-			rowObject.add(workload.getFunction4());
-			rowObject.add(workload.getFunction5());
-			rowObject.add(workload.getFunction6());
-			rowObject.add(workload.getFunction7());
-			rowObject.add(workload.getFunction8());
-			rowObject.add(workload.getFunction9());
-			rowObject.add(workload.getFunction10());
-			rowObject.add(String.valueOf(workload.getGeneration()));
-			rowObject.add(String.valueOf(workload.isActive()));
-			rowObject.add(String.valueOf(workload.getPercentile90()));
-			rowObject.add(String.valueOf(workload.getPercentile80()));
-			rowObject.add(String.valueOf(workload.getPercentile70()));
-			rowObject.add(String.valueOf(workload.getTotalErrors()));
-			rowObject.add(String.valueOf(workload.getSearchMethod()));
-			rowObject.add(String.valueOf(workload.getUsers1()));
-			rowObject.add(String.valueOf(workload.getUsers2()));
-			rowObject.add(String.valueOf(workload.getUsers3()));
-			rowObject.add(String.valueOf(workload.getUsers4()));
-			rowObject.add(String.valueOf(workload.getUsers5()));
-			rowObject.add(String.valueOf(workload.getUsers6()));
-			rowObject.add(String.valueOf(workload.getUsers7()));
-			rowObject.add(String.valueOf(workload.getUsers8()));
-			rowObject.add(String.valueOf(workload.getUsers9()));
-			rowObject.add(String.valueOf(workload.getUsers10()));
-			model.addRow(rowObject.toArray());
-		}
-		model.fireTableDataChanged();
-	}
-
+	
 	public static void collectionPropertyToTableModelRows(
 			CollectionProperty prop, PowerTableModel model,
 			@SuppressWarnings("rawtypes") Class[] columnClasses) {

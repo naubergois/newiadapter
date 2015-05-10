@@ -11,6 +11,7 @@ import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroupGUI;
 import br.unifor.iadapter.util.FindService;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
+import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class RefreshRowWorkloadAction implements ActionListener {
 
@@ -30,7 +31,7 @@ public class RefreshRowWorkloadAction implements ActionListener {
 			WorkLoadThreadGroup gp = (WorkLoadThreadGroup) nodes.get(0)
 					.getTestElement();
 
-			JMeterPluginsUtils.modelFromDerbyGui(sender.getWtableModel(),
+			WorkLoadUtil.modelFromDerbyGui(sender.getWtableModel(),
 					gp.getName());
 			JMeterPluginsUtils.derbyAgentToTableModelRows(sender
 					.getWtableModelAgents());

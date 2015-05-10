@@ -13,6 +13,7 @@ import org.apache.jmeter.gui.util.PowerTableModel;
 
 import br.unifor.iadapter.jmeter.GraphPanelChart;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
+import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class WorkLoadTableClicked implements MouseListener {
 
@@ -41,7 +42,7 @@ public class WorkLoadTableClicked implements MouseListener {
 
 		Object[] workloadData = model.getRowData(row);
 
-		WorkLoad workLoad = JMeterPluginsUtils.getWorkLoad(new ArrayList(Arrays
+		WorkLoad workLoad = WorkLoadUtil.getWorkLoad(new ArrayList(Arrays
 				.asList(workloadData)));
 
 		WorkLoadThreadGroupGUI.plotGraph(workLoad, chart);

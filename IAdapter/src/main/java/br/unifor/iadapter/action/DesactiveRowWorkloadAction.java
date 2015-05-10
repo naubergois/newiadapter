@@ -13,6 +13,7 @@ import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroupGUI;
 import br.unifor.iadapter.util.FindService;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
+import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class DesactiveRowWorkloadAction implements ActionListener {
 
@@ -35,7 +36,7 @@ public class DesactiveRowWorkloadAction implements ActionListener {
 
 		try {
 			MySQLDatabase.desactiveValue(gp.getName());
-			JMeterPluginsUtils.modelFromDerbyGui(sender.getWtableModel(),
+			WorkLoadUtil.modelFromDerbyGui(sender.getWtableModel(),
 					gp.getName());
 		} catch (ClassNotFoundException e2) {
 			// TODO Auto-generated catch block

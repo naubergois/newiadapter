@@ -18,6 +18,7 @@ import br.unifor.iadapter.agent.Agent;
 import br.unifor.iadapter.percentiles.PercentileCounter;
 import br.unifor.iadapter.threadGroup.FactoryWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
+import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class MySQLDatabase {
 
@@ -942,7 +943,7 @@ public class MySQLDatabase {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		while (rs.next()) {
-			WorkLoad workload = MySQLDatabase.resultSetToWorkLoad(rs);
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
 			list.add(workload);
 		}
 
@@ -968,7 +969,7 @@ public class MySQLDatabase {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		while (rs.next()) {
-			WorkLoad workload = MySQLDatabase.resultSetToWorkLoad(rs);
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
 			list.add(workload);
 		}
 
@@ -992,7 +993,7 @@ public class MySQLDatabase {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		while (rs.next()) {
-			WorkLoad workload = MySQLDatabase.resultSetToWorkLoad(rs);
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
 			list.add(workload);
 		}
 
@@ -1017,7 +1018,32 @@ public class MySQLDatabase {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		while (rs.next()) {
-			WorkLoad workload = MySQLDatabase.resultSetToWorkLoad(rs);
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
+	public static List<WorkLoad> listWorkLoadsTABUForNewGeneration(
+			String testPlan, String generation) throws ClassNotFoundException,
+			SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
+				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? "
+				+ "AND SEARCHMETHOD='TABU' ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
 			list.add(workload);
 		}
 
@@ -1039,7 +1065,7 @@ public class MySQLDatabase {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		while (rs.next()) {
-			WorkLoad workload = MySQLDatabase.resultSetToWorkLoad(rs);
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
 			list.add(workload);
 		}
 
@@ -1089,86 +1115,12 @@ public class MySQLDatabase {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		while (rs.next()) {
-			WorkLoad workload = MySQLDatabase.resultSetToWorkLoad(rs);
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
 			list.add(workload);
 		}
 
 		return list;
 
-	}
-
-	public static WorkLoad resultSetToWorkLoad(ResultSet rs)
-			throws SQLException {
-		String type = rs.getString(2);
-		WorkLoad workload = FactoryWorkLoad.createWorkLoad(type);
-		workload.setName(rs.getString(1));
-		workload.setType(type);
-		workload.setNumThreads(Integer.valueOf(rs.getString(3)));
-		workload.setWorstResponseTime(Long.valueOf(rs.getString(4)));
-		workload.setError(Boolean.valueOf(rs.getString(5)));
-		workload.setFit(Double.valueOf(rs.getString(6)));
-		workload.setFunction1(rs.getString(7));
-		workload.setFunction2(rs.getString(8));
-		workload.setFunction3(rs.getString(9));
-		workload.setFunction4(rs.getString(10));
-		workload.setFunction5(rs.getString(11));
-		workload.setFunction6(rs.getString(12));
-		workload.setFunction7(rs.getString(13));
-		workload.setFunction8(rs.getString(14));
-		workload.setFunction9(rs.getString(15));
-		workload.setFunction10(rs.getString(16));
-		if (rs.getString(18) != null) {
-			workload.setGeneration(Integer.valueOf(rs.getString(18)));
-		}
-		if (rs.getString(19) != null) {
-			workload.setActive(Boolean.valueOf(rs.getString(19)));
-		}
-		if (rs.getString(20) != null) {
-			workload.setPercentile90(Long.valueOf(rs.getString(20)));
-		}
-		if (rs.getString(21) != null) {
-			workload.setPercentile80(Long.valueOf(rs.getString(21)));
-		}
-		if (rs.getString(22) != null) {
-			workload.setPercentile70(Long.valueOf(rs.getString(22)));
-		}
-		if (rs.getString(23) != null) {
-			workload.setTotalErrors(Long.valueOf(rs.getString(23)));
-		}
-		if (rs.getString(24) != null) {
-			workload.setSearchMethod(rs.getString(24));
-		}
-		if (rs.getString(25) != null) {
-			workload.setUsers1(Integer.valueOf(rs.getString(25)));
-		}
-		if (rs.getString(26) != null) {
-			workload.setUsers2(Integer.valueOf(rs.getString(26)));
-		}
-		if (rs.getString(27) != null) {
-			workload.setUsers3(Integer.valueOf(rs.getString(27)));
-		}
-		if (rs.getString(28) != null) {
-			workload.setUsers4(Integer.valueOf(rs.getString(28)));
-		}
-		if (rs.getString(29) != null) {
-			workload.setUsers5(Integer.valueOf(rs.getString(29)));
-		}
-		if (rs.getString(30) != null) {
-			workload.setUsers6(Integer.valueOf(rs.getString(30)));
-		}
-		if (rs.getString(31) != null) {
-			workload.setUsers7(Integer.valueOf(rs.getString(31)));
-		}
-		if (rs.getString(32) != null) {
-			workload.setUsers8(Integer.valueOf(rs.getString(32)));
-		}
-		if (rs.getString(33) != null) {
-			workload.setUsers9(Integer.valueOf(rs.getString(33)));
-		}
-		if (rs.getString(34) != null) {
-			workload.setUsers10(Integer.valueOf(rs.getString(33)));
-		}
-		return workload;
 	}
 
 	public static long getResponseTime(String ip, String workLoad,

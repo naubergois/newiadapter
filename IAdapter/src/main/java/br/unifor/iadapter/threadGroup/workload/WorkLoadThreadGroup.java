@@ -33,21 +33,18 @@ import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
-import org.jgap.Chromosome;
-import org.jgap.Population;
-import org.jgap.impl.CrossoverOperator;
-import org.jgap.impl.MutationOperator;
 
 import br.unifor.iadapter.agent.Agent;
 import br.unifor.iadapter.database.MySQLDatabase;
-import br.unifor.iadapter.genetic.GeneWorkLoad;
 import br.unifor.iadapter.genetic.GeneticAlgorithm;
 import br.unifor.iadapter.sa.SimulateAnnealing;
+import br.unifor.iadapter.tabu.TabuSearch;
 import br.unifor.iadapter.threadGroup.AbstractSimpleThreadGroup;
 import br.unifor.iadapter.threadGroup.SingletonEngine;
 import br.unifor.iadapter.util.CSVReadStats;
 import br.unifor.iadapter.util.FindService;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
+import br.unifor.iadapter.util.WorkLoadUtil;
 
 /***
  * Class for define workload model and control the execution of test
@@ -228,6 +225,20 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		return null;
 	}
 
+	public static List<WorkLoad> returnListTABUWorkLoadsForNewGeneration(
+			WorkLoadThreadGroup tg) {
+		try {
+			return MySQLDatabase.listWorkLoadsTABUForNewGeneration(
+					tg.getName(), String.valueOf(tg.getGeneration()));
+		} catch (ClassNotFoundException e1) {
+
+			log.error(e1.getMessage());
+		} catch (SQLException e1) {
+			log.error(e1.getMessage());
+		}
+		return null;
+	}
+
 	@Override
 	public void threadFinished(JMeterThread thread) {
 		if (this.temperature == 0) {
@@ -275,19 +286,33 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				agent.runningFinal();
 
+				List<TestElement> listElement = FindService
+						.searchWorkLoadControllerWithNoGui(this.tree);
+
 				List<WorkLoad> list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(this);
 
 				List<WorkLoad> listSA = returnListSAWorkLoadsForNewGeneration(this);
+
+				List<WorkLoad> listTABU = returnListTABUWorkLoadsForNewGeneration(this);
 
 				this.setGeneration(this.getGeneration() + 1);
 
 				List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(this,
 						list);
 
-				List<TestElement> listElement = FindService
-						.searchWorkLoadControllerWithNoGui(this.tree);
-
 				List<WorkLoad> listNewSA = new ArrayList<WorkLoad>();
+
+				List<WorkLoad> listTABUnewGeneration = null;
+				if (listTABU.size() > 0) {
+
+					TabuSearch.addTabuTable(listTABU.get(0), listElement);
+					List<WorkLoad> neighboors = WorkLoadUtil.getNeighBoors(
+							listTABU.get(0), listElement,
+							Integer.valueOf(getThreadNumberMax()));
+					listTABUnewGeneration = TabuSearch.verify(neighboors,
+							listElement);
+
+				}
 
 				if (listSA.size() > 0) {
 					this.temperature = SimulateAnnealing.sa(this.temperature,
@@ -302,9 +327,18 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 						for (WorkLoad workLoad : listBest) {
 							MySQLDatabase.insertWorkLoads(
-									JMeterPluginsUtils.getObjectList(workLoad),
+									WorkLoadUtil.getObjectList(workLoad),
 									this.getName(),
 									String.valueOf(this.getGeneration()));
+						}
+
+						if (listTABUnewGeneration.size() > 0) {
+							for (WorkLoad workLoad : listTABUnewGeneration) {
+								MySQLDatabase.insertWorkLoads(
+										WorkLoadUtil.getObjectList(workLoad),
+										this.getName(),
+										String.valueOf(this.getGeneration()));
+							}
 						}
 					}
 					int minTempInt = Integer.valueOf(getMinTemp());
@@ -314,10 +348,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 							for (WorkLoad workLoad : listNewSA) {
 								MySQLDatabase.insertWorkLoads(
-										JMeterPluginsUtils
-												.getObjectList(workLoad), this
-												.getName(), String.valueOf(this
-												.getGeneration()));
+										WorkLoadUtil.getObjectList(workLoad),
+										this.getName(),
+										String.valueOf(this.getGeneration()));
 							}
 
 						}

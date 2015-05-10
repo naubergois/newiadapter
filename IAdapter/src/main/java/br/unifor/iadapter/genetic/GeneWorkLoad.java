@@ -22,6 +22,7 @@ import org.jgap.impl.MutationOperator;
 import br.unifor.iadapter.threadGroup.FactoryWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.util.FindService;
+import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class GeneWorkLoad {
 
@@ -157,8 +158,8 @@ public class GeneWorkLoad {
 		List<WorkLoad> workLoads = new ArrayList<WorkLoad>();
 		for (int i = 0; i <= 10; i++) {
 
-			WorkLoad workload = FactoryWorkLoad
-					.createWorkLoadTemperatureWithGui(generation, userNumbers);
+			WorkLoad workload = WorkLoadUtil.createWorkLoadTemperatureWithGui(
+					generation, userNumbers);
 			workLoads.add(workload);
 		}
 
@@ -172,7 +173,7 @@ public class GeneWorkLoad {
 		List<WorkLoad> workLoads = new ArrayList<WorkLoad>();
 		for (IChromosome iChromosome : list) {
 			Gene[] gene = iChromosome.getGenes();
-			WorkLoad workload = FactoryWorkLoad.createWorkLoadWithGui(gene,
+			WorkLoad workload = WorkLoadUtil.createWorkLoadWithGui(gene,
 					generation);
 			workLoads.add(workload);
 		}

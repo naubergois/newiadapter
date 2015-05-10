@@ -20,6 +20,7 @@ import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroupGUI;
 import br.unifor.iadapter.util.FindService;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
+import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class AddRowWorkloadAction implements ActionListener {
 
@@ -66,15 +67,17 @@ public class AddRowWorkloadAction implements ActionListener {
 			}
 			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(
 					users, 1);
-			workloadList.addAll(FactoryWorkLoad.createWorkLoadNodes(users, 1));
-			workloadList.add(FactoryWorkLoad.createWorkLoadTemperatureWithGui(1, users));
-			workloadList.add(FactoryWorkLoad.createWorkLoadTemperatureWithGui(1, users));
+			workloadList.addAll(WorkLoadUtil.createWorkLoadNodes(users, 1));
+			workloadList.add(WorkLoadUtil.createWorkLoadTemperatureWithGui(1,
+					users));
+			workloadList.add(WorkLoadUtil.createWorkLoadTemperatureWithGui(1,
+					users));
+			workloadList.add(WorkLoadUtil.createWorkLoadTabuWithGui(1, users));
+			workloadList.add(WorkLoadUtil.createWorkLoadTabuWithGui(1, users));
 		} catch (InvalidConfigurationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
-		
 
 		GuiPackage gp = GuiPackage.getInstance();
 		if (gp != null) {
@@ -86,7 +89,7 @@ public class AddRowWorkloadAction implements ActionListener {
 
 		for (WorkLoad workLoad : workloadList) {
 
-			Object[] rowObject = JMeterPluginsUtils.getObjectList(workLoad);
+			Object[] rowObject = WorkLoadUtil.getObjectList(workLoad);
 			tableModel.addRow(rowObject);
 
 		}
