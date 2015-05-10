@@ -64,11 +64,12 @@ public class WorkLoadUtil {
 	}
 
 	public static List<WorkLoad> getNeighBoors(WorkLoad workload,
-			List<TestElement> nodes, int maxUsers) {
+			List<TestElement> nodes, int maxUsers,int generation) {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (int i = 0; i < 10; i++) {
 			WorkLoad neighboor = getNeighBoor(workload, nodes, maxUsers);
+			neighboor.setGeneration(generation);
 			list.add(neighboor);
 		}
 
