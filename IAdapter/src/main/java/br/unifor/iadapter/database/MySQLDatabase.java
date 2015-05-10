@@ -1033,10 +1033,9 @@ public class MySQLDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? "
-				+ "AND SEARCHMETHOD='TABU' ORDER BY FIT*1 DESC");
+				+ "  FROM  workload WHERE TESTPLAN=? "
+				+ "AND SEARCHMETHOD='TABU' ORDER BY FIT*1 DESC LIMIT 10");
 		ps.setString(1, testPlan);
-		ps.setString(2, generation);
 
 		ResultSet rs = ps.executeQuery();
 

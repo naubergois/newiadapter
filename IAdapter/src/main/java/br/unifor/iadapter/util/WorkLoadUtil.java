@@ -902,7 +902,7 @@ public class WorkLoadUtil {
 			prefix = "TABU";
 		}
 		workload.setNumThreads(parametros.get(11));
-		workload.setName("SA:" + "G" + parametros.get(12) + ":"
+		workload.setName(prefix+":" + "G" + parametros.get(12) + ":"
 				+ workload.getType() + "-" + workload.getNumThreads() + "-"
 				+ workload.getFunction1() + "-" + workload.getFunction2() + "-"
 				+ workload.getFunction3() + "-" + workload.getFunction4() + "-"
