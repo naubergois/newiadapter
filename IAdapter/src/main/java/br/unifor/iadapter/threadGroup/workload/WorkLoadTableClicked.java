@@ -45,7 +45,11 @@ public class WorkLoadTableClicked implements MouseListener {
 		WorkLoad workLoad = WorkLoadUtil.getWorkLoad(new ArrayList(Arrays
 				.asList(workloadData)));
 
-		WorkLoadThreadGroupGUI.plotGraph(workLoad, chart);
+		if (workLoad != null) {
+
+			WorkLoadThreadGroupGUI.plotGraph(workLoad, chart);
+
+		}
 
 		// TODO Auto-generated method stub
 

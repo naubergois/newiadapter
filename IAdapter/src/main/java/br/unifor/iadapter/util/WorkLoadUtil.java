@@ -17,6 +17,7 @@ import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.tabu.TabuElement;
 import br.unifor.iadapter.threadGroup.FactoryWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
+import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 
 public class WorkLoadUtil {
 
@@ -64,7 +65,36 @@ public class WorkLoadUtil {
 	}
 
 	public static List<WorkLoad> getNeighBoors(WorkLoad workload,
-			List<TestElement> nodes, int maxUsers,int generation) {
+			List<TestElement> nodes, int maxUsers, int generation,
+			WorkLoadThreadGroup tg) {
+
+		int users = 0;
+		try {
+			users = MySQLDatabase.listBestWorkloadGenetic(tg.getName());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		int usersWorst = 0;
+		try {
+			usersWorst = MySQLDatabase.listWorstWorkloadGenetic(tg.getName());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (usersWorst > 0) {
+
+			maxUsers = usersWorst;
+		}
+
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (int i = 0; i < 10; i++) {
@@ -345,44 +375,53 @@ public class WorkLoadUtil {
 
 		if (object != null) {
 
-			String type = object.get(1).toString();
-			WorkLoad workload = FactoryWorkLoad.createWorkLoad(type);
-			workload.setNumThreads(Integer.valueOf(object.get(2).toString()));
-			workload.setName((object.get(0).toString()));
-			workload.setType((type));
-			workload.setWorstResponseTime(Long
-					.valueOf(object.get(3).toString()));
-			workload.setError(Boolean.valueOf(object.get(4).toString()));
-			workload.setFit(Double.valueOf(object.get(5).toString()));
-			workload.setFunction1(object.get(6).toString());
-			workload.setFunction2(object.get(7).toString());
-			workload.setFunction3(object.get(8).toString());
-			workload.setFunction4(object.get(9).toString());
-			workload.setFunction5(object.get(10).toString());
-			workload.setFunction6(object.get(11).toString());
-			workload.setFunction7(object.get(12).toString());
-			workload.setFunction8(object.get(13).toString());
-			workload.setFunction9(object.get(14).toString());
-			workload.setFunction10(object.get(15).toString());
-			workload.setGeneration(Integer.valueOf(object.get(16).toString()));
-			workload.setActive(Boolean.valueOf(object.get(17).toString()));
-			workload.setPercentile90(Integer.valueOf(object.get(18).toString()));
-			workload.setPercentile80(Integer.valueOf(object.get(19).toString()));
-			workload.setPercentile70(Integer.valueOf(object.get(20).toString()));
-			workload.setTotalErrors(Integer.valueOf(object.get(21).toString()));
-			workload.setSearchMethod(object.get(22).toString());
-			workload.setUsers1(Integer.valueOf(object.get(23).toString()));
-			workload.setUsers2(Integer.valueOf(object.get(24).toString()));
-			workload.setUsers3(Integer.valueOf(object.get(25).toString()));
-			workload.setUsers4(Integer.valueOf(object.get(26).toString()));
-			workload.setUsers5(Integer.valueOf(object.get(27).toString()));
-			workload.setUsers6(Integer.valueOf(object.get(28).toString()));
-			workload.setUsers7(Integer.valueOf(object.get(29).toString()));
-			workload.setUsers8(Integer.valueOf(object.get(30).toString()));
-			workload.setUsers9(Integer.valueOf(object.get(31).toString()));
-			workload.setUsers10(Integer.valueOf(object.get(32).toString()));
+			if (object.get(1) != null) {
 
-			return workload;
+				String type = object.get(1).toString();
+				WorkLoad workload = FactoryWorkLoad.createWorkLoad(type);
+				workload.setNumThreads(Integer
+						.valueOf(object.get(2).toString()));
+				workload.setName((object.get(0).toString()));
+				workload.setType((type));
+				workload.setWorstResponseTime(Long.valueOf(object.get(3)
+						.toString()));
+				workload.setError(Boolean.valueOf(object.get(4).toString()));
+				workload.setFit(Double.valueOf(object.get(5).toString()));
+				workload.setFunction1(object.get(6).toString());
+				workload.setFunction2(object.get(7).toString());
+				workload.setFunction3(object.get(8).toString());
+				workload.setFunction4(object.get(9).toString());
+				workload.setFunction5(object.get(10).toString());
+				workload.setFunction6(object.get(11).toString());
+				workload.setFunction7(object.get(12).toString());
+				workload.setFunction8(object.get(13).toString());
+				workload.setFunction9(object.get(14).toString());
+				workload.setFunction10(object.get(15).toString());
+				workload.setGeneration(Integer.valueOf(object.get(16)
+						.toString()));
+				workload.setActive(Boolean.valueOf(object.get(17).toString()));
+				workload.setPercentile90(Integer.valueOf(object.get(18)
+						.toString()));
+				workload.setPercentile80(Integer.valueOf(object.get(19)
+						.toString()));
+				workload.setPercentile70(Integer.valueOf(object.get(20)
+						.toString()));
+				workload.setTotalErrors(Integer.valueOf(object.get(21)
+						.toString()));
+				workload.setSearchMethod(object.get(22).toString());
+				workload.setUsers1(Integer.valueOf(object.get(23).toString()));
+				workload.setUsers2(Integer.valueOf(object.get(24).toString()));
+				workload.setUsers3(Integer.valueOf(object.get(25).toString()));
+				workload.setUsers4(Integer.valueOf(object.get(26).toString()));
+				workload.setUsers5(Integer.valueOf(object.get(27).toString()));
+				workload.setUsers6(Integer.valueOf(object.get(28).toString()));
+				workload.setUsers7(Integer.valueOf(object.get(29).toString()));
+				workload.setUsers8(Integer.valueOf(object.get(30).toString()));
+				workload.setUsers9(Integer.valueOf(object.get(31).toString()));
+				workload.setUsers10(Integer.valueOf(object.get(32).toString()));
+
+				return workload;
+			}
 		}
 		return null;
 	}
@@ -436,15 +475,11 @@ public class WorkLoadUtil {
 		String[] types = WorkLoad.getTypes();
 		if ((nodes.size() > 0) && (types.length > 0) && (maxThreads > 0)) {
 
-			int rest = maxThreads / 20;
-
-			if (rest < 20) {
-				rest = 20;
-			}
+			int third = maxThreads / 3;
 
 			for (int i = 0; i < nodes.size(); i++) {
 				for (int j = 0; j < types.length; j++) {
-					for (int z = 0; z < maxThreads; z = z + rest) {
+					for (int z = 0; (z < maxThreads); z = z + third) {
 
 						WorkLoad workload = null;
 						if (j == 0) {
@@ -488,8 +523,8 @@ public class WorkLoadUtil {
 						workload.setGeneration(generation);
 						workload.setActive(true);
 						workload.setSearchMethod("GENETICALGORITHM");
-						returnList.add(workload);
 						workload.calcUsers();
+						returnList.add(workload);
 
 					}
 
@@ -815,9 +850,19 @@ public class WorkLoadUtil {
 		return workload;
 	}
 
-	public static WorkLoad mutant(WorkLoad workLoad, int users, int maxUsers) {
+	public static WorkLoad mutant(WorkLoad workLoad, int users, int maxUsers,
+			int maxThreads) {
+		if (maxUsers < 0) {
+			maxUsers = 0;
+		}
+		if (users < 0) {
+			users = 0;
+		}
+		if ((users == 0) && (maxUsers == 0)) {
+			maxUsers = maxThreads;
+		}
 		WorkLoad workloadMutation = new WorkLoad();
-		int newUsers = (users + randInt(users, maxUsers)) / 2;
+		int newUsers = (users + randInt(0, maxUsers)) / 2;
 		workloadMutation.setNumThreads(newUsers);
 		workloadMutation.setName("Mutation-" + newUsers + "-"
 				+ workLoad.getName());
@@ -837,9 +882,6 @@ public class WorkLoadUtil {
 		workloadMutation.setFunction9(workLoad.getFunction9());
 		workloadMutation.setFunction10(workLoad.getFunction10());
 		workloadMutation.setGeneration(workLoad.getGeneration());
-		workloadMutation.setPercentile70(0);
-		workloadMutation.setPercentile80(0);
-		workloadMutation.setPercentile90(0);
 
 		workloadMutation.setSearchMethod("GENETICALGORITHM");
 
@@ -903,7 +945,7 @@ public class WorkLoadUtil {
 			prefix = "TABU";
 		}
 		workload.setNumThreads(parametros.get(11));
-		workload.setName(prefix+":" + "G" + parametros.get(12) + ":"
+		workload.setName(prefix + ":" + "G" + parametros.get(12) + ":"
 				+ workload.getType() + "-" + workload.getNumThreads() + "-"
 				+ workload.getFunction1() + "-" + workload.getFunction2() + "-"
 				+ workload.getFunction3() + "-" + workload.getFunction4() + "-"

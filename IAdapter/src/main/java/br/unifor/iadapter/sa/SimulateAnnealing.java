@@ -1,11 +1,13 @@
 package br.unifor.iadapter.sa;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import org.apache.jmeter.testelement.TestElement;
 
+import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.util.WorkLoadUtil;
@@ -70,6 +72,34 @@ public class SimulateAnnealing {
 
 	public static WorkLoad pertub(int maxUsers, WorkLoadThreadGroup tg,
 			List<TestElement> nodes, int generation) {
+
+		int users = 0;
+		try {
+			users = MySQLDatabase.listBestWorkloadGenetic(tg.getName());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		int usersWorst = 0;
+		try {
+			usersWorst = MySQLDatabase.listWorstWorkloadGenetic(tg.getName());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (usersWorst > 0) {
+			int newUserWorst = usersWorst;
+			if (newUserWorst < maxUsers)
+				maxUsers = newUserWorst;
+		}
 
 		List<Integer> parametros = new ArrayList<Integer>();
 

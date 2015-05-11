@@ -305,14 +305,15 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				List<WorkLoad> listTABUnewGeneration = null;
 
 				listTABU = TabuSearch.verify(listTABU, listElement);
-				
+
 				if (listTABU.size() > 0) {
 
 					TabuSearch.addTabuTable(listTABU.get(0), listElement);
 
 					List<WorkLoad> neighboors = WorkLoadUtil.getNeighBoors(
 							listTABU.get(0), listElement,
-							Integer.valueOf(getThreadNumberMax()), generation);
+							Integer.valueOf(getThreadNumberMax()), generation,
+							this);
 					listTABUnewGeneration = TabuSearch.verify(neighboors,
 							listElement);
 

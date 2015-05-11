@@ -65,8 +65,6 @@ public abstract class JMeterPluginsUtils {
 		return prefixPlugins ? PLUGINS_PREFIX + label : label;
 	}
 
-	
-
 	public static List<WorkLoad> getListWorkLoadFromPopulation(
 			Population population, ListedHashTree tree, int generation) {
 		List<TestElement> listElement = FindService
@@ -111,6 +109,9 @@ public abstract class JMeterPluginsUtils {
 	public static List<WorkLoad> getListWorkLoadFromPopulationTestPlan(
 			List<Chromosome> listC, ListedHashTree tree, int generation,
 			String testPlan, int maxUsers) {
+
+		int maxThreads = maxUsers;
+
 		List<TestElement> listElement = FindService
 				.searchWorkLoadControllerWithNoGui(tree);
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
@@ -129,16 +130,30 @@ public abstract class JMeterPluginsUtils {
 				int users = MySQLDatabase.listBestWorkloadGenetic(testPlan,
 						workLoad.getType());
 
+				int usersWorst = MySQLDatabase.listWorstWorkloadGenetic(
+						testPlan, workLoad.getType());
+
+				if (usersWorst > 0) {
+					maxUsers = usersWorst;
+				}
+
 				int generationWorkLoad = Integer.valueOf(workLoad
 						.getGeneration());
 
-				if ((workLoad.getNumThreads() <= users)
-						&& (generationWorkLoad >= generation)) {
-					WorkLoad workloadMutation = WorkLoadUtil.mutant(workLoad,
-							users, maxUsers);
-					listAux.add(workloadMutation);
-					listRemove.add(workLoad);
+				if ((generationWorkLoad >= generation)) {
 
+					Random mutRandom = new Random();
+
+					int probabilty = mutRandom.nextInt(10);
+
+					if ((probabilty < 2)
+							|| (workLoad.getNumThreads() > (maxUsers))) {
+
+						WorkLoad workloadMutation = WorkLoadUtil.mutant(
+								workLoad, users, maxUsers, maxThreads);
+						listAux.add(workloadMutation);
+						listRemove.add(workLoad);
+					}
 				}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -384,7 +399,6 @@ public abstract class JMeterPluginsUtils {
 
 	}
 
-	
 	public static void collectionPropertyToTableModelRows(
 			CollectionProperty prop, PowerTableModel model,
 			@SuppressWarnings("rawtypes") Class[] columnClasses) {

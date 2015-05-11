@@ -576,14 +576,14 @@ public class MySQLDatabase {
 		Connection con = singleton();
 		PreparedStatement ps = con
 				.prepareStatement(""
-						+ "UPDATE workload SET ACTIVE='false' WHERE   CAST(FIT AS DECIMAL)>0 and TESTPLAN=? ");
+						+ "UPDATE workload SET ACTIVE='false' WHERE FIT IS NOT NULL AND   (CAST(FIT AS DECIMAL)>0 OR CAST(FIT AS DECIMAL)<0)  and TESTPLAN=? ");
 
 		ps.setString(1, testPlan);
 
 		ps.executeUpdate();
 
 		ps = con.prepareStatement(""
-				+ "UPDATE workload SET GENERATION='1' WHERE  ACTIVE='true' AND  CAST(FIT AS DECIMAL)=0 and TESTPLAN=? ");
+				+ "UPDATE workload SET GENERATION='1' WHERE FIT IS NOT NULL AND ACTIVE='true' AND  CAST(FIT AS DECIMAL)=0 and TESTPLAN=? ");
 		ps.setString(1, testPlan);
 
 		ps.executeUpdate();
@@ -619,14 +619,22 @@ public class MySQLDatabase {
 		}
 		if (count > 0) {
 
-			if ((responseTime < maxTime) && (responseTime90Percent < maxTime)) {
+			if ((responseTime <= maxTime) || (responseTime90Percent <= maxTime)) {
 
 				fit = (long) (0.8 * responseTime90Percent + 0.2 * responseTime)
-						- totalError;
+						- 2 * totalError;
 
 			} else {
 
-				fit = Long.MIN_VALUE;
+				if (responseTime90Percent > maxTime) {
+					long delta = (maxTime - ((long) (0.8 * responseTime90Percent + 0.2 * responseTime)));
+					System.out.println("delta " + delta);
+					fit = maxTime + delta - 2 * totalError;
+				} else {
+					long delta = (maxTime - ((long) (0.8 * responseTime + 0.2 * responseTime90Percent)));
+					System.out.println("delta " + delta);
+					fit = maxTime + delta - 2 * totalError;
+				}
 
 			}
 
@@ -1077,12 +1085,80 @@ public class MySQLDatabase {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT USERS"
-						+ "  FROM  workload WHERE TESTPLAN=? AND SEARCHMETHOD='GENETICALGORITHM' AND TYPE=? ORDER BY FIT*1 DESC");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
+				+ "  FROM  workload WHERE TESTPLAN=? "
+				+ " AND TYPE=? ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, type);
+
+		ResultSet rs = ps.executeQuery();
+
+		int users = 0;
+
+		if (rs.next()) {
+			users = Integer.valueOf(rs.getString(1));
+		}
+
+		return users;
+
+	}
+
+	public static int listBestWorkloadGenetic(String testPlan)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
+				+ "  FROM  workload WHERE TESTPLAN=? "
+				+ "  ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
+
+		ResultSet rs = ps.executeQuery();
+
+		int users = 0;
+
+		if (rs.next()) {
+			users = Integer.valueOf(rs.getString(1));
+		}
+
+		return users;
+
+	}
+
+	public static int listWorstWorkloadGenetic(String testPlan, String type)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
+				+ "  FROM  workload WHERE TESTPLAN=? "
+				+ "AND (ERROR='true' OR CAST(FIT AS DECIMAL)<0) "
+				+ "AND TYPE=? ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, type);
+
+		ResultSet rs = ps.executeQuery();
+
+		int users = 0;
+
+		if (rs.next()) {
+			users = Integer.valueOf(rs.getString(1));
+		}
+
+		return users;
+
+	}
+
+	public static int listWorstWorkloadGenetic(String testPlan)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
+				+ "  FROM  workload WHERE TESTPLAN=? "
+				+ "AND (ERROR='true' OR CAST(FIT AS DECIMAL)<0) "
+				+ " ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
 
 		ResultSet rs = ps.executeQuery();
 
@@ -1101,11 +1177,9 @@ public class MySQLDatabase {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT "
-						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? AND ACTIVE='true' ORDER BY FIT*1 DESC");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
+				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=?"
+				+ " AND ACTIVE='true'  ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
