@@ -41,7 +41,7 @@ public class GeneWorkLoad {
 
 	public static CrossoverOperator crossOverPopulation(Population population,
 			List<Chromosome> list) throws InvalidConfigurationException {
-		CrossoverOperator cs = new CrossoverOperator(getConfiguration());
+		CrossoverOperator cs = new CrossoverOperator(getConfiguration(), 100);
 		cs.operate(population, list);
 		return cs;
 
@@ -49,7 +49,7 @@ public class GeneWorkLoad {
 
 	public static MutationOperator mutationPopulation(Population population,
 			List<Chromosome> list) throws InvalidConfigurationException {
-		MutationOperator cs = new MutationOperator(getConfiguration());
+		MutationOperator cs = new MutationOperator(getConfiguration(), 20);
 		cs.operate(population, list);
 		return cs;
 

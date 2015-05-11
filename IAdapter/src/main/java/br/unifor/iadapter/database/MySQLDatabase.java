@@ -553,6 +553,32 @@ public class MySQLDatabase {
 
 	}
 
+	public static long selectUsers(String workload, String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
+
+		long rst = 0;
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT USERS FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+		ps.setString(1, workload);
+		ps.setString(2, testPlan);
+		ps.setString(3, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		String user = "0";
+		while (rs.next()) {
+			user = rs.getString(1);
+		}
+
+		rst = Long.valueOf(user);
+		return rst;
+
+	}
+
 	public static void updateActiveValue(String workload, String testPlan,
 			String generation, long maxTime) throws ClassNotFoundException,
 			SQLException {
@@ -599,6 +625,8 @@ public class MySQLDatabase {
 		long responseTime90Percent = selectResponseTimePercent90(workload,
 				testPlan, generation);
 
+		long users = selectUsers(workload, testPlan, generation);
+
 		double fitDatabase = selectFit(workload, testPlan, generation);
 		long totalError = selectTotalError(workload, testPlan, generation);
 
@@ -619,36 +647,39 @@ public class MySQLDatabase {
 		}
 		if (count > 0) {
 
-			if ((responseTime <= maxTime) || (responseTime90Percent <= maxTime)) {
+			if (responseTime > 0) {
+				if ((responseTime <= maxTime)
+						|| (responseTime90Percent <= maxTime)) {
 
-				fit = (long) (0.8 * responseTime90Percent + 0.2 * responseTime)
-						- 2 * totalError;
+					fit = (long) (0.9 * responseTime90Percent + 0.1 * responseTime)
+							- 10 * totalError + users;
 
-			} else {
-
-				if (responseTime90Percent > maxTime) {
-					long delta = (maxTime - ((long) (0.8 * responseTime90Percent + 0.2 * responseTime)));
-					System.out.println("delta " + delta);
-					fit = maxTime + delta - 2 * totalError;
 				} else {
-					long delta = (maxTime - ((long) (0.8 * responseTime + 0.2 * responseTime90Percent)));
-					System.out.println("delta " + delta);
-					fit = maxTime + delta - 2 * totalError;
+
+					if (responseTime90Percent > maxTime) {
+						long delta = (maxTime - ((long) (0.9 * responseTime90Percent + 0.1 * responseTime)));
+						System.out.println("delta " + delta);
+						fit = maxTime + delta - 10 * totalError;
+					} else {
+						long delta = (maxTime - ((long) (0.9 * responseTime + 0.1 * responseTime90Percent)));
+						System.out.println("delta " + delta);
+						fit = maxTime + delta - 10 * totalError;
+					}
+
 				}
 
-			}
+				if ((fitDatabase >= 0) && (fitDatabase != 0.5)) {
+					if ((fit < 0) || (fit > fitDatabase) || (fit == 0.5)) {
+						ps = con.prepareStatement(""
+								+ "UPDATE workload SET FIT=? WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+						ps.setString(1, String.valueOf(fit));
+						ps.setString(2, workload);
+						ps.setString(3, testPlan);
+						ps.setString(4, generation);
 
-			if ((fitDatabase >= 0) && (fitDatabase != 0.5)) {
-				if ((fit < 0) || (fit > fitDatabase) || (fit == 0.5)) {
-					ps = con.prepareStatement(""
-							+ "UPDATE workload SET FIT=? WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
-					ps.setString(1, String.valueOf(fit));
-					ps.setString(2, workload);
-					ps.setString(3, testPlan);
-					ps.setString(4, generation);
+						ps.executeUpdate();
 
-					ps.executeUpdate();
-
+					}
 				}
 			}
 		}

@@ -45,11 +45,15 @@ public class WorkLoadUtil {
 
 	public static int randInt(int min, int max) {
 
-		Random rand = new Random();
+		try {
+			Random rand = new Random();
 
-		int randomNum = rand.nextInt((max - min) + 1) + min;
+			int randomNum = rand.nextInt((max - min) + 1) + min;
 
-		return randomNum;
+			return randomNum;
+		} catch (IllegalArgumentException e) {
+			return 0;
+		}
 	}
 
 	public static int getIndexType(String type) {
@@ -93,6 +97,10 @@ public class WorkLoadUtil {
 		if (usersWorst > 0) {
 
 			maxUsers = usersWorst;
+		}
+
+		if (workload.getNumThreads() < 0) {
+			workload.setNumThreads(0);
 		}
 
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
@@ -834,18 +842,37 @@ public class WorkLoadUtil {
 
 		workload.setSearchMethod("GENETICALGORITHM");
 
-		workload.setName("G" + generation + ":" + workload.getType() + "-"
-				+ workload.getNumThreads() + "-" + workload.getFunction1()
-				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
-				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()
-				+ "-" + workload.getFunction6() + "-" + workload.getFunction7()
-				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
-				+ "-" + workload.getFunction10() + workload.getUsers1() + "-"
-				+ workload.getUsers2() + "-" + workload.getUsers3() + "-"
-				+ workload.getUsers4() + "-" + workload.getUsers5() + "-"
-				+ workload.getUsers6() + "-" + workload.getUsers7() + "-"
-				+ workload.getUsers8() + "-" + workload.getUsers9() + "-"
-				+ workload.getUsers10());
+		if (workload.getName() == null) {
+			workload.setName("");
+		}
+
+		if (workload.getName() != null) {
+
+			if (workload.getName().length() == 0) {
+
+				workload.setName("G" + generation + ":" + workload.getType()
+						+ "-" + workload.getNumThreads() + "-"
+						+ workload.getFunction1() + "-"
+						+ workload.getFunction2() + "-"
+						+ workload.getFunction3() + "-"
+						+ workload.getFunction4() + "-"
+						+ workload.getFunction5() + "-"
+						+ workload.getFunction6() + "-"
+						+ workload.getFunction7() + "-"
+						+ workload.getFunction8() + "-"
+						+ workload.getFunction9() + "-"
+						+ workload.getFunction10() + workload.getUsers1() + "-"
+						+ workload.getUsers2() + "-" + workload.getUsers3()
+						+ "-" + workload.getUsers4() + "-"
+						+ workload.getUsers5() + "-" + workload.getUsers6()
+						+ "-" + workload.getUsers7() + "-"
+						+ workload.getUsers8() + "-" + workload.getUsers9()
+						+ "-" + workload.getUsers10());
+			} else {
+				workload.setName("G" + generation + ":" + workload.getName());
+			}
+			workload.calcUsers();
+		}
 
 		return workload;
 	}

@@ -146,8 +146,7 @@ public abstract class JMeterPluginsUtils {
 
 					int probabilty = mutRandom.nextInt(10);
 
-					if ((probabilty < 2)
-							|| (workLoad.getNumThreads() > (maxUsers))) {
+					if ((probabilty < 2)) {
 
 						WorkLoad workloadMutation = WorkLoadUtil.mutant(
 								workLoad, users, maxUsers, maxThreads);
@@ -235,22 +234,24 @@ public abstract class JMeterPluginsUtils {
 			List<WorkLoad> model, String propname) {
 		CollectionProperty rows = new CollectionProperty(propname,
 				new ArrayList<Object>());
-		for (int row = 0; row < model.size(); row++) {
-			Object[] item = WorkLoadUtil.getObjectList(model.get(row));
-			if (item != null) {
-				for (int i = 0; i < item.length; i++) {
-					String object = String.valueOf(item[i]);
-					if (object == null) {
-						item[i] = "0";
-					} else {
-						item[i] = String.valueOf(object);
+		if (model != null) {
+			for (int row = 0; row < model.size(); row++) {
+				Object[] item = WorkLoadUtil.getObjectList(model.get(row));
+				if (item != null) {
+					for (int i = 0; i < item.length; i++) {
+						String object = String.valueOf(item[i]);
+						if (object == null) {
+							item[i] = "0";
+						} else {
+							item[i] = String.valueOf(object);
+						}
+
 					}
 
+					rows.addItem(item);
+				} else {
+					log.info("Objeto nulo");
 				}
-
-				rows.addItem(item);
-			} else {
-				log.info("Objeto nulo");
 			}
 		}
 		return rows;
