@@ -19,9 +19,9 @@ public class TabuSearch {
 			List<TestElement> nodes) {
 		List<WorkLoad> workLoadForRemove = new ArrayList();
 		for (WorkLoad workLoad : list) {
-			for (TabuElement tabuTable : tabuTable) {
+			for (TabuElement tabuElement : tabuTable) {
 				TabuElement tabu = WorkLoadUtil.convertTabu(workLoad, nodes);
-				if (tabu.getTotal() == tabuTable.getTotal()) {
+				if (tabu.getTotal() == tabuElement.getTotal()) {
 					workLoadForRemove.add(workLoad);
 				}
 			}
