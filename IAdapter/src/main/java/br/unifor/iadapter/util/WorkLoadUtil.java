@@ -124,7 +124,7 @@ public class WorkLoadUtil {
 		int func = random.nextInt(10);
 
 		if (func == 0) {
-			int newFunc = random.nextInt(nodes.size() - 1);
+			int newFunc = random.nextInt(nodes.size());
 			parametros.add(newFunc);
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -137,7 +137,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 1) {
-			int newFunc = random.nextInt(nodes.size() - 1);
+			int newFunc = random.nextInt(nodes.size() );
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(newFunc);
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -150,7 +150,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 2) {
-			int newFunc = random.nextInt(nodes.size() - 1);
+			int newFunc = random.nextInt(nodes.size());
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(newFunc);
@@ -163,7 +163,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 3) {
-			int newFunc = random.nextInt(nodes.size() - 1);
+			int newFunc = random.nextInt(nodes.size() );
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -176,7 +176,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 4) {
-			int newFunc = random.nextInt(nodes.size() - 1);
+			int newFunc = random.nextInt(nodes.size() );
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -189,7 +189,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 5) {
-			int newFunc = random.nextInt(nodes.size() - 1);
+			int newFunc = random.nextInt(nodes.size() );
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -202,7 +202,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 6) {
-			int newFunc = random.nextInt(nodes.size() - 1);
+			int newFunc = random.nextInt(nodes.size());
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -215,7 +215,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 7) {
-			int newFunc = random.nextInt(nodes.size() - 1);
+			int newFunc = random.nextInt(nodes.size() );
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -228,7 +228,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 8) {
-			int newFunc = random.nextInt(nodes.size() - 1);
+			int newFunc = random.nextInt(nodes.size() );
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -241,7 +241,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 9) {
-			int newFunc = random.nextInt(nodes.size() - 1);
+			int newFunc = random.nextInt(nodes.size() );
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
