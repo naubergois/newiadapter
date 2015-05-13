@@ -1089,6 +1089,30 @@ public class MySQLDatabase {
 
 	}
 
+	public static List<WorkLoad> listWorkLoadsALlForNewGeneration(
+			String testPlan, String generation) throws ClassNotFoundException,
+			SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
+				+ "  FROM  workload WHERE TESTPLAN=? "
+				+ " ORDER BY FIT*1 DESC LIMIT 10");
+		ps.setString(1, testPlan);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
 	public static List<WorkLoad> listAllWorkLoads(String testPlan)
 			throws ClassNotFoundException, SQLException {
 

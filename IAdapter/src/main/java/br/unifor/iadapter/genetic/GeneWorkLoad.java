@@ -19,7 +19,6 @@ import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.IntegerGene;
 import org.jgap.impl.MutationOperator;
 
-import br.unifor.iadapter.threadGroup.FactoryWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.util.FindService;
 import br.unifor.iadapter.util.WorkLoadUtil;
@@ -60,7 +59,7 @@ public class GeneWorkLoad {
 			throws InvalidConfigurationException {
 		List<TestElement> list = FindService
 				.searchWorkLoadControllerWithNoGui(threadGroupTree);
-		Gene[] wgenes = new Gene[12];
+		Gene[] wgenes = new Gene[22];
 
 		wgenes[0] = new IntegerGene(getConfiguration());
 		wgenes[0].setAllele(Arrays.asList(WorkLoad.getTypes()).indexOf(
@@ -70,24 +69,43 @@ public class GeneWorkLoad {
 		wgenes[2] = new IntegerGene(getConfiguration());
 		wgenes[2].setAllele(indexOf(list, workload.getFunction1()));
 		wgenes[3] = new IntegerGene(getConfiguration());
-		wgenes[3].setAllele(indexOf(list, workload.getFunction2()));
+		wgenes[3].setAllele(workload.getUsers1());
 		wgenes[4] = new IntegerGene(getConfiguration());
-		wgenes[4].setAllele(indexOf(list, workload.getFunction3()));
+		wgenes[4].setAllele(indexOf(list, workload.getFunction2()));
 		wgenes[5] = new IntegerGene(getConfiguration());
-		wgenes[5].setAllele(indexOf(list, workload.getFunction4()));
+		wgenes[5].setAllele(workload.getUsers2());
 		wgenes[6] = new IntegerGene(getConfiguration());
-		wgenes[6].setAllele(indexOf(list, workload.getFunction5()));
+		wgenes[6].setAllele(indexOf(list, workload.getFunction3()));
 		wgenes[7] = new IntegerGene(getConfiguration());
-		wgenes[7].setAllele(indexOf(list, workload.getFunction6()));
+		wgenes[7].setAllele(workload.getUsers3());
 		wgenes[8] = new IntegerGene(getConfiguration());
-		wgenes[8].setAllele(indexOf(list, workload.getFunction7()));
+		wgenes[8].setAllele(indexOf(list, workload.getFunction4()));
 		wgenes[9] = new IntegerGene(getConfiguration());
-		wgenes[9].setAllele(indexOf(list, workload.getFunction8()));
+		wgenes[9].setAllele(workload.getUsers4());
 		wgenes[10] = new IntegerGene(getConfiguration());
-		wgenes[10].setAllele(indexOf(list, workload.getFunction9()));
+		wgenes[10].setAllele(indexOf(list, workload.getFunction5()));
 		wgenes[11] = new IntegerGene(getConfiguration());
-		wgenes[11].setAllele(indexOf(list, workload.getFunction10()));
-
+		wgenes[11].setAllele(workload.getUsers5());
+		wgenes[12] = new IntegerGene(getConfiguration());
+		wgenes[12].setAllele(indexOf(list, workload.getFunction6()));
+		wgenes[13] = new IntegerGene(getConfiguration());
+		wgenes[13].setAllele(workload.getUsers6());
+		wgenes[14] = new IntegerGene(getConfiguration());
+		wgenes[14].setAllele(indexOf(list, workload.getFunction7()));
+		wgenes[15] = new IntegerGene(getConfiguration());
+		wgenes[15].setAllele(workload.getUsers7());
+		wgenes[16] = new IntegerGene(getConfiguration());
+		wgenes[16].setAllele(indexOf(list, workload.getFunction8()));
+		wgenes[17] = new IntegerGene(getConfiguration());
+		wgenes[17].setAllele(workload.getUsers8());
+		wgenes[18] = new IntegerGene(getConfiguration());
+		wgenes[18].setAllele(indexOf(list, workload.getFunction9()));
+		wgenes[19] = new IntegerGene(getConfiguration());
+		wgenes[19].setAllele(workload.getUsers9());
+		wgenes[20] = new IntegerGene(getConfiguration());
+		wgenes[20].setAllele(indexOf(list, workload.getFunction10()));
+		wgenes[21] = new IntegerGene(getConfiguration());
+		wgenes[21].setAllele(workload.getUsers10());
 		return wgenes;
 
 	}
@@ -204,20 +222,31 @@ public class GeneWorkLoad {
 				.searchWorkLoadControllerWithGui();
 
 		int userNumberMax = userNumbers;
-		Gene[] wgenes = new Gene[12];
+		int userMaxGene = userNumberMax / 10;
+		Gene[] wgenes = new Gene[22];
 		wgenes[0] = new IntegerGene(getConfiguration(), 0,
 				WorkLoad.getTypes().length - 1);
 		wgenes[1] = new IntegerGene(getConfiguration(), 1, userNumberMax);
 		wgenes[2] = new IntegerGene(getConfiguration(), 0, list.size());
-		wgenes[3] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[3] = new IntegerGene(getConfiguration(), 1, userMaxGene);
 		wgenes[4] = new IntegerGene(getConfiguration(), 0, list.size());
-		wgenes[5] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[5] = new IntegerGene(getConfiguration(), 1, userMaxGene);
 		wgenes[6] = new IntegerGene(getConfiguration(), 0, list.size());
-		wgenes[7] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[7] = new IntegerGene(getConfiguration(), 1, userMaxGene);
 		wgenes[8] = new IntegerGene(getConfiguration(), 0, list.size());
-		wgenes[9] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[9] = new IntegerGene(getConfiguration(), 1, userMaxGene);
 		wgenes[10] = new IntegerGene(getConfiguration(), 0, list.size());
-		wgenes[11] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[11] = new IntegerGene(getConfiguration(), 1, userMaxGene);
+		wgenes[12] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[13] = new IntegerGene(getConfiguration(), 1, userMaxGene);
+		wgenes[14] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[15] = new IntegerGene(getConfiguration(), 1, userMaxGene);
+		wgenes[16] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[17] = new IntegerGene(getConfiguration(), 1, userMaxGene);
+		wgenes[18] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[19] = new IntegerGene(getConfiguration(), 1, userMaxGene);
+		wgenes[20] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[21] = new IntegerGene(getConfiguration(), 1, userMaxGene);
 
 		return wgenes;
 	}

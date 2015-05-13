@@ -239,6 +239,20 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		return null;
 	}
 
+	public static List<WorkLoad> returnListALLWorkLoadsForNewGeneration(
+			WorkLoadThreadGroup tg) {
+		try {
+			return MySQLDatabase.listWorkLoadsALlForNewGeneration(tg.getName(),
+					String.valueOf(tg.getGeneration()));
+		} catch (ClassNotFoundException e1) {
+
+			log.error(e1.getMessage());
+		} catch (SQLException e1) {
+			log.error(e1.getMessage());
+		}
+		return null;
+	}
+
 	@Override
 	public void threadFinished(JMeterThread thread) {
 		if (this.temperature == 0) {
@@ -293,7 +307,10 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				List<WorkLoad> listSA = returnListSAWorkLoadsForNewGeneration(this);
 
-				List<WorkLoad> listTABU = returnListTABUWorkLoadsForNewGeneration(this);
+				// List<WorkLoad> listTABU =
+				// returnListTABUWorkLoadsForNewGeneration(this);
+
+				List<WorkLoad> listTABU = returnListALLWorkLoadsForNewGeneration(this);
 
 				this.setGeneration(this.getGeneration() + 1);
 
@@ -434,11 +451,10 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			list = MySQLDatabase.listWorkLoadsOrderName(this.getName(),
 					String.valueOf(this.getGeneration()));
 		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+
+			log.error(e1.getMessage());
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			log.error(e1.getMessage());
 		}
 
 		this.setTree(threadGroupTree);
@@ -479,37 +495,68 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			context.setRestartNextLoop(true);
 
 			int count = 1;
-			int count2 = 1;
 
-			while (count <= workload.getNumThreads()) {
+			while (count <= 10) {
 
-				if (count > workload.getNumThreads())
-					break;
+				int users = 0;
 
 				String nameWorkloadController = getFunctionNameByID(workload,
-						count2 % 10);
+						count % 10);
 
 				if ((nameWorkloadController != null)
 						&& (!(nameWorkloadController.equals("None")))) {
 
-					count++;
+					if (count == 1) {
+						users = workload.getUsers1();
+					}
+					if (count == 2) {
+						users = workload.getUsers2();
+					}
+					if (count == 3) {
+						users = workload.getUsers3();
+					}
+					if (count == 4) {
+						users = workload.getUsers4();
+					}
+					if (count == 5) {
+						users = workload.getUsers5();
+					}
+					if (count == 6) {
+						users = workload.getUsers6();
+					}
+					if (count == 7) {
+						users = workload.getUsers7();
+					}
+					if (count == 8) {
+						users = workload.getUsers8();
+					}
+					if (count == 9) {
+						users = workload.getUsers9();
+					}
+					if (count == 10) {
+						users = workload.getUsers10();
+					}
 
 					TestElement node = getNodesByName(nameWorkloadController,
 							lista);
 
-					JMeterThread jmThread = makeThread(groupCount, notifier,
-							threadGroupTree, engine, count, context, workload,
-							node);
-					workload.scheduleThread(log, numThreads, jmThread, count);
-					Thread newThread = new Thread(jmThread,
-							jmThread.getThreadName());
+					for (int j = 0; j < users; j++) {
+						JMeterThread jmThread = makeThread(groupCount,
+								notifier, threadGroupTree, engine, j, context,
+								workload, node);
+						workload.scheduleThread(log, numThreads, jmThread,
+								count);
+						Thread newThread = new Thread(jmThread,
+								jmThread.getThreadName());
 
-					registerStartedThread(jmThread, newThread);
+						registerStartedThread(jmThread, newThread);
 
-					newThread.start();
+						newThread.start();
+					}
+					groupCount++;
 				}
 
-				count2++;
+				count++;
 
 			}
 

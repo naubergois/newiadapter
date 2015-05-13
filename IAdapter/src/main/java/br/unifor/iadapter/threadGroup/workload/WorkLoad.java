@@ -6,6 +6,8 @@ import org.apache.log.Logger;
 import br.unifor.iadapter.jmeter.GraphRowSumValues;
 
 public class WorkLoad {
+	
+	
 
 	public void calcUsers() {
 
