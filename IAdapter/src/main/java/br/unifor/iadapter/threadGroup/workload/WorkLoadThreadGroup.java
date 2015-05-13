@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -396,6 +397,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 						|| (minTempInt <= temperature)) {
 					this.currentTest = 0;
 
+					File file = new File("tempResults.csv");
+					file.delete();
+					CSVReadStats.setErrorsTotal(new HashMap());
+					CSVReadStats.setErrors(new HashMap());
+					CSVReadStats.setPercentiles(new HashMap());
+					CSVReadStats.setRequestsMaxTime(new HashMap());
+					CSVReadStats.setWorkloads(new HashMap());
+
 					startEngine();
 
 				} else {
@@ -403,6 +412,11 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					file.delete();
 					this.generation = 1;
 					this.currentTest = 0;
+					CSVReadStats.setErrorsTotal(new HashMap());
+					CSVReadStats.setErrors(new HashMap());
+					CSVReadStats.setPercentiles(new HashMap());
+					CSVReadStats.setRequestsMaxTime(new HashMap());
+					CSVReadStats.setWorkloads(new HashMap());
 
 				}
 

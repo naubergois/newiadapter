@@ -137,7 +137,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 1) {
-			int newFunc = random.nextInt(nodes.size() );
+			int newFunc = random.nextInt(nodes.size());
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(newFunc);
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -163,7 +163,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 3) {
-			int newFunc = random.nextInt(nodes.size() );
+			int newFunc = random.nextInt(nodes.size());
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -176,7 +176,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 4) {
-			int newFunc = random.nextInt(nodes.size() );
+			int newFunc = random.nextInt(nodes.size());
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -189,7 +189,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 5) {
-			int newFunc = random.nextInt(nodes.size() );
+			int newFunc = random.nextInt(nodes.size());
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -215,7 +215,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 7) {
-			int newFunc = random.nextInt(nodes.size() );
+			int newFunc = random.nextInt(nodes.size());
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -228,7 +228,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 8) {
-			int newFunc = random.nextInt(nodes.size() );
+			int newFunc = random.nextInt(nodes.size());
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -241,7 +241,7 @@ public class WorkLoadUtil {
 			parametros.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 9) {
-			int newFunc = random.nextInt(nodes.size() );
+			int newFunc = random.nextInt(nodes.size());
 			parametros.add(getIndex(nodes, workload.getFunction1()));
 			parametros.add(getIndex(nodes, workload.getFunction2()));
 			parametros.add(getIndex(nodes, workload.getFunction3()));
@@ -345,13 +345,6 @@ public class WorkLoadUtil {
 		WorkLoad workload = createRandomWorkLoad();
 		int numberUsers = randInt(0, maxUsers + 1);
 		workload.setNumThreads(numberUsers);
-		workload.setName("TABU:" + workload.getType() + "-"
-				+ workload.getNumThreads() + "-" + workload.getFunction1()
-				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
-				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()
-				+ "-" + workload.getFunction6() + "-" + workload.getFunction7()
-				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
-				+ "-" + workload.getFunction10());
 
 		int maxUser = numberUsers / 10;
 		int users1 = randInt(0, maxUser);
@@ -389,6 +382,13 @@ public class WorkLoadUtil {
 			workload.setNumThreads(1);
 			workload.setUsers1(1);
 		}
+		workload.setName("TABU:" + workload.getType() + "-"
+				+ workload.getNumThreads() + "-" + workload.getFunction1()
+				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
+				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()
+				+ "-" + workload.getFunction6() + "-" + workload.getFunction7()
+				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
+				+ "-" + workload.getFunction10());
 		return workload;
 	}
 
@@ -1042,6 +1042,10 @@ public class WorkLoadUtil {
 				+ workloadMutation.getUsers6() + workloadMutation.getUsers7()
 				+ workloadMutation.getUsers8() + workloadMutation.getUsers9()
 				+ workloadMutation.getUsers10());
+		if (workloadMutation.getNumThreads() == 0) {
+			workloadMutation.setNumThreads(1);
+			workloadMutation.setUsers1(1);
+		}
 
 		workloadMutation.setName("Mutation-" + workloadMutation.getNumThreads()
 				+ "-" + workLoad.getName());
