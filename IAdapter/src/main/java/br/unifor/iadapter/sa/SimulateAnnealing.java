@@ -108,52 +108,52 @@ public class SimulateAnnealing {
 		parametros.add(random1);
 		Integer random2 = 0;
 
-		random2 = random.nextInt((int) nodes.size() + 1);
+		random2 = random.nextInt((int) nodes.size());
 		parametros.add(random2);
 
 		Integer random3 = 0;
 
-		random3 = random.nextInt((int) nodes.size() + 1);
+		random3 = random.nextInt((int) nodes.size());
 		parametros.add(random3);
 
 		Integer random4 = 0;
 
-		random4 = random.nextInt((int) nodes.size() + 1);
+		random4 = random.nextInt((int) nodes.size() );
 		parametros.add(random4);
 
 		Integer random5 = 0;
 
-		random5 = random.nextInt((int) nodes.size() + 1);
+		random5 = random.nextInt((int) nodes.size() );
 		parametros.add(random5);
 
 		Integer random6 = 0;
 
-		random6 = random.nextInt((int) nodes.size() + 1);
+		random6 = random.nextInt((int) nodes.size() );
 		parametros.add(random6);
 
 		Integer random7 = 0;
 
-		random7 = random.nextInt((int) nodes.size() + 1);
+		random7 = random.nextInt((int) nodes.size() );
 		parametros.add(random7);
 
 		Integer random8 = 0;
 
-		random8 = random.nextInt((int) nodes.size() + 1);
+		random8 = random.nextInt((int) nodes.size() );
 		parametros.add(random8);
 
 		Integer random9 = 0;
 
-		random9 = random.nextInt((int) nodes.size() + 1);
+		random9 = random.nextInt((int) nodes.size() );
 		parametros.add(random9);
 
 		Integer random10 = 0;
 
-		random10 = random.nextInt((int) nodes.size() + 1);
+		random10 = random.nextInt((int) nodes.size() );
 		parametros.add(random10);
 
 		Integer random11 = 0;
 
-		random11 = random.nextInt((int) nodes.size() + 1);
+		random11 = random.nextInt((int) nodes.size() );
 		parametros.add(random11);
 
 		parametros.add(maxUsers);

@@ -227,25 +227,25 @@ public class GeneWorkLoad {
 		wgenes[0] = new IntegerGene(getConfiguration(), 0,
 				WorkLoad.getTypes().length - 1);
 		wgenes[1] = new IntegerGene(getConfiguration(), 1, userNumberMax);
-		wgenes[2] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[2] = new IntegerGene(getConfiguration(), 0, list.size() - 1);
 		wgenes[3] = new IntegerGene(getConfiguration(), 1, userMaxGene);
-		wgenes[4] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[4] = new IntegerGene(getConfiguration(), 0, list.size() - 1);
 		wgenes[5] = new IntegerGene(getConfiguration(), 1, userMaxGene);
-		wgenes[6] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[6] = new IntegerGene(getConfiguration(), 0, list.size() - 1);
 		wgenes[7] = new IntegerGene(getConfiguration(), 1, userMaxGene);
-		wgenes[8] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[8] = new IntegerGene(getConfiguration(), 0, list.size() - 1);
 		wgenes[9] = new IntegerGene(getConfiguration(), 1, userMaxGene);
-		wgenes[10] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[10] = new IntegerGene(getConfiguration(), 0, list.size() - 1);
 		wgenes[11] = new IntegerGene(getConfiguration(), 1, userMaxGene);
-		wgenes[12] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[12] = new IntegerGene(getConfiguration(), 0, list.size() - 1);
 		wgenes[13] = new IntegerGene(getConfiguration(), 1, userMaxGene);
-		wgenes[14] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[14] = new IntegerGene(getConfiguration(), 0, list.size() - 1);
 		wgenes[15] = new IntegerGene(getConfiguration(), 1, userMaxGene);
-		wgenes[16] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[16] = new IntegerGene(getConfiguration(), 0, list.size() - 1);
 		wgenes[17] = new IntegerGene(getConfiguration(), 1, userMaxGene);
-		wgenes[18] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[18] = new IntegerGene(getConfiguration(), 0, list.size() - 1);
 		wgenes[19] = new IntegerGene(getConfiguration(), 1, userMaxGene);
-		wgenes[20] = new IntegerGene(getConfiguration(), 0, list.size());
+		wgenes[20] = new IntegerGene(getConfiguration(), 0, list.size() - 1);
 		wgenes[21] = new IntegerGene(getConfiguration(), 1, userMaxGene);
 
 		return wgenes;

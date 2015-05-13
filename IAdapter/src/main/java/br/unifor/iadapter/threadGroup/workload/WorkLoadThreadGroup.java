@@ -354,7 +354,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 									String.valueOf(this.getGeneration()));
 						}
 
-						if (listTABUnewGeneration.size() > 0) {
+						if ((listTABUnewGeneration != null)
+								&& (listTABUnewGeneration.size() > 0)) {
 							for (WorkLoad workLoad : listTABUnewGeneration) {
 								MySQLDatabase.insertWorkLoads(
 										WorkLoadUtil.getObjectList(workLoad),
@@ -486,9 +487,10 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					workload.getNumThreads());
 
 			threadsToSchedule = numThreads;
+			log.info("Starting workload " + workload.getName());
 
 			log.info("Starting thread group number " + groupCount + " threads "
-					+ numThreads);
+					+ workload.getNumThreads());
 
 			final JMeterContext context = JMeterContextService.getContext();
 
@@ -501,11 +503,12 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				int users = 0;
 
 				String nameWorkloadController = getFunctionNameByID(workload,
-						count % 10);
+						count);
 
 				if ((nameWorkloadController != null)
 						&& (!(nameWorkloadController.equals("None")))) {
 
+					log.info("Valor do count " + count);
 					if (count == 1) {
 						users = workload.getUsers1();
 					}
@@ -537,21 +540,40 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 						users = workload.getUsers10();
 					}
 
+					log.info("Valor do user " + users);
+
+					log.info("Valor do worload " + workload.getUsers1());
+					log.info("Valor do worload " + workload.getUsers2());
+					log.info("Valor do worload " + workload.getUsers3());
+					log.info("Valor do worload " + workload.getUsers4());
+					log.info("Valor do worload " + workload.getUsers5());
+					log.info("Valor do worload " + workload.getUsers6());
+					log.info("Valor do worload " + workload.getUsers7());
+					log.info("Valor do worload " + workload.getUsers8());
+					log.info("Valor do worload " + workload.getUsers9());
+					log.info("Valor do worload " + workload.getUsers10());
+
 					TestElement node = getNodesByName(nameWorkloadController,
 							lista);
 
-					for (int j = 0; j < users; j++) {
-						JMeterThread jmThread = makeThread(groupCount,
-								notifier, threadGroupTree, engine, j, context,
-								workload, node);
-						workload.scheduleThread(log, numThreads, jmThread,
-								count);
-						Thread newThread = new Thread(jmThread,
-								jmThread.getThreadName());
+					if (users > 0) {
 
-						registerStartedThread(jmThread, newThread);
+						log.info("Starting threads " + users + " Func:"
+								+ nameWorkloadController);
 
-						newThread.start();
+						for (int j = 0; j < users; j++) {
+							JMeterThread jmThread = makeThread(groupCount,
+									notifier, threadGroupTree, engine, j,
+									context, workload, node);
+							workload.scheduleThread(log, numThreads, jmThread,
+									count);
+							Thread newThread = new Thread(jmThread,
+									jmThread.getThreadName());
+
+							registerStartedThread(jmThread, newThread);
+
+							newThread.start();
+						}
 					}
 					groupCount++;
 				}
@@ -598,34 +620,34 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	}
 
 	public static String getFunctionNameByID(WorkLoad workLoad, int id) {
-		if (id == 0) {
+		if (id == 1) {
 			return workLoad.getFunction1();
 		}
-		if (id == 1) {
+		if (id == 2) {
 			return workLoad.getFunction2();
 		}
-		if (id == 2) {
+		if (id == 3) {
 			return workLoad.getFunction3();
 		}
-		if (id == 3) {
+		if (id == 4) {
 			return workLoad.getFunction4();
 		}
-		if (id == 4) {
+		if (id == 5) {
 			return workLoad.getFunction5();
 		}
-		if (id == 5) {
+		if (id == 6) {
 			return workLoad.getFunction6();
 		}
-		if (id == 6) {
+		if (id == 7) {
 			return workLoad.getFunction7();
 		}
-		if (id == 7) {
+		if (id == 8) {
 			return workLoad.getFunction8();
 		}
-		if (id == 8) {
+		if (id == 9) {
 			return workLoad.getFunction9();
 		}
-		if (id == 9) {
+		if (id == 10) {
 			return workLoad.getFunction10();
 		}
 		return "None";
