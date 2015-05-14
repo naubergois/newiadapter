@@ -22,8 +22,6 @@ import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.control.gui.LoopControlPanel;
@@ -61,13 +59,13 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	private static final long serialVersionUID = 1L;
 	public static final String WIKIPAGE = "WorkLoadThreadGroup";
 	private static final Logger log = LoggingManager.getLoggerForClass();
-	private static WorkLoad saCurrentWorkLoad;
 
 	private JTextField threadMax;
 	private JTextField maxtime;
 	private JTextField genNumber;
 	private JTextField bestInd;
 	private JTextField minTemp;
+	private JTextField percentile90FitWeigth;
 	/**
      *
      */
@@ -150,6 +148,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		createTabAgent(tabbedPane);
 		createTabParameters(tabbedPane);
 		createLogPanel(tabbedPane);
+		createFitParameters(tabbedPane);
 		add(tabbedPane, BorderLayout.CENTER);
 
 		createControllerPanel();
@@ -176,7 +175,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		grid.getDefaultEditor(String.class).addCellEditorListener(this);
 		createTableModel();
 		grid.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		// grid.setMinimumSize(new Dimension(400, 400));
+
 		grid.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		grid.setPreferredScrollableViewportSize(new Dimension(800, 800));
 		grid.setSize(800, 800);
@@ -184,10 +183,6 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		grid.addMouseListener(new WorkLoadTableClicked(grid, this, wtableModel,
 				chart));
-
-		// TableColumnModel tcm = grid.getColumnModel();
-		// TableColumn tc = tcm.getColumn(1);
-		// tc.setWidth(tc.getWidth() + 25);
 
 		return grid;
 	}
@@ -379,6 +374,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			utg.setGenNumber(genNumber.getText());
 			utg.setBestIndividuals(bestInd.getText());
 			utg.setMinTemp(minTemp.getText());
+			utg.setResponse90FitWeigth(percentile90FitWeigth.getText());
 
 			if (grid == null) {
 				createGrid();
@@ -415,7 +411,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		genNumber.setText(utg.getGenNumber());
 		bestInd.setText(utg.getBestIndividuals());
 		minTemp.setText(utg.getMinTemp());
-
+		percentile90FitWeigth.setText(utg.getResponse90FitWeigth());
+		
 		JMeterProperty threadValues = utg.getData();
 		if (!(threadValues instanceof NullProperty)) {
 			CollectionProperty columns = (CollectionProperty) threadValues;
@@ -430,7 +427,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 				JMeterPluginsUtils.collectionPropertyToDerby(columns, utg,
 						String.valueOf(utg.getGeneration()));
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error(e.getMessage());
 			}
 
 			wtableModel.addTableModelListener(this);
@@ -522,11 +519,29 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		param.add(genNumber);
 		param.add(new JLabel("Number of Best Individuals for CrossOver"));
 		param.add(bestInd);
-		param.add(new JLabel("Evolution Algorithm"));
+		param.add(new JLabel("Minimal Simulated Annealing Temperature"));
 		param.add(minTemp);
 		panel.add(param, BorderLayout.CENTER);
 
 		tab1.addTab("Parameters", panel);
+
+		return tab1;
+
+	}
+
+	public Component createFitParameters(JTabbedPane tab1) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+
+		JPanel param = new JPanel();
+		param.setLayout(new GridLayout(0, 2));
+		percentile90FitWeigth = new JTextField("90", 5);
+
+		param.add(new JLabel("Percentile 90 Fit Weigth"));
+		param.add(percentile90FitWeigth);
+		panel.add(param, BorderLayout.CENTER);
+
+		tab1.addTab("FIT", panel);
 
 		return tab1;
 

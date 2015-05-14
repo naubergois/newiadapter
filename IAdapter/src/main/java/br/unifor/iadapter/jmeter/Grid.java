@@ -13,7 +13,11 @@ import org.apache.jmeter.gui.util.VerticalPanel;
 
 
 public class Grid extends VerticalPanel {
-    private JTable grid;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JTable grid;
     private PowerTableModel tableModel;
 
     public Grid(String title, String[] columnIdentifiers, Class<?>[] columnClasses, Object[] defaultValues) {

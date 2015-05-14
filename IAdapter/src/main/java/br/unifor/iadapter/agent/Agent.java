@@ -3,14 +3,21 @@ package br.unifor.iadapter.agent;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import org.apache.jorphan.logging.LoggingManager;
+import org.apache.log.Logger;
 
 import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 
 public class Agent {
 
+	private static final Logger log = LoggingManager.getLoggerForClass();
+
 	private String workload;
+
 	public String getWorkload() {
 		return workload;
 	}
@@ -28,7 +35,9 @@ public class Agent {
 	}
 
 	public void setName(String name) {
+
 		this.name = name;
+
 	}
 
 	public String getIp() {
@@ -72,14 +81,11 @@ public class Agent {
 			while (MySQLDatabase.verifyRunning() > 0)
 				;
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 
 	}
@@ -89,34 +95,29 @@ public class Agent {
 			while (MySQLDatabase.verifyRunningFinal() > 0)
 				;
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 
 	}
 
 	public void delete() {
 		List<Object> listAgent = new ArrayList<Object>();
+
 		listAgent.add(tg.getName() + tg.hashCode());
 		listAgent.add("true");
 		try {
 			listAgent.add(java.net.InetAddress.getLocalHost());
 			MySQLDatabase.deleteAgent(listAgent, null);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 
 	}
@@ -129,8 +130,7 @@ public class Agent {
 		try {
 			listAgent.add(java.net.InetAddress.getLocalHost());
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 
 		try {

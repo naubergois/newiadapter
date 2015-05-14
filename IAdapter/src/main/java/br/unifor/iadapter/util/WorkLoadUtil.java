@@ -2,6 +2,8 @@ package br.unifor.iadapter.util;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -848,7 +850,7 @@ public class WorkLoadUtil {
 	}
 
 	public static WorkLoad getWorkLoadFromChromosome(Chromosome chromosome,
-			List<TestElement> list, int generation) {
+			List<TestElement> list, int generation, int generationTrack) {
 		Gene[] gene = chromosome.getGenes();
 		String type = WorkLoad.getTypes()[((IntegerGene) gene[0]).intValue()];
 
@@ -955,10 +957,15 @@ public class WorkLoadUtil {
 		if (workload.getName() != null) {
 
 			if (workload.getName().length() == 0) {
+				String prefix = "";
 
-				workload.setName("G" + generation + ":" + workload.getType()
-						+ "-" + workload.getNumThreads() + "-"
-						+ workload.getFunction1() + "-"
+				if (generationTrack > 0) {
+					prefix = "G" + generationTrack + ":";
+				}
+
+				workload.setName(prefix + "G" + generation + ":"
+						+ workload.getType() + "-" + workload.getNumThreads()
+						+ "-" + workload.getFunction1() + "-"
 						+ workload.getFunction2() + "-"
 						+ workload.getFunction3() + "-"
 						+ workload.getFunction4() + "-"
@@ -969,6 +976,7 @@ public class WorkLoadUtil {
 						+ workload.getFunction9() + "-"
 						+ workload.getFunction10());
 			} else {
+
 				workload.setName("G" + generation + ":" + workload.getName());
 			}
 
@@ -976,6 +984,36 @@ public class WorkLoadUtil {
 		}
 
 		return workload;
+	}
+
+	public static boolean isNumeric(String str) {
+		NumberFormat formatter = NumberFormat.getInstance();
+		ParsePosition pos = new ParsePosition(0);
+		formatter.parse(str, pos);
+		return str.length() == pos.getIndex();
+	}
+
+	public static int getGenerationFromName(String workloadName) {
+		String terms[] = workloadName.split(":");
+		if (terms.length > 0) {
+			int max = 0;
+			for (String string : terms) {
+				System.out.print(string);
+				if (string.substring(0, 1).equals("G")) {
+					String stringNumber = string.replace('G', '0');
+					if (isNumeric(stringNumber)) {
+						int number = Integer.valueOf(stringNumber);
+						if (number > max) {
+							max = number;
+						}
+					}
+
+				}
+			}
+			return max;
+		} else {
+			return 0;
+		}
 	}
 
 	public static WorkLoad mutant(WorkLoad workLoad, int users, int maxUsers,
@@ -1140,6 +1178,7 @@ public class WorkLoadUtil {
 				+ workload.getUsers5() + workload.getUsers6()
 				+ workload.getUsers7() + workload.getUsers8()
 				+ workload.getUsers9() + workload.getUsers10());
+
 		workload.setName(prefix + ":" + "G" + parametros.get(12) + ":"
 				+ workload.getType() + "-" + workload.getNumThreads() + "-"
 				+ workload.getFunction1() + "-" + workload.getFunction2() + "-"

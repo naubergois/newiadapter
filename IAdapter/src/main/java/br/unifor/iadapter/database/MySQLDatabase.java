@@ -16,7 +16,6 @@ import java.util.Properties;
 
 import br.unifor.iadapter.agent.Agent;
 import br.unifor.iadapter.percentiles.PercentileCounter;
-import br.unifor.iadapter.threadGroup.FactoryWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.util.WorkLoadUtil;
 
@@ -457,8 +456,6 @@ public class MySQLDatabase {
 	public static String selectError(String workload, String testPlan,
 			String generation) throws ClassNotFoundException, SQLException {
 
-		long rst = 0;
-
 		Connection con = singleton();
 
 		PreparedStatement ps = con
@@ -482,8 +479,6 @@ public class MySQLDatabase {
 	public static long selectTotalError(String workload, String testPlan,
 			String generation) throws ClassNotFoundException, SQLException {
 
-		long rst = 0;
-
 		Connection con = singleton();
 
 		PreparedStatement ps = con
@@ -506,8 +501,6 @@ public class MySQLDatabase {
 
 	public static int deleteTestPlan(String testPlan)
 			throws ClassNotFoundException, SQLException {
-
-		long rst = 0;
 
 		Connection con = singleton();
 
@@ -1096,7 +1089,7 @@ public class MySQLDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=? "
+				+ "  FROM  workload WHERE TESTPLAN=? and  ACTIVE='true' "
 				+ " ORDER BY FIT*1 DESC LIMIT 10");
 		ps.setString(1, testPlan);
 

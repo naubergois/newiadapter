@@ -4,7 +4,6 @@ package br.unifor.iadapter.listener;
 
 import java.io.PrintStream;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Set;
 

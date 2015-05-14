@@ -8,26 +8,23 @@ import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
-import org.apache.jmeter.gui.GuiPackage;
-import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.gui.util.PowerTableModel;
+import org.apache.jorphan.logging.LoggingManager;
+import org.apache.log.Logger;
 import org.jgap.InvalidConfigurationException;
 
 import br.unifor.iadapter.genetic.GeneWorkLoad;
-import br.unifor.iadapter.threadGroup.FactoryWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
-import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroupGUI;
-import br.unifor.iadapter.util.FindService;
-import br.unifor.iadapter.util.JMeterPluginsUtils;
 import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class AddRowWorkloadAction implements ActionListener {
 
+	private static final Logger log = LoggingManager.getLoggerForClass();
+
 	private JTable grid;
 	private PowerTableModel tableModel;
-	private JButton deleteRowButton;
-	private Object[] defaultValues;
+
 	private WorkLoadThreadGroupGUI sender;
 
 	public AddRowWorkloadAction(WorkLoadThreadGroupGUI aSender, JTable grid,
@@ -36,8 +33,7 @@ public class AddRowWorkloadAction implements ActionListener {
 
 		this.grid = grid;
 		this.tableModel = tableModel;
-		this.deleteRowButton = deleteRowButton;
-		this.defaultValues = defaultValues;
+
 		this.sender = aSender;
 	}
 
@@ -48,11 +44,6 @@ public class AddRowWorkloadAction implements ActionListener {
 					grid.getEditingRow(), grid.getEditingColumn());
 			cellEditor.stopCellEditing();
 		}
-
-		List<JMeterTreeNode> nodes = FindService
-				.searchWorkLoadThreadGroupWithGui();
-		WorkLoadThreadGroup tg = (WorkLoadThreadGroup) nodes.get(0)
-				.getTestElement();
 
 		int users = 10;
 
@@ -75,16 +66,7 @@ public class AddRowWorkloadAction implements ActionListener {
 			workloadList.add(WorkLoadUtil.createWorkLoadTabuWithGui(1, users));
 			workloadList.add(WorkLoadUtil.createWorkLoadTabuWithGui(1, users));
 		} catch (InvalidConfigurationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		GuiPackage gp = GuiPackage.getInstance();
-		if (gp != null) {
-
-			List<JMeterTreeNode> lista = FindService
-					.searchWorkLoadControllerWithGui();
-
+			log.error(e1.getMessage());
 		}
 
 		for (WorkLoad workLoad : workloadList) {

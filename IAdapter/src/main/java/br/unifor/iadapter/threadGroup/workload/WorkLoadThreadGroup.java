@@ -25,7 +25,6 @@ import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.testelement.property.JMeterProperty;
-import org.apache.jmeter.testelement.property.PropertyIterator;
 import org.apache.jmeter.threads.JMeterContext;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterThread;
@@ -57,18 +56,13 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		Serializable, TestStateListener, SampleListener, LoopIterationListener {
 
 	/**
-	 * Condition Accessor - this is gonna be like <code>${count} &lt; 10</code>
-	 * 
-	 * @return the condition associated with this controller
-	 */
-
-	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private int generation = 1;
 	private int temperature = 0;
+	private int generationTrack = 0;
 
 	public int getGeneration() {
 		return generation;
@@ -98,7 +92,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		this.currentTest = currentTest;
 	}
 
-	private WorkLoad workloadCurrent;
 	private WorkLoad workloadCurrentSA;
 
 	public WorkLoad getWorkloadCurrentSA() {
@@ -138,8 +131,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		}
 		return list;
 	}
-
-	private WorkLoad workLoadaux;
 
 	public static void startEngine() {
 		final JMeterContext context = JMeterContextService.getContext();
@@ -433,23 +424,13 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	private static final Logger log = LoggingManager.getLoggerForClass();
 	public static final String DATA_PROPERTY = "workloadthreadgroupdata";
-	private int threadsToSchedule;
 
 	private final Map<JMeterThread, Thread> allThreads = new ConcurrentHashMap<JMeterThread, Thread>();
-	/**
-	 * Is test (still) running?
-	 */
-	private volatile boolean running = false;
-
-	// JMeter 2.7 Compatibility
-	private long tgStartTime = -1;
-
-	private PropertyIterator scheduleIT;
-	private static final long TOLERANCE = 1000;
-
 	private static final String THREAD_NUMBER_MAX = "threadnumbermax";
 
 	private static final String THREAD_MAX_TIME = "threadmaxtimemax";
+
+	private static final String PERCENTILE90_FIT_WEIGTH = "percentile90fitweigth";
 
 	private static final String THREAD_IND = "threadind";
 
@@ -485,22 +466,26 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		int size = list.size();
 
 		if (size > 0) {
-			running = true;
-
 			Agent agent = new Agent(this);
 			// agent.setWorkload(this.currentTest);
 			agent.running();
 			WorkLoad workload = list.get(this.getCurrentTest());
 
+			int newGeneration = WorkLoadUtil.getGenerationFromName(workload
+					.getName());
+			
+			System.out.print(workload.getName()+" "+newGeneration);
+
+			if (newGeneration > 0) {
+				generationTrack = newGeneration + generation;
+			}
+
 			JMeterContextService.getContext().getVariables()
 					.put("currentWorkload", workload.getName());
-
-			this.workloadCurrent = workload;
 
 			int numThreads = getThreadNumberCounter(workload,
 					workload.getNumThreads());
 
-			threadsToSchedule = numThreads;
 			log.info("Starting workload " + workload.getName());
 
 			log.info("Starting thread group number " + groupCount + " threads "
@@ -522,7 +507,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				if ((nameWorkloadController != null)
 						&& (!(nameWorkloadController.equals("None")))) {
 
-					log.info("Valor do count " + count);
 					if (count == 1) {
 						users = workload.getUsers1();
 					}
@@ -553,19 +537,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					if (count == 10) {
 						users = workload.getUsers10();
 					}
-
-					log.info("Valor do user " + users);
-
-					log.info("Valor do worload " + workload.getUsers1());
-					log.info("Valor do worload " + workload.getUsers2());
-					log.info("Valor do worload " + workload.getUsers3());
-					log.info("Valor do worload " + workload.getUsers4());
-					log.info("Valor do worload " + workload.getUsers5());
-					log.info("Valor do worload " + workload.getUsers6());
-					log.info("Valor do worload " + workload.getUsers7());
-					log.info("Valor do worload " + workload.getUsers8());
-					log.info("Valor do worload " + workload.getUsers9());
-					log.info("Valor do worload " + workload.getUsers10());
 
 					TestElement node = getNodesByName(nameWorkloadController,
 							lista);
@@ -599,6 +570,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			log.info("Started thread group number " + groupCount);
 		}
 
+	}
+
+	public int getGenerationTrack() {
+		return generationTrack;
+	}
+
+	public void setGenerationTrack(int generationTrack) {
+		this.generationTrack = generationTrack;
 	}
 
 	@Override
@@ -763,6 +742,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	}
 
+	public String getResponse90FitWeigth() {
+		return getPropertyAsString(PERCENTILE90_FIT_WEIGTH);
+	}
+
+	public void setResponse90FitWeigth(String delay) {
+		setProperty(PERCENTILE90_FIT_WEIGTH, delay);
+	}
+
 	public String getMaxTime() {
 		return getPropertyAsString(THREAD_MAX_TIME);
 	}
@@ -841,7 +828,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	@Override
 	public void stop() {
-		running = false;
 		for (JMeterThread item : allThreads.keySet()) {
 			item.stop();
 		}

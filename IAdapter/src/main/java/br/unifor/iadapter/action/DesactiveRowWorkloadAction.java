@@ -7,24 +7,24 @@ import java.util.List;
 
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.gui.util.PowerTableModel;
+import org.apache.jorphan.logging.LoggingManager;
+import org.apache.log.Logger;
 
 import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroupGUI;
 import br.unifor.iadapter.util.FindService;
-import br.unifor.iadapter.util.JMeterPluginsUtils;
 import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class DesactiveRowWorkloadAction implements ActionListener {
+	private static final Logger log = LoggingManager.getLoggerForClass();
 
-	private PowerTableModel model;
 	WorkLoadThreadGroupGUI sender;
 
 	public DesactiveRowWorkloadAction(WorkLoadThreadGroupGUI sender,
 			PowerTableModel model) {
 
 		this.sender = sender;
-		this.model = model;
 
 	}
 
@@ -39,11 +39,9 @@ public class DesactiveRowWorkloadAction implements ActionListener {
 			WorkLoadUtil.modelFromDerbyGui(sender.getWtableModel(),
 					gp.getName());
 		} catch (ClassNotFoundException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+			log.error(e2.getMessage());
 		} catch (SQLException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+			log.error(e2.getMessage());
 		}
 
 	}

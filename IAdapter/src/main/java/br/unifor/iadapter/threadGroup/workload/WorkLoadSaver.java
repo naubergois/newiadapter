@@ -211,20 +211,11 @@ public class WorkLoadSaver extends AbstractTestElement implements Serializable,
 		return getPropertyAsBoolean(SKIP_SUFFIX);
 	}
 
-	private boolean getSuccessOnly() {
-		return getPropertyAsBoolean(SUCCESS_ONLY);
-	}
-
 	private boolean getAddTimeStamp() {
 		return getPropertyAsBoolean(ADD_TIMESTAMP);
 	}
 
 	private int getNumberPadLen() {
 		return getPropertyAsInt(NUMBER_PAD_LENGTH, 0);
-	}
-
-	// Mutable int to keep track of sample count
-	private static class Counter {
-		int num;
 	}
 }

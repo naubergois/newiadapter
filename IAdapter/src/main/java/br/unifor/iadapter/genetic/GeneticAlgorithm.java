@@ -41,7 +41,8 @@ public class GeneticAlgorithm {
 			return JMeterPluginsUtils.getListWorkLoadFromPopulationTestPlan(
 					population.getChromosomes(), tg.getTree(),
 					tg.getGeneration(), tg.getName(),
-					Integer.valueOf(tg.getThreadNumberMax()));
+					Integer.valueOf(tg.getThreadNumberMax()),
+					new Integer(tg.getGenerationTrack()));
 
 		} catch (Exception e) {
 			e.printStackTrace();

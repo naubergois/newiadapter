@@ -66,28 +66,30 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	public static List<WorkLoad> getListWorkLoadFromPopulation(
-			Population population, ListedHashTree tree, int generation) {
+			Population population, ListedHashTree tree, int generation,
+			int generationTrack) {
 		List<TestElement> listElement = FindService
 				.searchWorkLoadControllerWithNoGui(tree);
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 		List<Chromosome> listC = population.getChromosomes();
 		for (Chromosome chromosome : listC) {
 			list.add(WorkLoadUtil.getWorkLoadFromChromosome(chromosome,
-					listElement, generation));
+					listElement, generation, generationTrack));
 		}
 
 		return list;
 	}
 
 	public static List<WorkLoad> getListWorkLoadFromPopulation(
-			List<Chromosome> listC, ListedHashTree tree, int generation) {
+			List<Chromosome> listC, ListedHashTree tree, int generation,
+			int generationTrack) {
 		List<TestElement> listElement = FindService
 				.searchWorkLoadControllerWithNoGui(tree);
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (Chromosome chromosome : listC) {
 			list.add(WorkLoadUtil.getWorkLoadFromChromosome(chromosome,
-					listElement, generation));
+					listElement, generation, generationTrack));
 		}
 
 		return list;
@@ -108,7 +110,7 @@ public abstract class JMeterPluginsUtils {
 
 	public static List<WorkLoad> getListWorkLoadFromPopulationTestPlan(
 			List<Chromosome> listC, ListedHashTree tree, int generation,
-			String testPlan, int maxUsers) {
+			String testPlan, int maxUsers, int generationTrack) {
 
 		int maxThreads = maxUsers;
 
@@ -118,7 +120,7 @@ public abstract class JMeterPluginsUtils {
 
 		for (Chromosome chromosome : listC) {
 			list.add(WorkLoadUtil.getWorkLoadFromChromosome(chromosome,
-					listElement, generation));
+					listElement, generation, generationTrack));
 		}
 
 		List<WorkLoad> listAux = new ArrayList<WorkLoad>();
