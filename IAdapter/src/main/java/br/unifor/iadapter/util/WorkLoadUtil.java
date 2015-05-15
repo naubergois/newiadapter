@@ -270,8 +270,7 @@ public class WorkLoadUtil {
 
 		return newWorkload;
 	}
-	
-	
+
 	public static WorkLoad getNeighBoorMutant(WorkLoad workload,
 			List<TestElement> nodes, int maxUsers, Integer generationTrack) {
 		Random random = new Random();
@@ -418,8 +417,8 @@ public class WorkLoadUtil {
 		parametros.add(newUsers);
 		parametros.add(workload.getGeneration() + 1);
 
-		WorkLoad newWorkload = createWorkLoad(nodes, parametros, "MUTANT",
-				generationTrack);
+		WorkLoad newWorkload = createWorkLoadMutant(nodes, parametros,
+				"MUTANT", generationTrack);
 
 		return newWorkload;
 	}
@@ -1405,6 +1404,92 @@ public class WorkLoadUtil {
 
 		workload.setName(preprefix + ":" + prefix + ":" + "G"
 				+ parametros.get(12) + ":" + workload.getType() + "-"
+				+ workload.getNumThreads() + "-" + workload.getFunction1()
+				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
+				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()
+				+ "-" + workload.getFunction6() + "-" + workload.getFunction7()
+				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
+				+ "-" + workload.getFunction10());
+
+		return workload;
+	}
+
+	public static WorkLoad createWorkLoadMutant(List<TestElement> nodes,
+			List<Integer> parametros, String search, int generationTrack) {
+		WorkLoad workload = null;
+		if (parametros.get(0) == 0) {
+			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[0]);
+
+		}
+		if (parametros.get(0) == 1) {
+			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[1]);
+
+		}
+
+		workload.setFunction1(getName(nodes, parametros.get(1)));
+		workload.setFunction2(getName(nodes, parametros.get(2)));
+		workload.setFunction3(getName(nodes, parametros.get(3)));
+		workload.setFunction4(getName(nodes, parametros.get(4)));
+		workload.setFunction5(getName(nodes, parametros.get(5)));
+		workload.setFunction6(getName(nodes, parametros.get(6)));
+		workload.setFunction7(getName(nodes, parametros.get(7)));
+		workload.setFunction8(getName(nodes, parametros.get(8)));
+		workload.setFunction9(getName(nodes, parametros.get(9)));
+		workload.setFunction10(getName(nodes, parametros.get(10)));
+		String prefix = "";
+		if (search.equals("SA")) {
+			prefix = "SA";
+		}
+		if (search.equals("TABU")) {
+			prefix = "TABU";
+		}
+
+		int maxUser = parametros.get(11) / 10;
+
+		int users1 = randInt(0, maxUser);
+		int users2 = randInt(0, maxUser);
+		int users3 = randInt(0, maxUser);
+		int users4 = randInt(0, maxUser);
+		int users5 = randInt(0, maxUser);
+		int users6 = randInt(0, maxUser);
+		int users7 = randInt(0, maxUser);
+		int users8 = randInt(0, maxUser);
+		int users9 = randInt(0, maxUser);
+		int users10 = randInt(0, maxUser);
+
+		workload.setUsers1(users1);
+		workload.setUsers2(users2);
+		workload.setUsers3(users3);
+		workload.setUsers4(users4);
+		workload.setUsers5(users5);
+		workload.setUsers6(users6);
+		workload.setUsers7(users7);
+		workload.setUsers8(users8);
+		workload.setUsers9(users9);
+		workload.setUsers10(users10);
+
+		workload.setSearchMethod(search);
+		workload.setGeneration(parametros.get(12));
+		workload.setActive(true);
+
+		workload.setNumThreads(workload.getUsers1() + workload.getUsers2()
+				+ workload.getUsers3() + workload.getUsers4()
+				+ workload.getUsers5() + workload.getUsers6()
+				+ workload.getUsers7() + workload.getUsers8()
+				+ workload.getUsers9() + workload.getUsers10());
+
+		if (workload.getNumThreads() == 0) {
+			workload.setNumThreads(1);
+			workload.setUsers1(1);
+		}
+
+		String preprefix = "";
+
+		if (generationTrack > 0) {
+			preprefix = "G" + generationTrack + ":";
+		}
+
+		workload.setName(preprefix + ":" + prefix + workload.getType() + "-"
 				+ workload.getNumThreads() + "-" + workload.getFunction1()
 				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
 				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()
