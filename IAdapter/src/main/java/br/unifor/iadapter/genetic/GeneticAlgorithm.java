@@ -36,7 +36,7 @@ public class GeneticAlgorithm {
 							new Integer(tg.getGenerationTrack()));
 
 			return GeneWorkLoad.mutationPopulation(listWorkloads, nodes,
-					maxUsers, generationTrack);
+					maxUsers, tg.getGeneration());
 
 		} catch (Exception e) {
 			e.printStackTrace();

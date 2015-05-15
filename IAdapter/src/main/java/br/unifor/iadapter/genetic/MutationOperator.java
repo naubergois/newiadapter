@@ -29,11 +29,11 @@ public class MutationOperator {
 		int evolute = random.nextInt(10);
 		WorkLoad workloadClone = workload.clone();
 		if (evolute < 3) {
-			
+
 			for (int i = 0; i <= n; i++) {
-				workloadClone = WorkLoadUtil.getNeighBoor(workloadClone, nodes,
-						maxUsers, generationTrack);
-				
+				workloadClone = WorkLoadUtil.getNeighBoorMutant(workloadClone,
+						nodes, maxUsers, generationTrack);
+
 			}
 			workloadClone.setName("Mutant:" + workloadClone.getName());
 		}
