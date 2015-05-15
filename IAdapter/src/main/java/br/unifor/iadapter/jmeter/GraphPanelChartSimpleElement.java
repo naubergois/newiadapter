@@ -4,6 +4,10 @@ package br.unifor.iadapter.jmeter;
 /** {@inheritDoc} */
 public class GraphPanelChartSimpleElement extends
 		AbstractGraphPanelChartElement {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	double value = 0;
 
 	/**

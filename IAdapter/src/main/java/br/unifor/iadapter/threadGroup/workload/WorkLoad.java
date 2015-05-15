@@ -6,8 +6,6 @@ import org.apache.log.Logger;
 import br.unifor.iadapter.jmeter.GraphRowSumValues;
 
 public class WorkLoad {
-	
-	
 
 	public void calcUsers() {
 
@@ -507,6 +505,48 @@ public class WorkLoad {
 			row.add(nowEnd - initialTime, -1);
 		}
 
+	}
+
+	public WorkLoad clone() {
+		WorkLoad workload = new WorkLoad();
+		workload.setActive(this.isActive());
+		workload.setEndRampUp(this.getEndRampUp());
+		workload.setError(this.isError());
+		workload.setFit(this.getFit());
+		workload.setFunction1(this.getFunction1());
+		workload.setFunction10(this.getFunction10());
+		workload.setFunction2(this.getFunction2());
+		workload.setFunction3(this.getFunction3());
+		workload.setFunction4(this.getFunction4());
+		workload.setFunction5(this.getFunction5());
+		workload.setFunction6(this.getFunction6());
+		workload.setFunction7(this.getFunction7());
+		workload.setFunction8(this.getFunction8());
+		workload.setFunction9(this.getFunction9());
+		workload.setGeneration(this.getGeneration());
+		workload.setInitialDelay(this.getInitialDelay());
+		workload.setName(this.getName());
+		workload.setNumThreads(this.getNumThreads());
+		workload.setPercentile70(this.getPercentile70());
+		workload.setPercentile80(this.getPercentile80());
+		workload.setPercentile70(this.getPercentile70());
+		workload.setSearchMethod(this.getSearchMethod());
+		workload.setStartRampUp(this.getStartRampUp());
+		workload.setTotalErrors(this.getTotalErrors());
+		workload.setType(this.getType());
+		workload.setUsers1(this.getUsers1());
+		workload.setUsers2(this.getUsers2());
+		workload.setUsers3(this.getUsers3());
+		workload.setUsers4(this.getUsers4());
+		workload.setUsers5(this.getUsers5());
+		workload.setUsers6(this.getUsers6());
+		workload.setUsers7(this.getUsers7());
+		workload.setUsers8(this.getUsers8());
+		workload.setUsers9(this.getUsers9());
+		workload.setUsers10(this.getUsers10());
+		workload.setWorstResponseTime(this.getWorstResponseTime());
+
+		return workload;
 	}
 
 }

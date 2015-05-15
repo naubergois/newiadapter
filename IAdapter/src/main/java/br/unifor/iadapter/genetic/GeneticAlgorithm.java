@@ -2,12 +2,11 @@ package br.unifor.iadapter.genetic;
 
 import java.util.List;
 
+import org.apache.jmeter.testelement.TestElement;
 import org.jgap.Chromosome;
+import org.jgap.IChromosome;
 import org.jgap.Population;
-import org.jgap.impl.CrossoverOperator;
-import org.jgap.impl.MutationOperator;
 
-import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
@@ -15,7 +14,8 @@ import br.unifor.iadapter.util.JMeterPluginsUtils;
 public class GeneticAlgorithm {
 
 	public static List<WorkLoad> newGeneration(WorkLoadThreadGroup tg,
-			List<WorkLoad> listOldPopulation) {
+			List<WorkLoad> listOldPopulation, List<TestElement> nodes,
+			int maxUsers, int generationTrack) {
 
 		try {
 
@@ -25,24 +25,18 @@ public class GeneticAlgorithm {
 			List<Chromosome> bestI = GeneWorkLoad.selectBestIndividualsList(
 					population, Integer.valueOf(tg.getBestIndividuals()));
 
-			CrossoverOperator operator = GeneWorkLoad.crossOverPopulation(
-					population, bestI);
+			List<IChromosome> newList = null;
 
-			MutationOperator operator1 = GeneWorkLoad.mutationPopulation(
-					population, bestI);
+			newList = GeneWorkLoad.crossOverPopulation(population, bestI);
 
-			MySQLDatabase.insertLog(tg.getName() + "Generation "
-					+ operator.getCrossOverRate());
-			MySQLDatabase.insertLog(tg.getName() + "CrossOverRate "
-					+ operator.getCrossOverRate());
-			MySQLDatabase.insertLog(tg.getName() + "CrossOverRatePercent"
-					+ operator.getCrossOverRatePercent());
+			List<WorkLoad> listWorkloads = JMeterPluginsUtils
+					.getListWorkLoadFromPopulationTestPlan(newList,
+							tg.getTree(), tg.getGeneration(), tg.getName(),
+							Integer.valueOf(tg.getThreadNumberMax()),
+							new Integer(tg.getGenerationTrack()));
 
-			return JMeterPluginsUtils.getListWorkLoadFromPopulationTestPlan(
-					population.getChromosomes(), tg.getTree(),
-					tg.getGeneration(), tg.getName(),
-					Integer.valueOf(tg.getThreadNumberMax()),
-					new Integer(tg.getGenerationTrack()));
+			return GeneWorkLoad.mutationPopulation(listWorkloads, nodes,
+					maxUsers, generationTrack);
 
 		} catch (Exception e) {
 			e.printStackTrace();

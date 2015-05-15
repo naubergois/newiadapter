@@ -2,6 +2,7 @@ package br.unifor.iadapter.action;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -46,6 +47,7 @@ public class AddRowWorkloadAction implements ActionListener {
 		}
 
 		int users = 10;
+		int population = Integer.valueOf(sender.getPopulationSize().getText());
 
 		List<WorkLoad> workloadList = null;
 
@@ -57,14 +59,21 @@ public class AddRowWorkloadAction implements ActionListener {
 				e2.printStackTrace();
 			}
 			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(
-					users, 1);
-			workloadList.addAll(WorkLoadUtil.createWorkLoadNodes(users, 1));
-			workloadList.add(WorkLoadUtil.createWorkLoadTemperatureWithGui(1,
-					users));
-			workloadList.add(WorkLoadUtil.createWorkLoadTemperatureWithGui(1,
-					users));
-			workloadList.add(WorkLoadUtil.createWorkLoadTabuWithGui(1, users));
-			workloadList.add(WorkLoadUtil.createWorkLoadTabuWithGui(1, users));
+					users, 1, population);
+			// workloadList.addAll(WorkLoadUtil.createWorkLoadNodes(users, 1));
+
+			List<WorkLoad> listSA = new ArrayList<WorkLoad>();
+			List<WorkLoad> listTABU = new ArrayList<WorkLoad>();
+			if (!(sender.getColaborative().isSelected())) {
+				listSA = WorkLoadUtil.createWorkLoadTemperatureWithGuiSame(
+						workloadList, 1, users);
+				listTABU = WorkLoadUtil.createWorkLoadTABUWithGuiSame(
+						workloadList, 1, users);
+
+			}
+
+			workloadList.addAll(listSA);
+			workloadList.addAll(listTABU);
 		} catch (InvalidConfigurationException e1) {
 			log.error(e1.getMessage());
 		}

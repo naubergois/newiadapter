@@ -6,7 +6,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 public abstract class JAbsrtactDialogPanel extends JPanel{
-    private int minWidth = 0;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int minWidth = 0;
 
     public int getMinWidth() {
         return minWidth;

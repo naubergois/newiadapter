@@ -74,25 +74,35 @@ public class SimulateAnnealing {
 			List<TestElement> nodes, int generation) {
 
 		int users = 0;
-		try {
-			users = MySQLDatabase.listBestWorkloadGenetic(tg.getName());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		if (tg.getCollaborative()) {
+			try {
+
+				users = MySQLDatabase.listBestWorkloadGenetic(tg.getName());
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			users = tg.getTemperature();
 		}
 
 		int usersWorst = 0;
-		try {
-			usersWorst = MySQLDatabase.listWorstWorkloadGenetic(tg.getName());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		if (tg.getCollaborative()) {
+			try {
+				usersWorst = MySQLDatabase.listWorstWorkloadGenetic(tg
+						.getName());
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		if (usersWorst > 0) {
@@ -118,49 +128,49 @@ public class SimulateAnnealing {
 
 		Integer random4 = 0;
 
-		random4 = random.nextInt((int) nodes.size() );
+		random4 = random.nextInt((int) nodes.size());
 		parametros.add(random4);
 
 		Integer random5 = 0;
 
-		random5 = random.nextInt((int) nodes.size() );
+		random5 = random.nextInt((int) nodes.size());
 		parametros.add(random5);
 
 		Integer random6 = 0;
 
-		random6 = random.nextInt((int) nodes.size() );
+		random6 = random.nextInt((int) nodes.size());
 		parametros.add(random6);
 
 		Integer random7 = 0;
 
-		random7 = random.nextInt((int) nodes.size() );
+		random7 = random.nextInt((int) nodes.size());
 		parametros.add(random7);
 
 		Integer random8 = 0;
 
-		random8 = random.nextInt((int) nodes.size() );
+		random8 = random.nextInt((int) nodes.size());
 		parametros.add(random8);
 
 		Integer random9 = 0;
 
-		random9 = random.nextInt((int) nodes.size() );
+		random9 = random.nextInt((int) nodes.size());
 		parametros.add(random9);
 
 		Integer random10 = 0;
 
-		random10 = random.nextInt((int) nodes.size() );
+		random10 = random.nextInt((int) nodes.size());
 		parametros.add(random10);
 
 		Integer random11 = 0;
 
-		random11 = random.nextInt((int) nodes.size() );
+		random11 = random.nextInt((int) nodes.size());
 		parametros.add(random11);
 
 		parametros.add(maxUsers);
 		parametros.add(generation);
 
-		WorkLoad workload = WorkLoadUtil
-				.createWorkLoad(nodes, parametros, "SA");
+		WorkLoad workload = WorkLoadUtil.createWorkLoad(nodes, parametros,
+				"SA", new Integer(tg.getGenerationTrack()));
 		return workload;
 
 	}

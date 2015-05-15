@@ -42,6 +42,7 @@ public class WorkLoadTableClicked implements MouseListener {
 
 		Object[] workloadData = model.getRowData(row);
 
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		WorkLoad workLoad = WorkLoadUtil.getWorkLoad(new ArrayList(Arrays
 				.asList(workloadData)));
 

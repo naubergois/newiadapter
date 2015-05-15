@@ -17,6 +17,7 @@ import java.util.Properties;
 import br.unifor.iadapter.agent.Agent;
 import br.unifor.iadapter.percentiles.PercentileCounter;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
+import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class MySQLDatabase {
@@ -427,6 +428,60 @@ public class MySQLDatabase {
 
 	}
 
+	public static long selectResponseTimePercent70(String workload,
+			String testPlan, String generation) throws ClassNotFoundException,
+			SQLException {
+
+		long rst = 0;
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT PERCENT70 FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+		ps.setString(1, workload);
+		ps.setString(2, testPlan);
+		ps.setString(3, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		String responseTime = "0";
+		while (rs.next()) {
+			responseTime = rs.getString(1);
+		}
+
+		rst = Long.valueOf(responseTime);
+		return rst;
+
+	}
+
+	public static long selectResponseTimePercent80(String workload,
+			String testPlan, String generation) throws ClassNotFoundException,
+			SQLException {
+
+		long rst = 0;
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement(""
+						+ "SELECT PERCENT80 FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+		ps.setString(1, workload);
+		ps.setString(2, testPlan);
+		ps.setString(3, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		String responseTime = "0";
+		while (rs.next()) {
+			responseTime = rs.getString(1);
+		}
+
+		rst = Long.valueOf(responseTime);
+		return rst;
+
+	}
+
 	public static long selectResponseTime(String workload, String testPlan,
 			String generation) throws ClassNotFoundException, SQLException {
 
@@ -610,12 +665,16 @@ public class MySQLDatabase {
 	}
 
 	public static double updateFitValue(String workload, String testPlan,
-			String generation, long maxTime) throws ClassNotFoundException,
-			SQLException {
+			String generation, long maxTime, WorkLoadThreadGroup tg)
+			throws ClassNotFoundException, SQLException {
 
 		double fit = 0;
 		long responseTime = selectResponseTime(workload, testPlan, generation);
 		long responseTime90Percent = selectResponseTimePercent90(workload,
+				testPlan, generation);
+		long responseTime80Percent = selectResponseTimePercent80(workload,
+				testPlan, generation);
+		long responseTime70Percent = selectResponseTimePercent80(workload,
 				testPlan, generation);
 
 		long users = selectUsers(workload, testPlan, generation);
@@ -639,27 +698,38 @@ public class MySQLDatabase {
 			count = rs.getInt(1);
 		}
 		if (count > 0) {
+			double penalty = 0;
+
+			if (responseTime90Percent > maxTime) {
+				double distance = responseTime90Percent - maxTime;
+				penalty += -10 * distance;
+			}
+			if (responseTime > maxTime) {
+				double distance = responseTime - maxTime;
+				penalty += -10 * distance;
+			}
+			if (responseTime80Percent > maxTime) {
+				double distance = responseTime80Percent - maxTime;
+				penalty += -10 * distance;
+			}
+			if (responseTime70Percent > maxTime) {
+				double distance = responseTime70Percent - maxTime;
+				penalty += -10 * distance;
+			}
 
 			if (responseTime > 0) {
-				if ((responseTime <= maxTime)
-						|| (responseTime90Percent <= maxTime)) {
 
-					fit = (long) (0.9 * responseTime90Percent + 0.1 * responseTime)
-							- 10 * totalError + users;
-
-				} else {
-
-					if (responseTime90Percent > maxTime) {
-						long delta = (maxTime - ((long) (0.9 * responseTime90Percent + 0.1 * responseTime)));
-						System.out.println("delta " + delta);
-						fit = maxTime + delta - 10 * totalError;
-					} else {
-						long delta = (maxTime - ((long) (0.9 * responseTime + 0.1 * responseTime90Percent)));
-						System.out.println("delta " + delta);
-						fit = maxTime + delta - 10 * totalError;
-					}
-
-				}
+				fit = responseTime90Percent
+						* Double.valueOf(tg.getResponse90FitWeight())
+						+ responseTime80Percent
+						* Double.valueOf(tg.getResponse80FitWeight())
+						+ responseTime70Percent
+						* Double.valueOf(tg.getResponse70FitWeight())
+						+ responseTime
+						* Double.valueOf(tg.getResponseMaxFitWeight())
+						+ totalError
+						* Double.valueOf(tg.getTotalErrorFitWeight()) + users
+						* Double.valueOf(tg.getUserFitWeight()) + penalty;
 
 				if ((fitDatabase >= 0) && (fitDatabase != 0.5)) {
 					if ((fit < 0) || (fit > fitDatabase) || (fit == 0.5)) {
@@ -736,7 +806,6 @@ public class MySQLDatabase {
 		ps.setString(1, objetos.get(0).toString());
 		ps.setString(2, objetos.get(3).toString());
 		ps.setString(3, testPlan);
-		// ps.setString(4, generation);
 
 		ResultSet rs = ps.executeQuery();
 
@@ -924,8 +993,9 @@ public class MySQLDatabase {
 
 	}
 
-	public static void updateAgentOrCreateIfNotExist(List objetos,
-			String testPlan) throws ClassNotFoundException, SQLException {
+	public static void updateAgentOrCreateIfNotExist(
+			@SuppressWarnings("rawtypes") List objetos, String testPlan)
+			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 

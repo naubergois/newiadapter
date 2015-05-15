@@ -153,6 +153,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	 * @param tg
 	 * @param generation
 	 */
+	@SuppressWarnings("unchecked")
 	public static void finishTest(Agent agent, WorkLoadThreadGroup tg,
 			String generation) {
 		agent.runningFinal();
@@ -177,7 +178,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			JMeterPluginsUtils.updateErrorValue(CSVReadStats.getErrors(), list,
 					tg);
 			JMeterPluginsUtils.updateFit(list, tg.getName(),
-					String.valueOf(tg.getGeneration()), tg.getMaxTime());
+					String.valueOf(tg.getGeneration()), tg.getMaxTime(), tg);
 
 		} catch (ClassNotFoundException e1) {
 			log.error(e1.getMessage());
@@ -296,18 +297,27 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 						.searchWorkLoadControllerWithNoGui(this.tree);
 
 				List<WorkLoad> list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(this);
+				List<WorkLoad> listSA = null;
+				if (this.getCollaborative()) {
+					listSA = returnListALLWorkLoadsForNewGeneration(this);
 
-				List<WorkLoad> listSA = returnListSAWorkLoadsForNewGeneration(this);
+				} else {
 
-				// List<WorkLoad> listTABU =
-				// returnListTABUWorkLoadsForNewGeneration(this);
+					listSA = returnListSAWorkLoadsForNewGeneration(this);
+				}
 
-				List<WorkLoad> listTABU = returnListALLWorkLoadsForNewGeneration(this);
+				List<WorkLoad> listTABU = null;
+
+				if (this.getCollaborative()) {
+					listTABU = returnListALLWorkLoadsForNewGeneration(this);
+				} else {
+					listTABU = returnListTABUWorkLoadsForNewGeneration(this);
+				}
 
 				this.setGeneration(this.getGeneration() + 1);
 
 				List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(this,
-						list);
+						list,listElement,Integer.valueOf(getThreadNumberMax()),this.getGenerationTrack());
 
 				List<WorkLoad> listNewSA = new ArrayList<WorkLoad>();
 
@@ -430,7 +440,21 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	private static final String THREAD_MAX_TIME = "threadmaxtimemax";
 
-	private static final String PERCENTILE90_FIT_WEIGTH = "percentile90fitweigth";
+	private static final String PERCENTILE90_FIT_WEIGHT = "percentile90fitweight";
+
+	private static final String PERCENTILE80_FIT_WEIGHT = "percentile80fitweight";
+
+	private static final String COLABORATIVE = "colaborative";
+
+	private static final String PERCENTILE70_FIT_WEIGHT = "percentile70fitweight";
+
+	private static final String POPULATION_SIZE = "populationsize";
+
+	private static final String RESPONSEMAX_FIT_WEIGHT = "responsemaxfitweigth";
+
+	private static final String TOTALERROR_FIT_WEIGHT = "totalerrorfitweigth";
+
+	private static final String USER_FIT_WEIGHT = "userfitweigth";
 
 	private static final String THREAD_IND = "threadind";
 
@@ -471,13 +495,19 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			agent.running();
 			WorkLoad workload = list.get(this.getCurrentTest());
 
-			int newGeneration = WorkLoadUtil.getGenerationFromName(workload
-					.getName());
-			
-			System.out.print(workload.getName()+" "+newGeneration);
+			int newGeneration = 0;
 
-			if (newGeneration > 0) {
-				generationTrack = newGeneration + generation;
+			int newGenerationAux = WorkLoadUtil.getGenerationFromName(workload
+					.getName());
+
+			if (newGenerationAux > newGeneration) {
+
+				newGeneration = newGenerationAux;
+
+				if (newGeneration > 0) {
+					generationTrack = newGeneration + 1;
+				}
+
 			}
 
 			JMeterContextService.getContext().getVariables()
@@ -742,12 +772,76 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	}
 
-	public String getResponse90FitWeigth() {
-		return getPropertyAsString(PERCENTILE90_FIT_WEIGTH);
+	public String getResponseMaxFitWeight() {
+		return getPropertyAsString(RESPONSEMAX_FIT_WEIGHT);
 	}
 
-	public void setResponse90FitWeigth(String delay) {
-		setProperty(PERCENTILE90_FIT_WEIGTH, delay);
+	public void setResponseMaxFitWeight(String delay) {
+		setProperty(RESPONSEMAX_FIT_WEIGHT, delay);
+	}
+
+	public void setTotalErrorFitWeight(String delay) {
+		setProperty(TOTALERROR_FIT_WEIGHT, delay);
+	}
+
+	public void setUserFitWeight(String delay) {
+		setProperty(USER_FIT_WEIGHT, delay);
+	}
+
+	public String getUserFitWeight() {
+		return getPropertyAsString(USER_FIT_WEIGHT);
+	}
+
+	public String getTotalErrorFitWeight() {
+		return getPropertyAsString(TOTALERROR_FIT_WEIGHT);
+	}
+
+	public String getResponse90FitWeight() {
+		return getPropertyAsString(PERCENTILE90_FIT_WEIGHT);
+	}
+
+	public void setResponse90FitWeight(String delay) {
+		setProperty(PERCENTILE90_FIT_WEIGHT, delay);
+	}
+
+	public String getResponse80FitWeight() {
+		return getPropertyAsString(PERCENTILE80_FIT_WEIGHT);
+	}
+
+	public boolean getCollaborative() {
+		return getPropertyAsBoolean(COLABORATIVE);
+	}
+
+	public void setCollaborative(boolean delay) {
+		setProperty(COLABORATIVE, delay);
+	}
+
+	public int getTemperature() {
+		return temperature;
+	}
+
+	public void setTemperature(int temperature) {
+		this.temperature = temperature;
+	}
+
+	public void setPopulationSize(String delay) {
+		setProperty(POPULATION_SIZE, delay);
+	}
+
+	public String getPopulationSize() {
+		return getPropertyAsString(POPULATION_SIZE);
+	}
+
+	public void setResponse80FitWeight(String delay) {
+		setProperty(PERCENTILE80_FIT_WEIGHT, delay);
+	}
+
+	public String getResponse70FitWeight() {
+		return getPropertyAsString(PERCENTILE70_FIT_WEIGHT);
+	}
+
+	public void setResponse70FitWeight(String delay) {
+		setProperty(PERCENTILE70_FIT_WEIGHT, delay);
 	}
 
 	public String getMaxTime() {

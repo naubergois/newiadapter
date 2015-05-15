@@ -1279,6 +1279,11 @@ public class GraphPanelChart extends JComponent implements ClipboardOwner {
 	private class HoverMotionListener extends java.awt.event.MouseMotionAdapter
 			implements Serializable {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void mouseDragged(java.awt.event.MouseEvent evt) {
 			chartMouseMoved(evt);

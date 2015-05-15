@@ -14,10 +14,8 @@ import org.jgap.Genotype;
 import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.Population;
-import org.jgap.impl.CrossoverOperator;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.IntegerGene;
-import org.jgap.impl.MutationOperator;
 
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.util.FindService;
@@ -38,19 +36,27 @@ public class GeneWorkLoad {
 		return index;
 	}
 
-	public static CrossoverOperator crossOverPopulation(Population population,
+	public static List<IChromosome> crossOverPopulation(Population population,
 			List<Chromosome> list) throws InvalidConfigurationException {
-		CrossoverOperator cs = new CrossoverOperator(getConfiguration(), 100);
-		cs.operate(population, list);
-		return cs;
+		getConfiguration().setPopulationSize(population.size());
+
+		List<IChromosome> newlist = new ArrayList<IChromosome>();
+		CrossoverOperator cs = new CrossoverOperator(getConfiguration(), 1);
+		newlist = cs.operateBestIndividuals(population.getChromosomes(), list);
+		return newlist;
 
 	}
 
-	public static MutationOperator mutationPopulation(Population population,
-			List<Chromosome> list) throws InvalidConfigurationException {
-		MutationOperator cs = new MutationOperator(getConfiguration(), 20);
-		cs.operate(population, list);
-		return cs;
+	public static List<WorkLoad> mutationPopulation(List<WorkLoad> list,
+			List<TestElement> nodes, int maxUsers, int generationTrack) {
+		MutationOperator cs = new MutationOperator();
+		List<WorkLoad> mutant = new ArrayList<WorkLoad>();
+		for (WorkLoad workLoad2 : list) {
+			mutant.add(cs.mutantWorkload(workLoad2, 3, nodes, maxUsers,
+					generationTrack));
+		}
+
+		return mutant;
 
 	}
 
@@ -185,9 +191,9 @@ public class GeneWorkLoad {
 	}
 
 	public static List<WorkLoad> createWorkLoadsFromChromossomeWithGui(
-			int userNumbers, int generation)
+			int userNumbers, int generation, int population)
 			throws InvalidConfigurationException {
-		IChromosome[] list = createPopulation(userNumbers);
+		IChromosome[] list = createPopulation(userNumbers, population);
 		List<WorkLoad> workLoads = new ArrayList<WorkLoad>();
 		for (IChromosome iChromosome : list) {
 			Gene[] gene = iChromosome.getGenes();
@@ -199,15 +205,15 @@ public class GeneWorkLoad {
 		return workLoads;
 	}
 
-	public static IChromosome[] createPopulation(int userNumbers)
-			throws InvalidConfigurationException {
+	public static IChromosome[] createPopulation(int userNumbers,
+			int populationSize) throws InvalidConfigurationException {
 
 		Gene[] gene = createGeneWithGui(userNumbers);
 		Chromosome chromosome = new Chromosome(getConfiguration(), gene);
 		if (!(getConfiguration().isLocked())) {
 			getConfiguration().setSampleChromosome(chromosome);
 		}
-		getConfiguration().setPopulationSize(10);
+		getConfiguration().setPopulationSize(populationSize);
 
 		Genotype population = Genotype
 				.randomInitialGenotype(getConfiguration());

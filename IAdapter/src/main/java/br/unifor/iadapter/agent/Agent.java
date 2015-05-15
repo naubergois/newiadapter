@@ -3,7 +3,6 @@ package br.unifor.iadapter.agent;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.jorphan.logging.LoggingManager;

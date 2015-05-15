@@ -45,6 +45,7 @@ import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
 import org.jgap.Chromosome;
+import org.jgap.IChromosome;
 import org.jgap.Population;
 
 import br.unifor.iadapter.agent.Agent;
@@ -109,7 +110,7 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	public static List<WorkLoad> getListWorkLoadFromPopulationTestPlan(
-			List<Chromosome> listC, ListedHashTree tree, int generation,
+			List<IChromosome> listC, ListedHashTree tree, int generation,
 			String testPlan, int maxUsers, int generationTrack) {
 
 		int maxThreads = maxUsers;
@@ -118,7 +119,7 @@ public abstract class JMeterPluginsUtils {
 				.searchWorkLoadControllerWithNoGui(tree);
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
-		for (Chromosome chromosome : listC) {
+		for (IChromosome chromosome : listC) {
 			list.add(WorkLoadUtil.getWorkLoadFromChromosome(chromosome,
 					listElement, generation, generationTrack));
 		}
@@ -151,7 +152,8 @@ public abstract class JMeterPluginsUtils {
 					if ((probabilty < 2)) {
 
 						WorkLoad workloadMutation = WorkLoadUtil.mutant(
-								workLoad, users, maxUsers, maxThreads);
+								workLoad, users, maxUsers, maxThreads,
+								generationTrack);
 						listAux.add(workloadMutation);
 						listRemove.add(workLoad);
 					}
@@ -260,12 +262,12 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	public static void updateFit(List<WorkLoad> list, String testPlan,
-			String generation, String maxTime) {
+			String generation, String maxTime, WorkLoadThreadGroup tg) {
 		for (WorkLoad workload : list) {
 			try {
 				workload.setFit(MySQLDatabase.updateFitValue(
 						workload.getName(), testPlan, generation,
-						Long.valueOf(maxTime)));
+						Long.valueOf(maxTime), tg));
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

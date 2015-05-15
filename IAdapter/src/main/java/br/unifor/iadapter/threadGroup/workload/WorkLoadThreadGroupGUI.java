@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -31,7 +32,6 @@ import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.testelement.property.CollectionProperty;
 import org.apache.jmeter.testelement.property.JMeterProperty;
 import org.apache.jmeter.testelement.property.NullProperty;
-import org.apache.jmeter.testelement.property.PropertyIterator;
 import org.apache.jmeter.threads.AbstractThreadGroup;
 import org.apache.jmeter.threads.gui.AbstractThreadGroupGui;
 import org.apache.jorphan.logging.LoggingManager;
@@ -65,7 +65,14 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	private JTextField genNumber;
 	private JTextField bestInd;
 	private JTextField minTemp;
-	private JTextField percentile90FitWeigth;
+	private JTextField percentile90FitWeight;
+	private JTextField percentile80FitWeight;
+	private JTextField percentile70FitWeight;
+	private JTextField responseMaxFitWeight;
+	private JTextField totalErrorFitWeight;
+	private JTextField userFitWeight;
+	private JTextField populationSize;
+	private JCheckBox colaborative;
 	/**
      *
      */
@@ -101,9 +108,11 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			String.class, String.class, String.class, String.class,
 			String.class, String.class, String.class, String.class };
 
+	@SuppressWarnings("rawtypes")
 	public static final Class[] columnClassesAgent = new Class[] {
 			String.class, String.class, String.class };
 
+	@SuppressWarnings("rawtypes")
 	public static final Class[] columnClassesLog = new Class[] { String.class };
 
 	public static final String[] defaultValues = new String[] { "1", "1", "1",
@@ -123,8 +132,6 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	protected JTable gridAgents;
 	protected JTable gridLog;
 	protected JPanel buttons;
-
-	private PropertyIterator scheduleIT;
 
 	JTabbedPane tabbedPane = new JTabbedPane();
 
@@ -149,9 +156,18 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		createTabParameters(tabbedPane);
 		createLogPanel(tabbedPane);
 		createFitParameters(tabbedPane);
+		createPopulationParameters(tabbedPane);
 		add(tabbedPane, BorderLayout.CENTER);
 
 		createControllerPanel();
+	}
+
+	public JTextField getPopulationSize() {
+		return populationSize;
+	}
+
+	public void setPopulationSize(JTextField populationSize) {
+		this.populationSize = populationSize;
 	}
 
 	public PowerTableModel getWtableLog() {
@@ -374,7 +390,14 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			utg.setGenNumber(genNumber.getText());
 			utg.setBestIndividuals(bestInd.getText());
 			utg.setMinTemp(minTemp.getText());
-			utg.setResponse90FitWeigth(percentile90FitWeigth.getText());
+			utg.setResponse90FitWeight(percentile90FitWeight.getText());
+			utg.setResponse80FitWeight(percentile80FitWeight.getText());
+			utg.setResponse70FitWeight(percentile70FitWeight.getText());
+			utg.setResponseMaxFitWeight(responseMaxFitWeight.getText());
+			utg.setTotalErrorFitWeight(totalErrorFitWeight.getText());
+			utg.setUserFitWeight(userFitWeight.getText());
+			utg.setPopulationSize(populationSize.getText());
+			utg.setCollaborative(colaborative.isSelected());
 
 			if (grid == null) {
 				createGrid();
@@ -411,8 +434,15 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		genNumber.setText(utg.getGenNumber());
 		bestInd.setText(utg.getBestIndividuals());
 		minTemp.setText(utg.getMinTemp());
-		percentile90FitWeigth.setText(utg.getResponse90FitWeigth());
-		
+		percentile90FitWeight.setText(utg.getResponse90FitWeight());
+		percentile80FitWeight.setText(utg.getResponse80FitWeight());
+		percentile70FitWeight.setText(utg.getResponse70FitWeight());
+		responseMaxFitWeight.setText(utg.getResponseMaxFitWeight());
+		totalErrorFitWeight.setText(utg.getTotalErrorFitWeight());
+		userFitWeight.setText(utg.getUserFitWeight());
+		colaborative.setSelected(utg.getCollaborative());
+		populationSize.setText(utg.getPopulationSize());
+
 		JMeterProperty threadValues = utg.getData();
 		if (!(threadValues instanceof NullProperty)) {
 			CollectionProperty columns = (CollectionProperty) threadValues;
@@ -442,6 +472,14 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			loopPanel.configure(te);
 		}
 
+	}
+
+	public JCheckBox getColaborative() {
+		return colaborative;
+	}
+
+	public void setColaborative(JCheckBox colaborative) {
+		this.colaborative = colaborative;
 	}
 
 	@Override
@@ -529,16 +567,52 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	}
 
+	public Component createPopulationParameters(JTabbedPane tab1) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+
+		JPanel param = new JPanel();
+		param.setLayout(new GridLayout(0, 2));
+		populationSize = new JTextField("2", 5);
+		colaborative = new JCheckBox("Collaborative?", true);
+
+		param.add(new JLabel("Population Size"));
+		param.add(populationSize);
+		param.add(colaborative);
+		panel.add(param, BorderLayout.CENTER);
+
+		tab1.addTab("Population", panel);
+
+		return tab1;
+
+	}
+
 	public Component createFitParameters(JTabbedPane tab1) {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 
 		JPanel param = new JPanel();
 		param.setLayout(new GridLayout(0, 2));
-		percentile90FitWeigth = new JTextField("90", 5);
+		percentile90FitWeight = new JTextField("90", 5);
+		percentile80FitWeight = new JTextField("20", 5);
+		percentile70FitWeight = new JTextField("10", 5);
+		responseMaxFitWeight = new JTextField("10", 5);
+		totalErrorFitWeight = new JTextField("-10", 5);
+		userFitWeight = new JTextField("10", 5);
 
-		param.add(new JLabel("Percentile 90 Fit Weigth"));
-		param.add(percentile90FitWeigth);
+		param.add(new JLabel("Percentile 90 Fit Weight"));
+		param.add(percentile90FitWeight);
+		param.add(new JLabel("Percentile 80 Fit Weight"));
+		param.add(percentile80FitWeight);
+		param.add(new JLabel("Percentile 70 Fit Weight"));
+		param.add(percentile70FitWeight);
+
+		param.add(new JLabel("Response Max Fit Weight"));
+		param.add(responseMaxFitWeight);
+		param.add(new JLabel("Total Error Fit Weight"));
+		param.add(totalErrorFitWeight);
+		param.add(new JLabel("User Fit Weight"));
+		param.add(userFitWeight);
 		panel.add(param, BorderLayout.CENTER);
 
 		tab1.addTab("FIT", panel);
