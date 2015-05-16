@@ -113,7 +113,7 @@ public abstract class JMeterPluginsUtils {
 			List<IChromosome> listC, ListedHashTree tree, int generation,
 			String testPlan, int maxUsers, int generationTrack) {
 
-		int maxThreads = maxUsers;
+		// int maxThreads = maxUsers;
 
 		List<TestElement> listElement = FindService
 				.searchWorkLoadControllerWithNoGui(tree);
@@ -124,51 +124,50 @@ public abstract class JMeterPluginsUtils {
 					listElement, generation, generationTrack));
 		}
 
-		List<WorkLoad> listAux = new ArrayList<WorkLoad>();
+		// List<WorkLoad> listAux = new ArrayList<WorkLoad>();
 
-		List<WorkLoad> listRemove = new ArrayList<WorkLoad>();
+		// List<WorkLoad> listRemove = new ArrayList<WorkLoad>();
 
-		for (WorkLoad workLoad : list) {
-			try {
-				int users = MySQLDatabase.listBestWorkloadGenetic(testPlan,
-						workLoad.getType());
+		// for (WorkLoad workLoad : list) {
+		// try {
+		// int users = MySQLDatabase.listBestWorkloadGenetic(testPlan,
+		// workLoad.getType());
 
-				int usersWorst = MySQLDatabase.listWorstWorkloadGenetic(
-						testPlan, workLoad.getType());
+		// int usersWorst = MySQLDatabase.listWorstWorkloadGenetic(
+		// testPlan, workLoad.getType());
 
-				if (usersWorst > 0) {
-					maxUsers = usersWorst;
-				}
+		// if (usersWorst > 0) {
+		// maxUsers = usersWorst;
+		// }
 
-				int generationWorkLoad = Integer.valueOf(workLoad
-						.getGeneration());
+		// int generationWorkLoad = Integer.valueOf(workLoad
+		// .getGeneration());
 
-				if ((generationWorkLoad >= generation)) {
+		// if ((generationWorkLoad >= generation)) {
 
-					Random mutRandom = new Random();
+		// Random mutRandom = new Random();
 
-					int probabilty = mutRandom.nextInt(10);
+		// int probabilty = mutRandom.nextInt(10);
 
-					if ((probabilty < 2)) {
+		/*
+		 * if ((probabilty < 2)) {
+		 * 
+		 * WorkLoad workloadMutation = WorkLoadUtil.mutant( workLoad, users,
+		 * maxUsers, maxThreads, generationTrack);
+		 * listAux.add(workloadMutation); listRemove.add(workLoad); }
+		 */
+		// }
+		// } catch (ClassNotFoundException e) {
+		// TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (SQLException e) {
+		// TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// }
 
-						WorkLoad workloadMutation = WorkLoadUtil.mutant(
-								workLoad, users, maxUsers, maxThreads,
-								generationTrack);
-						listAux.add(workloadMutation);
-						listRemove.add(workLoad);
-					}
-				}
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		list.removeAll(listRemove);
-		list.addAll(listAux);
+		// list.removeAll(listRemove);
+		// list.addAll(listAux);
 
 		return list;
 

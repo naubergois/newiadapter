@@ -60,7 +60,7 @@ public class AddRowWorkloadAction implements ActionListener {
 			}
 			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(
 					users, 1, population);
-			// workloadList.addAll(WorkLoadUtil.createWorkLoadNodes(users, 1));
+			workloadList.addAll(WorkLoadUtil.createWorkLoadNodes(users, 1));
 
 			List<WorkLoad> listSA = new ArrayList<WorkLoad>();
 			List<WorkLoad> listTABU = new ArrayList<WorkLoad>();

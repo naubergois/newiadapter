@@ -272,7 +272,7 @@ public class WorkLoadUtil {
 	}
 
 	public static WorkLoad getNeighBoorMutant(WorkLoad workload,
-			List<TestElement> nodes, int maxUsers, Integer generationTrack) {
+			List<TestElement> nodes, int maxUsers, Integer generation) {
 		Random random = new Random();
 		List<Integer> parametros = new ArrayList<Integer>();
 		parametros.add(getIndexType(workload.getType()));
@@ -418,7 +418,7 @@ public class WorkLoadUtil {
 		parametros.add(workload.getGeneration() + 1);
 
 		WorkLoad newWorkload = createWorkLoadMutant(nodes, parametros,
-				"MUTANT", generationTrack);
+				"GENETICALGORITHM", generation);
 
 		return newWorkload;
 	}
@@ -1415,7 +1415,7 @@ public class WorkLoadUtil {
 	}
 
 	public static WorkLoad createWorkLoadMutant(List<TestElement> nodes,
-			List<Integer> parametros, String search, int generationTrack) {
+			List<Integer> parametros, String search, int generation) {
 		WorkLoad workload = null;
 		if (parametros.get(0) == 0) {
 			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[0]);
@@ -1437,12 +1437,6 @@ public class WorkLoadUtil {
 		workload.setFunction9(getName(nodes, parametros.get(9)));
 		workload.setFunction10(getName(nodes, parametros.get(10)));
 		String prefix = "";
-		if (search.equals("SA")) {
-			prefix = "SA";
-		}
-		if (search.equals("TABU")) {
-			prefix = "TABU";
-		}
 
 		int maxUser = parametros.get(11) / 10;
 
@@ -1485,8 +1479,8 @@ public class WorkLoadUtil {
 
 		String preprefix = "";
 
-		if (generationTrack > 0) {
-			preprefix = "G" + generationTrack + ":";
+		if (generation > 0) {
+			preprefix = "G" + generation + ":";
 		}
 
 		workload.setName(preprefix + ":" + prefix + workload.getType() + "-"
