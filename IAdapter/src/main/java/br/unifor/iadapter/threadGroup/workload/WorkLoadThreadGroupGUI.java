@@ -41,6 +41,8 @@ import br.unifor.iadapter.action.AddRowWorkloadAction;
 import br.unifor.iadapter.action.DeleteAgentAction;
 import br.unifor.iadapter.action.DeleteRowAction;
 import br.unifor.iadapter.action.DesactiveRowWorkloadAction;
+import br.unifor.iadapter.action.ExportWorkloadAction;
+import br.unifor.iadapter.action.NewGenerationWorkloadAction;
 import br.unifor.iadapter.action.RefreshRowWorkloadAction;
 import br.unifor.iadapter.action.SaveRowAction;
 import br.unifor.iadapter.jmeter.AbstractGraphRow;
@@ -48,6 +50,7 @@ import br.unifor.iadapter.jmeter.ClearRowWorkloadAction;
 import br.unifor.iadapter.jmeter.GraphPanelChart;
 import br.unifor.iadapter.jmeter.GraphRowSumValues;
 import br.unifor.iadapter.jmeter.GuiBuilderHelper;
+import br.unifor.iadapter.util.ExportCSVWorkloads;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
 
 public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
@@ -73,6 +76,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	private JTextField userFitWeight;
 	private JTextField populationSize;
 	private JCheckBox colaborative;
+	private JTextField initialGeneration;
+	private JTextField responseTimeMaxPenalty;
+	private JTextField mutantProbability;
 	/**
      *
      */
@@ -91,7 +97,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			"USER5", "USER6", "USER7", "USER8", "USER9", "USER10" };
 
 	public static final String[] columnIdentifiersAgent = new String[] {
-			"Name", "Running", "IP" };
+			"Name", "Running", "IP", "Date" };
 
 	public static final String[] columnIdentifiersLog = new String[] { "Log" };
 	/**
@@ -110,7 +116,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 	@SuppressWarnings("rawtypes")
 	public static final Class[] columnClassesAgent = new Class[] {
-			String.class, String.class, String.class };
+			String.class, String.class, String.class, String.class };
 
 	@SuppressWarnings("rawtypes")
 	public static final Class[] columnClassesLog = new Class[] { String.class };
@@ -297,9 +303,25 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		button5.setIcon(save);
 		buttons.add(button5);
 
-		JButton button6 = new JButton("DesFit");
-
+		JButton button6 = new JButton();
+		ImageIcon turnoff = new javax.swing.ImageIcon(getClass().getResource(
+				"turnoff.png"));
+		button6.setIcon(turnoff);
 		buttons.add(button6);
+
+		JButton button7 = new JButton();
+		ImageIcon export = new javax.swing.ImageIcon(getClass().getResource(
+				"export.jpeg"));
+		button7.setIcon(export);
+
+		buttons.add(button7);
+
+		JButton button8 = new JButton();
+		ImageIcon dna2 = new javax.swing.ImageIcon(getClass().getResource(
+				"dna2.png"));
+		button8.setIcon(dna2);
+
+		buttons.add(button8);
 
 		button1.addActionListener(new AddRowWorkloadAction(this, grid,
 				wtableModel, null, null));
@@ -316,6 +338,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		button6.addActionListener(new DesactiveRowWorkloadAction(this,
 				wtableModel));
+
+		button7.addActionListener(new ExportWorkloadAction());
+
+		button8.addActionListener(new NewGenerationWorkloadAction());
 		southPanel.add(buttons, BorderLayout.SOUTH);
 		southPanel.add(database, BorderLayout.SOUTH);
 
@@ -398,6 +424,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			utg.setUserFitWeight(userFitWeight.getText());
 			utg.setPopulationSize(populationSize.getText());
 			utg.setCollaborative(colaborative.isSelected());
+			utg.setInitialGeneration(initialGeneration.getText());
+			utg.setResponseTimeMaxPenalty(responseTimeMaxPenalty.getText());
+			utg.setMutantProbabilty(mutantProbability.getText());
 
 			if (grid == null) {
 				createGrid();
@@ -442,6 +471,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		userFitWeight.setText(utg.getUserFitWeight());
 		colaborative.setSelected(utg.getCollaborative());
 		populationSize.setText(utg.getPopulationSize());
+		initialGeneration.setText(utg.getInitialGeneration());
+		responseTimeMaxPenalty.setText(utg.getResponseTimeMaxPenalty());
+		mutantProbability.setText(utg.getMutantProbability());
 
 		JMeterProperty threadValues = utg.getData();
 		if (!(threadValues instanceof NullProperty)) {
@@ -549,6 +581,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		genNumber = new JTextField("3", 5);
 		bestInd = new JTextField("1", 5);
 		minTemp = new JTextField("0", 15);
+		mutantProbability = new JTextField("1", 15);
 		param.add(new JLabel("Thread Max Number"));
 		param.add(threadMax);
 		param.add(new JLabel("Max response time"));
@@ -559,6 +592,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		param.add(bestInd);
 		param.add(new JLabel("Minimal Simulated Annealing Temperature"));
 		param.add(minTemp);
+		param.add(new JLabel("Mutation Probability Number (1-9)"));
+		param.add(mutantProbability);
 		panel.add(param, BorderLayout.CENTER);
 
 		tab1.addTab("Parameters", panel);
@@ -575,10 +610,14 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		param.setLayout(new GridLayout(0, 2));
 		populationSize = new JTextField("2", 5);
 		colaborative = new JCheckBox("Collaborative?", true);
+		initialGeneration = new JTextField("1", 5);
 
 		param.add(new JLabel("Population Size"));
 		param.add(populationSize);
+		param.add(new JLabel("Colaborative"));
 		param.add(colaborative);
+		param.add(new JLabel("Initial Generation"));
+		param.add(initialGeneration);
 		panel.add(param, BorderLayout.CENTER);
 
 		tab1.addTab("Population", panel);
@@ -599,6 +638,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		responseMaxFitWeight = new JTextField("10", 5);
 		totalErrorFitWeight = new JTextField("-10", 5);
 		userFitWeight = new JTextField("10", 5);
+		responseTimeMaxPenalty = new JTextField("-10", 5);
 
 		param.add(new JLabel("Percentile 90 Fit Weight"));
 		param.add(percentile90FitWeight);
@@ -613,6 +653,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		param.add(totalErrorFitWeight);
 		param.add(new JLabel("User Fit Weight"));
 		param.add(userFitWeight);
+		param.add(new JLabel("Response Time Max Across Penalty"));
+		param.add(responseTimeMaxPenalty);
+
 		panel.add(param, BorderLayout.CENTER);
 
 		tab1.addTab("FIT", panel);

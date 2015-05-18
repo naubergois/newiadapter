@@ -23,19 +23,21 @@ public class MutationOperator {
 	private final static String CVS_REVISION = "$Revision: 1.45 $";
 
 	public static WorkLoad mutantWorkload(WorkLoad workload, int n,
-			List<TestElement> nodes, int maxUsers, int generationTrack) {
+			List<TestElement> nodes, int maxUsers, int generation,
+			int mutantionProbability) {
 		Random random = new Random();
 
 		int evolute = random.nextInt(10);
 		WorkLoad workloadClone = workload.clone();
-		if (evolute < 3) {
+		if (evolute < mutantionProbability) {
 
 			for (int i = 0; i <= n; i++) {
-				workloadClone = WorkLoadUtil.getNeighBoorMutant(workloadClone,
-						nodes, maxUsers, generationTrack);
+				workloadClone = WorkLoadUtil.getNeighBorHoodMutant(
+						workloadClone, nodes, maxUsers);
 
 			}
-			workloadClone.setName("Mutant:" + workloadClone.getName());
+			workloadClone.setName("Mutant:G" + generation + ":"
+					+ workloadClone.getName());
 		}
 		return workloadClone;
 

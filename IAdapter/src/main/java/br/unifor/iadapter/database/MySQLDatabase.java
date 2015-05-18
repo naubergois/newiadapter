@@ -54,13 +54,13 @@ public class MySQLDatabase {
 			+ MySQLDatabase.COLUMNSAMPLES + ") values ("
 			+ MySQLDatabase.PARAMETERSSAMPLE + ")";
 
-	private final static String COLUMNSAGENT = "name,running," + "ip";
+	private final static String COLUMNSAGENT = "name,running," + "ip,date";
 
 	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
 
 	private final static String PARAMETERSSAMPLE = "?,?,?,?,?,?";
 
-	private final static String PARAMETERSAGENT = "?,?,?";
+	private final static String PARAMETERSAGENT = "?,?,?,?";
 
 	private final static String SET = "NAME=?,TYPE=?,"
 			+ "USERS=?,RESPONSETIME=?,ERROR=?,FIT=?,FUNCTION1=?,"
@@ -650,14 +650,8 @@ public class MySQLDatabase {
 		Connection con = singleton();
 		PreparedStatement ps = con
 				.prepareStatement(""
-						+ "UPDATE workload SET ACTIVE='false' WHERE FIT IS NOT NULL AND   (CAST(FIT AS DECIMAL)>0 OR CAST(FIT AS DECIMAL)<0)  and TESTPLAN=? ");
+						+ "UPDATE workload SET ACTIVE='false' WHERE FIT!=0  and TESTPLAN=? ");
 
-		ps.setString(1, testPlan);
-
-		ps.executeUpdate();
-
-		ps = con.prepareStatement(""
-				+ "UPDATE workload SET GENERATION='1' WHERE FIT IS NOT NULL AND ACTIVE='true' AND  CAST(FIT AS DECIMAL)=0 and TESTPLAN=? ");
 		ps.setString(1, testPlan);
 
 		ps.executeUpdate();
@@ -665,8 +659,9 @@ public class MySQLDatabase {
 	}
 
 	public static double updateFitValue(String workload, String testPlan,
-			String generation, long maxTime, WorkLoadThreadGroup tg)
-			throws ClassNotFoundException, SQLException {
+			String generation, long maxTime, WorkLoadThreadGroup tg,
+			long responseTimeMaxPenalty) throws ClassNotFoundException,
+			SQLException {
 
 		double fit = 0;
 		long responseTime = selectResponseTime(workload, testPlan, generation);
@@ -702,19 +697,19 @@ public class MySQLDatabase {
 
 			if (responseTime90Percent > maxTime) {
 				double distance = responseTime90Percent - maxTime;
-				penalty += -10 * distance;
+				penalty += responseTimeMaxPenalty * distance;
 			}
 			if (responseTime > maxTime) {
 				double distance = responseTime - maxTime;
-				penalty += -10 * distance;
+				penalty += responseTimeMaxPenalty * distance;
 			}
 			if (responseTime80Percent > maxTime) {
 				double distance = responseTime80Percent - maxTime;
-				penalty += -10 * distance;
+				penalty += responseTimeMaxPenalty * distance;
 			}
 			if (responseTime70Percent > maxTime) {
 				double distance = responseTime70Percent - maxTime;
-				penalty += -10 * distance;
+				penalty += responseTimeMaxPenalty * distance;
 			}
 
 			if (responseTime > 0) {
@@ -984,9 +979,11 @@ public class MySQLDatabase {
 			String name = rs.getString(1);
 			String running = rs.getString(2);
 			String ip = rs.getString(3);
+			String date = rs.getString(4);
 			agent.setIp(ip);
 			agent.setName(name);
 			agent.setRunning(running);
+			agent.setDate(date);
 			list.add(agent);
 		}
 		return list;
@@ -1013,6 +1010,7 @@ public class MySQLDatabase {
 			ps.setString(1, objetos.get(0).toString());
 			ps.setString(2, objetos.get(1).toString());
 			ps.setString(3, objetos.get(2).toString());
+			ps.setString(4, objetos.get(3).toString());
 			ps.executeUpdate();
 		} else {
 
@@ -1062,7 +1060,7 @@ public class MySQLDatabase {
 				.prepareStatement(""
 						+ "SELECT "
 						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? AND ACTIVE='true' ORDER BY NAME ");
+						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=?  AND ACTIVE='true' ORDER BY NAME ");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
@@ -1159,9 +1157,10 @@ public class MySQLDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=? and  ACTIVE='true' "
+				+ "  FROM  workload WHERE TESTPLAN=? and  GENERATION=? "
 				+ " ORDER BY FIT*1 DESC LIMIT 10");
 		ps.setString(1, testPlan);
+		ps.setString(2, generation);
 
 		ResultSet rs = ps.executeQuery();
 
@@ -1254,6 +1253,29 @@ public class MySQLDatabase {
 				+ "AND TYPE=? ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, type);
+
+		ResultSet rs = ps.executeQuery();
+
+		int users = 0;
+
+		if (rs.next()) {
+			users = Integer.valueOf(rs.getString(1));
+		}
+
+		return users;
+
+	}
+
+	public static int listMaxUserWithNoErroWorkloadGenetic(String testPlan)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
+				+ "  FROM  workload WHERE TESTPLAN=? "
+				+ "AND (CAST(TOTALERROR AS DECIMAL)=0) "
+				+ "ORDER BY USERS*1 DESC");
+		ps.setString(1, testPlan);
 
 		ResultSet rs = ps.executeQuery();
 

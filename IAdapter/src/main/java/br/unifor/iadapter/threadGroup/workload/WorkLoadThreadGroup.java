@@ -11,12 +11,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.jmeter.JMeter;
 import org.apache.jmeter.engine.JMeterEngine;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.engine.TreeCloner;
 import org.apache.jmeter.engine.TreeClonerNoTimer;
 import org.apache.jmeter.engine.event.LoopIterationEvent;
 import org.apache.jmeter.engine.event.LoopIterationListener;
+import org.apache.jmeter.gui.GuiPackage;
+import org.apache.jmeter.gui.tree.JMeterTreeModel;
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleListener;
@@ -60,7 +63,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private int generation = 1;
+	private int generation = 0;
 	private int temperature = 0;
 	private int generationTrack = 0;
 
@@ -246,6 +249,210 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		return null;
 	}
 
+	public static List<TestElement> testNodeToTestElement(
+			List<JMeterTreeNode> nodes) {
+		List<TestElement> list = new ArrayList<TestElement>();
+		for (JMeterTreeNode jMeterTreeNode : nodes) {
+			list.add(jMeterTreeNode.getTestElement());
+		}
+		return list;
+
+	}
+
+	public static void createNextGenerationElementsWithGui(
+			WorkLoadThreadGroup tg) {
+
+		List<JMeterTreeNode> nodes = FindService
+				.searchWorkLoadControllerWithGui();
+
+		List<TestElement> listElement = testNodeToTestElement(nodes);
+
+		tg.setGeneration(Integer.valueOf(tg.getInitialGeneration()));
+
+		List<WorkLoad> list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
+		List<WorkLoad> listSA = null;
+		if (tg.getCollaborative()) {
+			listSA = returnListALLWorkLoadsForNewGeneration(tg);
+
+		} else {
+
+			listSA = returnListSAWorkLoadsForNewGeneration(tg);
+		}
+
+		List<WorkLoad> listTABU = null;
+
+		if (tg.getCollaborative()) {
+			listTABU = returnListALLWorkLoadsForNewGeneration(tg);
+		} else {
+			listTABU = returnListTABUWorkLoadsForNewGeneration(tg);
+		}
+
+		tg.setGeneration(tg.getGeneration() + 1);
+
+		List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(tg, list,
+				listElement, true);
+
+		List<WorkLoad> listNewSA = new ArrayList<WorkLoad>();
+
+		List<WorkLoad> listTABUnewGeneration = null;
+
+		listTABU = TabuSearch.verify(listTABU, listElement);
+
+		if (listTABU.size() > 0) {
+
+			TabuSearch.addTabuTable(listTABU.get(0), listElement);
+
+			List<WorkLoad> neighboors = WorkLoadUtil.getNeighborHood(
+					listTABU.get(0), listElement, tg);
+			listTABUnewGeneration = TabuSearch.verify(neighboors, listElement);
+
+		}
+
+		if (listSA.size() > 0) {
+			tg.temperature = SimulateAnnealing.sa(tg.temperature,
+					listSA.get(0), Integer.valueOf(tg.getThreadNumberMax()),
+					listNewSA, tg.getGeneration(), tg, listElement);
+		}
+
+		try {
+			int generations = Integer.valueOf(tg.getGenNumber());
+			if (tg.getGeneration() <= generations) {
+
+				for (WorkLoad workLoad : listBest) {
+					MySQLDatabase.insertWorkLoads(
+							WorkLoadUtil.getObjectList(workLoad), tg.getName(),
+							String.valueOf(tg.getGeneration()));
+				}
+
+				if ((listTABUnewGeneration != null)
+						&& (listTABUnewGeneration.size() > 0)) {
+					for (WorkLoad workLoad : listTABUnewGeneration) {
+						MySQLDatabase.insertWorkLoads(
+								WorkLoadUtil.getObjectList(workLoad),
+								tg.getName(),
+								String.valueOf(tg.getGeneration()));
+					}
+				}
+			}
+			int minTempInt = Integer.valueOf(tg.getMinTemp());
+
+			if (minTempInt <= tg.getTemperature()) {
+				if (listSA.size() > 0) {
+
+					for (WorkLoad workLoad : listNewSA) {
+						MySQLDatabase.insertWorkLoads(
+								WorkLoadUtil.getObjectList(workLoad),
+								tg.getName(),
+								String.valueOf(tg.getGeneration()));
+					}
+
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		JMeterPluginsUtils.listWorkLoadToCollectionProperty(listBest,
+				WorkLoadThreadGroup.DATA_PROPERTY);
+
+	}
+
+	public static void createNextGenerationElementsWithNoGui(
+			WorkLoadThreadGroup tg) {
+
+		List<TestElement> listElement = FindService
+				.searchWorkLoadControllerWithNoGui(tg.getTree());
+
+		List<WorkLoad> list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
+		List<WorkLoad> listSA = null;
+		if (tg.getCollaborative()) {
+			listSA = returnListALLWorkLoadsForNewGeneration(tg);
+
+		} else {
+
+			listSA = returnListSAWorkLoadsForNewGeneration(tg);
+		}
+
+		List<WorkLoad> listTABU = null;
+
+		if (tg.getCollaborative()) {
+			listTABU = returnListALLWorkLoadsForNewGeneration(tg);
+		} else {
+			listTABU = returnListTABUWorkLoadsForNewGeneration(tg);
+		}
+
+		tg.setGeneration(tg.getGeneration() + 1);
+
+		List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(tg, list,
+				listElement, false);
+
+		List<WorkLoad> listNewSA = new ArrayList<WorkLoad>();
+
+		List<WorkLoad> listTABUnewGeneration = null;
+
+		listTABU = TabuSearch.verify(listTABU, listElement);
+
+		if (listTABU.size() > 0) {
+
+			TabuSearch.addTabuTable(listTABU.get(0), listElement);
+
+			List<WorkLoad> neighboors = WorkLoadUtil.getNeighborHood(
+					listTABU.get(0), listElement, tg);
+			listTABUnewGeneration = TabuSearch.verify(neighboors, listElement);
+
+		}
+
+		if (listSA.size() > 0) {
+			tg.temperature = SimulateAnnealing.sa(tg.temperature,
+					listSA.get(0), Integer.valueOf(tg.getThreadNumberMax()),
+					listNewSA, tg.getGeneration(), tg, listElement);
+		}
+
+		try {
+			int generations = Integer.valueOf(tg.getGenNumber());
+			if (tg.getGeneration() <= generations) {
+
+				for (WorkLoad workLoad : listBest) {
+					MySQLDatabase.insertWorkLoads(
+							WorkLoadUtil.getObjectList(workLoad), tg.getName(),
+							String.valueOf(tg.getGeneration()));
+				}
+
+				if ((listTABUnewGeneration != null)
+						&& (listTABUnewGeneration.size() > 0)) {
+					for (WorkLoad workLoad : listTABUnewGeneration) {
+						MySQLDatabase.insertWorkLoads(
+								WorkLoadUtil.getObjectList(workLoad),
+								tg.getName(),
+								String.valueOf(tg.getGeneration()));
+					}
+				}
+			}
+			int minTempInt = Integer.valueOf(tg.getMinTemp());
+
+			if (minTempInt <= tg.getTemperature()) {
+				if (listSA.size() > 0) {
+
+					for (WorkLoad workLoad : listNewSA) {
+						MySQLDatabase.insertWorkLoads(
+								WorkLoadUtil.getObjectList(workLoad),
+								tg.getName(),
+								String.valueOf(tg.getGeneration()));
+					}
+
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		JMeterPluginsUtils.listWorkLoadToCollectionProperty(listBest,
+				WorkLoadThreadGroup.DATA_PROPERTY);
+
+	}
+
 	@Override
 	public void threadFinished(JMeterThread thread) {
 		if (this.temperature == 0) {
@@ -293,100 +500,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				agent.runningFinal();
 
-				List<TestElement> listElement = FindService
-						.searchWorkLoadControllerWithNoGui(this.tree);
-
-				List<WorkLoad> list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(this);
-				List<WorkLoad> listSA = null;
-				if (this.getCollaborative()) {
-					listSA = returnListALLWorkLoadsForNewGeneration(this);
-
-				} else {
-
-					listSA = returnListSAWorkLoadsForNewGeneration(this);
-				}
-
-				List<WorkLoad> listTABU = null;
-
-				if (this.getCollaborative()) {
-					listTABU = returnListALLWorkLoadsForNewGeneration(this);
-				} else {
-					listTABU = returnListTABUWorkLoadsForNewGeneration(this);
-				}
-
-				this.setGeneration(this.getGeneration() + 1);
-
-				List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(this,
-						list,listElement,Integer.valueOf(getThreadNumberMax()),this.getGenerationTrack());
-
-				List<WorkLoad> listNewSA = new ArrayList<WorkLoad>();
-
-				List<WorkLoad> listTABUnewGeneration = null;
-
-				listTABU = TabuSearch.verify(listTABU, listElement);
-
-				if (listTABU.size() > 0) {
-
-					TabuSearch.addTabuTable(listTABU.get(0), listElement);
-
-					List<WorkLoad> neighboors = WorkLoadUtil.getNeighBoors(
-							listTABU.get(0), listElement,
-							Integer.valueOf(getThreadNumberMax()), generation,
-							this);
-					listTABUnewGeneration = TabuSearch.verify(neighboors,
-							listElement);
-
-				}
-
-				if (listSA.size() > 0) {
-					this.temperature = SimulateAnnealing.sa(this.temperature,
-							listSA.get(0),
-							Integer.valueOf(getThreadNumberMax()), listNewSA,
-							this.generation, this, listElement);
-				}
-
-				try {
-					int generations = Integer.valueOf(getGenNumber());
-					if (getGeneration() <= generations) {
-
-						for (WorkLoad workLoad : listBest) {
-							MySQLDatabase.insertWorkLoads(
-									WorkLoadUtil.getObjectList(workLoad),
-									this.getName(),
-									String.valueOf(this.getGeneration()));
-						}
-
-						if ((listTABUnewGeneration != null)
-								&& (listTABUnewGeneration.size() > 0)) {
-							for (WorkLoad workLoad : listTABUnewGeneration) {
-								MySQLDatabase.insertWorkLoads(
-										WorkLoadUtil.getObjectList(workLoad),
-										this.getName(),
-										String.valueOf(this.getGeneration()));
-							}
-						}
-					}
-					int minTempInt = Integer.valueOf(getMinTemp());
-
-					if (minTempInt <= temperature) {
-						if (listSA.size() > 0) {
-
-							for (WorkLoad workLoad : listNewSA) {
-								MySQLDatabase.insertWorkLoads(
-										WorkLoadUtil.getObjectList(workLoad),
-										this.getName(),
-										String.valueOf(this.getGeneration()));
-							}
-
-						}
-					}
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				JMeterPluginsUtils.listWorkLoadToCollectionProperty(listBest,
-						WorkLoadThreadGroup.DATA_PROPERTY);
+				createNextGenerationElementsWithNoGui(this);
 
 				int generations = Integer.valueOf(getGenNumber());
 				int minTempInt = Integer.valueOf(getMinTemp());
@@ -428,7 +542,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	@Override
 	public boolean verifyThreadsStopped() {
-		// TODO Auto-generated method stub
+
 		return super.verifyThreadsStopped();
 	}
 
@@ -437,6 +551,10 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	private final Map<JMeterThread, Thread> allThreads = new ConcurrentHashMap<JMeterThread, Thread>();
 	private static final String THREAD_NUMBER_MAX = "threadnumbermax";
+
+	private static final String MUTANT_PROBABILTY = "mutantprobablity";
+
+	private static final String RESPONSE_TIME_MAX_PENALTY = "responsetimemaxpenalty";
 
 	private static final String THREAD_MAX_TIME = "threadmaxtimemax";
 
@@ -462,9 +580,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	private static final String MIN_TEMP = "workloadthreadgroup.mintemp";
 
+	private static final String INITIAL_GENERATION = "workloadthreadgroup.initialgeneration";;
+
 	@Override
 	public void start(int groupCount, ListenerNotifier notifier,
 			ListedHashTree threadGroupTree, StandardJMeterEngine engine) {
+		if (generation == 0) {
+			generation = Integer.valueOf(this.getInitialGeneration());
+		}
 
 		List<WorkLoad> list = null;
 		try {
@@ -491,7 +614,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		if (size > 0) {
 			Agent agent = new Agent(this);
-			// agent.setWorkload(this.currentTest);
+
 			agent.running();
 			WorkLoad workload = list.get(this.getCurrentTest());
 
@@ -772,6 +895,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	}
 
+	public String getInitialGeneration() {
+		return getPropertyAsString(INITIAL_GENERATION);
+	}
+
+	public void setInitialGeneration(String delay) {
+		setProperty(INITIAL_GENERATION, delay);
+	}
+
 	public String getResponseMaxFitWeight() {
 		return getPropertyAsString(RESPONSEMAX_FIT_WEIGHT);
 	}
@@ -790,6 +921,22 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	public String getUserFitWeight() {
 		return getPropertyAsString(USER_FIT_WEIGHT);
+	}
+
+	public void setResponseTimeMaxPenalty(String delay) {
+		setProperty(RESPONSE_TIME_MAX_PENALTY, delay);
+	}
+
+	public void setMutantProbabilty(String delay) {
+		setProperty(MUTANT_PROBABILTY, delay);
+	}
+
+	public String getMutantProbability() {
+		return getPropertyAsString(MUTANT_PROBABILTY);
+	}
+
+	public String getResponseTimeMaxPenalty() {
+		return getPropertyAsString(RESPONSE_TIME_MAX_PENALTY);
 	}
 
 	public String getTotalErrorFitWeight() {

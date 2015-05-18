@@ -18,6 +18,7 @@ import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.IntegerGene;
 
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
+import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.util.FindService;
 import br.unifor.iadapter.util.WorkLoadUtil;
 
@@ -47,13 +48,15 @@ public class GeneWorkLoad {
 
 	}
 
-	public static List<WorkLoad> mutationPopulation(List<WorkLoad> list,
-			List<TestElement> nodes, int maxUsers, int generationTrack) {
+	public static List<WorkLoad> mutationPopulation(WorkLoadThreadGroup tg,
+			List<WorkLoad> list, List<TestElement> nodes) {
+		int maxUsers = Integer.valueOf(tg.getNumberOfThreads());
+		int generation = tg.getGeneration();
 		MutationOperator cs = new MutationOperator();
 		List<WorkLoad> mutant = new ArrayList<WorkLoad>();
 		for (WorkLoad workLoad2 : list) {
 			mutant.add(cs.mutantWorkload(workLoad2, 3, nodes, maxUsers,
-					generationTrack));
+					generation, Integer.valueOf(tg.getMutantProbability())));
 		}
 
 		return mutant;
@@ -61,10 +64,18 @@ public class GeneWorkLoad {
 	}
 
 	public static Gene[] geneFromWorkLoad(WorkLoad workload,
-			ListedHashTree threadGroupTree)
+			ListedHashTree threadGroupTree, boolean gui)
 			throws InvalidConfigurationException {
-		List<TestElement> list = FindService
-				.searchWorkLoadControllerWithNoGui(threadGroupTree);
+		List<TestElement> list = null;
+		if (!(gui)) {
+			list = FindService
+					.searchWorkLoadControllerWithNoGui(threadGroupTree);
+		} else {
+
+			List<JMeterTreeNode> nodes = FindService
+					.searchWorkLoadControllerWithGui();
+			list = WorkLoadThreadGroup.testNodeToTestElement(nodes);
+		}
 		Gene[] wgenes = new Gene[22];
 
 		wgenes[0] = new IntegerGene(getConfiguration());
@@ -137,10 +148,10 @@ public class GeneWorkLoad {
 	}
 
 	public static Population population(List<WorkLoad> list,
-			ListedHashTree threadGroupTree)
+			ListedHashTree threadGroupTree, boolean gui)
 			throws InvalidConfigurationException {
 		Population population = new Population(getConfiguration());
-		List<Chromosome> listC = getChromossomes(list, threadGroupTree);
+		List<Chromosome> listC = getChromossomes(list, threadGroupTree, gui);
 
 		for (Chromosome chromosome : listC) {
 			population.addChromosome(chromosome);
@@ -149,11 +160,11 @@ public class GeneWorkLoad {
 	}
 
 	public static List<Chromosome> getChromossomes(List<WorkLoad> list,
-			ListedHashTree threadGroupTree)
+			ListedHashTree threadGroupTree, boolean gui)
 			throws InvalidConfigurationException {
 		List<Chromosome> listC = new ArrayList<Chromosome>();
 		for (WorkLoad workload : list) {
-			Gene[] genes = geneFromWorkLoad(workload, threadGroupTree);
+			Gene[] genes = geneFromWorkLoad(workload, threadGroupTree, gui);
 			Chromosome chromossome = new Chromosome(getConfiguration());
 			chromossome.setGenes(genes);
 			chromossome.setFitnessValueDirectly(workload.getFit());

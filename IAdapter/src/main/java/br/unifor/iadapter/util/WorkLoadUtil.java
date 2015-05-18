@@ -11,6 +11,8 @@ import java.util.Random;
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.gui.util.PowerTableModel;
 import org.apache.jmeter.testelement.TestElement;
+import org.apache.jorphan.logging.LoggingManager;
+import org.apache.log.Logger;
 import org.jgap.Gene;
 import org.jgap.IChromosome;
 import org.jgap.impl.IntegerGene;
@@ -23,6 +25,17 @@ import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 
 public class WorkLoadUtil {
 
+	private static final Logger log = LoggingManager.getLoggerForClass();
+
+	/***
+	 * Convert worload to tabu element for the tabu list
+	 * 
+	 * @param workload
+	 *            WorkLoad
+	 * @param nodes
+	 *            WorkloadController(s) in the test script
+	 * @return
+	 */
 	public static TabuElement convertTabu(WorkLoad workload,
 			List<TestElement> nodes) {
 		TabuElement tabu = new TabuElement();
@@ -45,6 +58,15 @@ public class WorkLoadUtil {
 
 	}
 
+	/**
+	 * Get a random interval
+	 * 
+	 * @param min
+	 *            minimal value
+	 * @param max
+	 *            maximal value
+	 * @return return random int value in interval
+	 */
 	public static int randInt(int min, int max) {
 
 		try {
@@ -58,6 +80,12 @@ public class WorkLoadUtil {
 		}
 	}
 
+	/**
+	 * Get index from the workload type
+	 * 
+	 * @param type
+	 * @return
+	 */
 	public static int getIndexType(String type) {
 		int index = 0;
 		int counter = 0;
@@ -70,30 +98,26 @@ public class WorkLoadUtil {
 		return index;
 	}
 
-	public static List<WorkLoad> getNeighBoors(WorkLoad workload,
-			List<TestElement> nodes, int maxUsers, int generation,
-			WorkLoadThreadGroup tg) {
-
-		int users = 0;
-		try {
-			users = MySQLDatabase.listBestWorkloadGenetic(tg.getName());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	/***
+	 * Get neighborhoods from a specified workload
+	 * 
+	 * @param workload
+	 * @param nodes
+	 * @param tg
+	 * @return
+	 */
+	public static List<WorkLoad> getNeighborHood(WorkLoad workload,
+			List<TestElement> nodes, WorkLoadThreadGroup tg) {
+		int generation = tg.getGeneration();
+		int maxUsers = Integer.valueOf(tg.getThreadNumberMax());
 
 		int usersWorst = 0;
 		try {
 			usersWorst = MySQLDatabase.listWorstWorkloadGenetic(tg.getName());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 
 		if (usersWorst > 0) {
@@ -109,316 +133,274 @@ public class WorkLoadUtil {
 
 		int populationSize = Integer.valueOf(tg.getPopulationSize());
 		for (int i = 0; i < populationSize; i++) {
-			WorkLoad neighboor = getNeighBoor(workload, nodes, maxUsers,
+			WorkLoad neighbor = getNeighBorHood(workload, nodes, maxUsers,
 					tg.getGenerationTrack());
-			neighboor.setGeneration(generation);
-			list.add(neighboor);
+			neighbor.setGeneration(generation);
+			list.add(neighbor);
 		}
 
 		return list;
 
 	}
 
-	public static WorkLoad getNeighBoor(WorkLoad workload,
-			List<TestElement> nodes, int maxUsers, Integer generationTrack) {
+	public static List<Integer> mutateParameter(List<Integer> parameter,
+			List<TestElement> nodes, WorkLoad workload) {
 		Random random = new Random();
-		List<Integer> parametros = new ArrayList<Integer>();
-		parametros.add(getIndexType(workload.getType()));
-
 		int func = random.nextInt(10);
 
 		if (func == 0) {
 			int newFunc = random.nextInt(nodes.size());
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 1) {
 			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 2) {
 			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 3) {
 			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 4) {
 			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 5) {
 			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 6) {
 			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 7) {
 			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 8) {
 			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction10()));
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction10()));
 		}
 		if (func == 9) {
 			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(newFunc);
 
 		}
+		return parameter;
+	}
 
-		int newUsers = (workload.getNumThreads() + randInt(
-				workload.getNumThreads(), maxUsers)) / 2;
+	/**
+	 * Get neighBorHood
+	 * 
+	 * @param workload
+	 * @param nodes
+	 *            WorloadControllers in script
+	 * @param maxUsers
+	 * @param generationTrack
+	 * @return
+	 */
+	public static WorkLoad getNeighBorHood(WorkLoad workload,
+			List<TestElement> nodes, int maxUsers, Integer generationTrack) {
 
-		parametros.add(newUsers);
-		parametros.add(workload.getGeneration() + 1);
+		List<Integer> parameters = new ArrayList<Integer>();
+		parameters.add(getIndexType(workload.getType()));
 
-		WorkLoad newWorkload = createWorkLoad(nodes, parametros, "TABU",
-				generationTrack);
+		parameters = mutateParameter(parameters, nodes, workload);
+
+		int newUsers = (workload.getNumThreads());
+
+		parameters.add(newUsers);
+		parameters.add(workload.getGeneration() + 1);
+
+		WorkLoad newWorkload = createWorkLoad(nodes, parameters, "TABU",
+				generationTrack, workload);
 
 		return newWorkload;
 	}
 
-	public static WorkLoad getNeighBoorMutant(WorkLoad workload,
-			List<TestElement> nodes, int maxUsers, Integer generation) {
-		Random random = new Random();
-		List<Integer> parametros = new ArrayList<Integer>();
-		parametros.add(getIndexType(workload.getType()));
-
-		int func = random.nextInt(10);
-
-		if (func == 0) {
-			int newFunc = random.nextInt(nodes.size());
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
-		}
-		if (func == 1) {
-			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
-		}
-		if (func == 2) {
-			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
-		}
-		if (func == 3) {
-			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
-		}
-		if (func == 4) {
-			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
-		}
-		if (func == 5) {
-			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
-		}
-		if (func == 6) {
-			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
-		}
-		if (func == 7) {
-			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(getIndex(nodes, workload.getFunction10()));
-		}
-		if (func == 8) {
-			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(newFunc);
-			parametros.add(getIndex(nodes, workload.getFunction10()));
-		}
-		if (func == 9) {
-			int newFunc = random.nextInt(nodes.size());
-			parametros.add(getIndex(nodes, workload.getFunction1()));
-			parametros.add(getIndex(nodes, workload.getFunction2()));
-			parametros.add(getIndex(nodes, workload.getFunction3()));
-			parametros.add(getIndex(nodes, workload.getFunction4()));
-			parametros.add(getIndex(nodes, workload.getFunction5()));
-			parametros.add(getIndex(nodes, workload.getFunction6()));
-			parametros.add(getIndex(nodes, workload.getFunction7()));
-			parametros.add(getIndex(nodes, workload.getFunction8()));
-			parametros.add(getIndex(nodes, workload.getFunction9()));
-			parametros.add(newFunc);
+	public static WorkLoad createWorkLoadMutant(List<TestElement> nodes,
+			List<Integer> parametros, String search) {
+		WorkLoad workload = null;
+		if (parametros.get(0) == 0) {
+			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[0]);
 
 		}
+		if (parametros.get(0) == 1) {
+			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[1]);
+
+		}
+
+		workload.setFunction1(getName(nodes, parametros.get(1)));
+		workload.setFunction2(getName(nodes, parametros.get(2)));
+		workload.setFunction3(getName(nodes, parametros.get(3)));
+		workload.setFunction4(getName(nodes, parametros.get(4)));
+		workload.setFunction5(getName(nodes, parametros.get(5)));
+		workload.setFunction6(getName(nodes, parametros.get(6)));
+		workload.setFunction7(getName(nodes, parametros.get(7)));
+		workload.setFunction8(getName(nodes, parametros.get(8)));
+		workload.setFunction9(getName(nodes, parametros.get(9)));
+		workload.setFunction10(getName(nodes, parametros.get(10)));
+		String prefix = "";
+
+		int maxUser = parametros.get(11) / 10;
+
+		int users1 = randInt(0, maxUser);
+		int users2 = randInt(0, maxUser);
+		int users3 = randInt(0, maxUser);
+		int users4 = randInt(0, maxUser);
+		int users5 = randInt(0, maxUser);
+		int users6 = randInt(0, maxUser);
+		int users7 = randInt(0, maxUser);
+		int users8 = randInt(0, maxUser);
+		int users9 = randInt(0, maxUser);
+		int users10 = randInt(0, maxUser);
+
+		workload.setUsers1(users1);
+		workload.setUsers2(users2);
+		workload.setUsers3(users3);
+		workload.setUsers4(users4);
+		workload.setUsers5(users5);
+		workload.setUsers6(users6);
+		workload.setUsers7(users7);
+		workload.setUsers8(users8);
+		workload.setUsers9(users9);
+		workload.setUsers10(users10);
+
+		workload.setSearchMethod(search);
+		workload.setGeneration(parametros.get(12));
+		workload.setActive(true);
+
+		workload.setNumThreads(workload.getUsers1() + workload.getUsers2()
+				+ workload.getUsers3() + workload.getUsers4()
+				+ workload.getUsers5() + workload.getUsers6()
+				+ workload.getUsers7() + workload.getUsers8()
+				+ workload.getUsers9() + workload.getUsers10());
+
+		if (workload.getNumThreads() == 0) {
+			workload.setNumThreads(1);
+			workload.setUsers1(1);
+		}
+
+		workload.setName(prefix + workload.getType() + "-"
+				+ workload.getNumThreads() + "-" + workload.getFunction1()
+				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
+				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()
+				+ "-" + workload.getFunction6() + "-" + workload.getFunction7()
+				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
+				+ "-" + workload.getFunction10());
+
+		return workload;
+	}
+
+	public static WorkLoad getNeighBorHoodMutant(WorkLoad workload,
+			List<TestElement> nodes, int maxUsers) {
+
+		List<Integer> parameters = new ArrayList<Integer>();
+		parameters.add(getIndexType(workload.getType()));
+
+		parameters = mutateParameter(parameters, nodes, workload);
 
 		int newUsers = (workload.getNumThreads() + randInt(
 				workload.getNumThreads(), maxUsers)) / 2;
 
-		parametros.add(newUsers);
-		parametros.add(workload.getGeneration() + 1);
+		parameters.add(newUsers);
+		parameters.add(workload.getGeneration() + 1);
 
-		WorkLoad newWorkload = createWorkLoadMutant(nodes, parametros,
-				"GENETICALGORITHM", generation);
+		WorkLoad newWorkload = createWorkLoadMutant(nodes, parameters,
+				"GENETICALGORITHM");
 
 		return newWorkload;
 	}
@@ -529,7 +511,7 @@ public class WorkLoadUtil {
 		workload.setSearchMethod("TABU");
 		workload.setGeneration(generation);
 		workload.setActive(true);
-		// workload.calcUsers();
+
 		workload.setNumThreads(workload.getUsers1() + workload.getUsers2()
 				+ workload.getUsers3() + workload.getUsers4()
 				+ workload.getUsers5() + workload.getUsers6()
@@ -595,7 +577,7 @@ public class WorkLoadUtil {
 				+ "-" + workload.getFunction6() + "-" + workload.getFunction7()
 				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
 				+ "-" + workload.getFunction10());
-		// workload.calcUsers();
+
 		return workload;
 	}
 
@@ -789,7 +771,7 @@ public class WorkLoadUtil {
 							workload.setNumThreads(z);
 						else
 							workload.setNumThreads(1);
-						workload.setName(workload.getType() + "-"
+						workload.setName("G1:" + workload.getType() + "-"
 								+ workload.getNumThreads() + "-"
 								+ workload.getFunction1() + "-"
 								+ workload.getFunction2() + "-"
@@ -879,18 +861,18 @@ public class WorkLoadUtil {
 				+ workload.getUsers5() + workload.getUsers6()
 				+ workload.getUsers7() + workload.getUsers8()
 				+ workload.getUsers9() + workload.getUsers10());
-		workload.setName(workload.getType() + "-" + workload.getNumThreads()
-				+ "-" + workload.getFunction1() + "-" + workload.getFunction2()
-				+ "-" + workload.getFunction3() + "-" + workload.getFunction4()
-				+ "-" + workload.getFunction5() + "-" + workload.getFunction6()
-				+ "-" + workload.getFunction7() + "-" + workload.getFunction8()
-				+ "-" + workload.getFunction9() + "-"
-				+ workload.getFunction10());
+		workload.setName("G1:" + workload.getType() + "-"
+				+ workload.getNumThreads() + "-" + workload.getFunction1()
+				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
+				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()
+				+ "-" + workload.getFunction6() + "-" + workload.getFunction7()
+				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
+				+ "-" + workload.getFunction10());
 
 		workload.setGeneration(generation);
 		workload.setSearchMethod("GENETICALGORITHM");
 		workload.setActive(true);
-		// workload.calcUsers();
+
 		return workload;
 	}
 
@@ -1222,87 +1204,6 @@ public class WorkLoadUtil {
 		}
 	}
 
-	public static WorkLoad mutant(WorkLoad workLoad, int users, int maxUsers,
-			int maxThreads, int generationTrack) {
-		if (maxUsers < 0) {
-			maxUsers = 0;
-		}
-		if (users < 0) {
-			users = 0;
-		}
-		if ((users == 0) && (maxUsers == 0)) {
-			maxUsers = maxThreads;
-		}
-		WorkLoad workloadMutation = new WorkLoad();
-		int newUsers = (users + randInt(0, maxUsers)) / 2;
-
-		workloadMutation.setType(workLoad.getType());
-		workloadMutation.setActive(workLoad.isActive());
-		workloadMutation.setEndRampUp(workLoad.getEndRampUp());
-		workloadMutation.setError(workLoad.isError());
-		workloadMutation.setFlightTime(workLoad.getFlightTime());
-		workloadMutation.setFunction1(workLoad.getFunction1());
-		workloadMutation.setFunction2(workLoad.getFunction2());
-		workloadMutation.setFunction3(workLoad.getFunction3());
-		workloadMutation.setFunction4(workLoad.getFunction4());
-		workloadMutation.setFunction5(workLoad.getFunction5());
-		workloadMutation.setFunction6(workLoad.getFunction6());
-		workloadMutation.setFunction7(workLoad.getFunction7());
-		workloadMutation.setFunction8(workLoad.getFunction8());
-		workloadMutation.setFunction9(workLoad.getFunction9());
-		workloadMutation.setFunction10(workLoad.getFunction10());
-		workloadMutation.setGeneration(workLoad.getGeneration());
-
-		workloadMutation.setSearchMethod("GENETICALGORITHM");
-
-		int maxUser = newUsers / 10;
-
-		int users1 = randInt(0, maxUser);
-		int users2 = randInt(0, maxUser);
-		int users3 = randInt(0, maxUser);
-		int users4 = randInt(0, maxUser);
-		int users5 = randInt(0, maxUser);
-		int users6 = randInt(0, maxUser);
-		int users7 = randInt(0, maxUser);
-		int users8 = randInt(0, maxUser);
-		int users9 = randInt(0, maxUser);
-		int users10 = randInt(0, maxUser);
-
-		workloadMutation.setUsers1(users1);
-		workloadMutation.setUsers2(users2);
-		workloadMutation.setUsers3(users3);
-		workloadMutation.setUsers4(users4);
-		workloadMutation.setUsers5(users5);
-		workloadMutation.setUsers6(users6);
-		workloadMutation.setUsers7(users7);
-		workloadMutation.setUsers8(users8);
-		workloadMutation.setUsers9(users9);
-		workloadMutation.setUsers10(users10);
-
-		workloadMutation.setTotalErrors(0);
-		workloadMutation.setNumThreads(workloadMutation.getUsers1()
-				+ workloadMutation.getUsers2() + workloadMutation.getUsers3()
-				+ workloadMutation.getUsers4() + workloadMutation.getUsers5()
-				+ workloadMutation.getUsers6() + workloadMutation.getUsers7()
-				+ workloadMutation.getUsers8() + workloadMutation.getUsers9()
-				+ workloadMutation.getUsers10());
-		if (workloadMutation.getNumThreads() == 0) {
-			workloadMutation.setNumThreads(1);
-			workloadMutation.setUsers1(1);
-		}
-
-		String prefix = "";
-
-		if (generationTrack > 0) {
-			prefix = "G" + generationTrack + ":";
-		}
-
-		workloadMutation.setName(prefix + "Mutation-"
-				+ workloadMutation.getNumThreads() + "-" + workLoad.getName());
-		return workloadMutation;
-
-	}
-
 	public static String getName(List<TestElement> nodes, int i) {
 		if (i < nodes.size()) {
 
@@ -1327,8 +1228,27 @@ public class WorkLoadUtil {
 		return index;
 	}
 
+	public static int deltaUsers() {
+		Random randomSignal = new Random();
+
+		int signal = randomSignal.nextInt(2);
+
+		int randomUser = randomSignal.nextInt(2);
+
+		int deltaUsers = 0;
+
+		if (signal == 0) {
+			deltaUsers = -1 * randomUser;
+		} else {
+			deltaUsers = randomUser;
+		}
+		return deltaUsers;
+
+	}
+
 	public static WorkLoad createWorkLoad(List<TestElement> nodes,
-			List<Integer> parametros, String search, int generationTrack) {
+			List<Integer> parametros, String search, int generationTrack,
+			WorkLoad source) {
 		WorkLoad workload = null;
 		if (parametros.get(0) == 0) {
 			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[0]);
@@ -1357,18 +1277,43 @@ public class WorkLoadUtil {
 			prefix = "TABU";
 		}
 
-		int maxUser = parametros.get(11) / 10;
+		int users1 = 0;
+		int users2 = 0;
+		int users3 = 0;
+		int users4 = 0;
+		int users5 = 0;
+		int users6 = 0;
+		int users7 = 0;
+		int users8 = 0;
+		int users9 = 0;
+		int users10 = 0;
 
-		int users1 = randInt(0, maxUser);
-		int users2 = randInt(0, maxUser);
-		int users3 = randInt(0, maxUser);
-		int users4 = randInt(0, maxUser);
-		int users5 = randInt(0, maxUser);
-		int users6 = randInt(0, maxUser);
-		int users7 = randInt(0, maxUser);
-		int users8 = randInt(0, maxUser);
-		int users9 = randInt(0, maxUser);
-		int users10 = randInt(0, maxUser);
+		int maxUser = parametros.get(11) / 10;
+		if ((search.equals("TABU")) || (search.equals("GENETICALGORITHM"))) {
+
+			users1 = source.getUsers1() + deltaUsers();
+			users2 = source.getUsers2() + deltaUsers();
+			users3 = source.getUsers3() + deltaUsers();
+			users4 = source.getUsers4() + deltaUsers();
+			users5 = source.getUsers5() + deltaUsers();
+			users6 = source.getUsers6() + deltaUsers();
+			users7 = source.getUsers7() + deltaUsers();
+			users8 = source.getUsers8() + deltaUsers();
+			users9 = source.getUsers9() + deltaUsers();
+			users10 = source.getUsers10() + deltaUsers();
+		}
+		if (search.equals("SA")) {
+			users1 = maxUser;
+			users2 = maxUser;
+			users3 = maxUser;
+			users4 = maxUser;
+			users5 = maxUser;
+			users6 = maxUser;
+			users7 = maxUser;
+			users8 = maxUser;
+			users9 = maxUser;
+			users10 = maxUser;
+		}
 
 		workload.setUsers1(users1);
 		workload.setUsers2(users2);
@@ -1391,9 +1336,18 @@ public class WorkLoadUtil {
 				+ workload.getUsers7() + workload.getUsers8()
 				+ workload.getUsers9() + workload.getUsers10());
 
-		if (workload.getNumThreads() == 0) {
+		if (workload.getNumThreads() <= 0) {
 			workload.setNumThreads(1);
 			workload.setUsers1(1);
+			workload.setUsers2(0);
+			workload.setUsers3(0);
+			workload.setUsers4(0);
+			workload.setUsers5(0);
+			workload.setUsers6(0);
+			workload.setUsers7(0);
+			workload.setUsers8(0);
+			workload.setUsers9(0);
+			workload.setUsers10(0);
 		}
 
 		String preprefix = "";
@@ -1404,86 +1358,6 @@ public class WorkLoadUtil {
 
 		workload.setName(preprefix + ":" + prefix + ":" + "G"
 				+ parametros.get(12) + ":" + workload.getType() + "-"
-				+ workload.getNumThreads() + "-" + workload.getFunction1()
-				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
-				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()
-				+ "-" + workload.getFunction6() + "-" + workload.getFunction7()
-				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
-				+ "-" + workload.getFunction10());
-
-		return workload;
-	}
-
-	public static WorkLoad createWorkLoadMutant(List<TestElement> nodes,
-			List<Integer> parametros, String search, int generation) {
-		WorkLoad workload = null;
-		if (parametros.get(0) == 0) {
-			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[0]);
-
-		}
-		if (parametros.get(0) == 1) {
-			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[1]);
-
-		}
-
-		workload.setFunction1(getName(nodes, parametros.get(1)));
-		workload.setFunction2(getName(nodes, parametros.get(2)));
-		workload.setFunction3(getName(nodes, parametros.get(3)));
-		workload.setFunction4(getName(nodes, parametros.get(4)));
-		workload.setFunction5(getName(nodes, parametros.get(5)));
-		workload.setFunction6(getName(nodes, parametros.get(6)));
-		workload.setFunction7(getName(nodes, parametros.get(7)));
-		workload.setFunction8(getName(nodes, parametros.get(8)));
-		workload.setFunction9(getName(nodes, parametros.get(9)));
-		workload.setFunction10(getName(nodes, parametros.get(10)));
-		String prefix = "";
-
-		int maxUser = parametros.get(11) / 10;
-
-		int users1 = randInt(0, maxUser);
-		int users2 = randInt(0, maxUser);
-		int users3 = randInt(0, maxUser);
-		int users4 = randInt(0, maxUser);
-		int users5 = randInt(0, maxUser);
-		int users6 = randInt(0, maxUser);
-		int users7 = randInt(0, maxUser);
-		int users8 = randInt(0, maxUser);
-		int users9 = randInt(0, maxUser);
-		int users10 = randInt(0, maxUser);
-
-		workload.setUsers1(users1);
-		workload.setUsers2(users2);
-		workload.setUsers3(users3);
-		workload.setUsers4(users4);
-		workload.setUsers5(users5);
-		workload.setUsers6(users6);
-		workload.setUsers7(users7);
-		workload.setUsers8(users8);
-		workload.setUsers9(users9);
-		workload.setUsers10(users10);
-
-		workload.setSearchMethod(search);
-		workload.setGeneration(parametros.get(12));
-		workload.setActive(true);
-
-		workload.setNumThreads(workload.getUsers1() + workload.getUsers2()
-				+ workload.getUsers3() + workload.getUsers4()
-				+ workload.getUsers5() + workload.getUsers6()
-				+ workload.getUsers7() + workload.getUsers8()
-				+ workload.getUsers9() + workload.getUsers10());
-
-		if (workload.getNumThreads() == 0) {
-			workload.setNumThreads(1);
-			workload.setUsers1(1);
-		}
-
-		String preprefix = "";
-
-		if (generation > 0) {
-			preprefix = "G" + generation + ":";
-		}
-
-		workload.setName(preprefix + ":" + prefix + workload.getType() + "-"
 				+ workload.getNumThreads() + "-" + workload.getFunction1()
 				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
 				+ "-" + workload.getFunction4() + "-" + workload.getFunction5()

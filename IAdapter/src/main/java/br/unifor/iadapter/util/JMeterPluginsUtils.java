@@ -33,6 +33,7 @@ import javax.swing.border.EtchedBorder;
 
 import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.gui.AbstractJMeterGuiComponent;
+import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.gui.util.PowerTableModel;
 import org.apache.jmeter.samplers.SampleSaveConfiguration;
 import org.apache.jmeter.testelement.TestElement;
@@ -110,64 +111,26 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	public static List<WorkLoad> getListWorkLoadFromPopulationTestPlan(
-			List<IChromosome> listC, ListedHashTree tree, int generation,
-			String testPlan, int maxUsers, int generationTrack) {
+			List<IChromosome> listC, WorkLoadThreadGroup tg, boolean gui) {
 
-		// int maxThreads = maxUsers;
+		ListedHashTree tree = tg.getTree();
+		int generation = tg.getGeneration();
 
-		List<TestElement> listElement = FindService
-				.searchWorkLoadControllerWithNoGui(tree);
+		int generationTrack = new Integer(tg.getGenerationTrack());
+		List<TestElement> listElement = null;
+		if (!(gui)) {
+			listElement = FindService.searchWorkLoadControllerWithNoGui(tree);
+		} else {
+			List<JMeterTreeNode> nodes = FindService
+					.searchWorkLoadControllerWithGui();
+			listElement = WorkLoadThreadGroup.testNodeToTestElement(nodes);
+		}
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (IChromosome chromosome : listC) {
 			list.add(WorkLoadUtil.getWorkLoadFromChromosome(chromosome,
 					listElement, generation, generationTrack));
 		}
-
-		// List<WorkLoad> listAux = new ArrayList<WorkLoad>();
-
-		// List<WorkLoad> listRemove = new ArrayList<WorkLoad>();
-
-		// for (WorkLoad workLoad : list) {
-		// try {
-		// int users = MySQLDatabase.listBestWorkloadGenetic(testPlan,
-		// workLoad.getType());
-
-		// int usersWorst = MySQLDatabase.listWorstWorkloadGenetic(
-		// testPlan, workLoad.getType());
-
-		// if (usersWorst > 0) {
-		// maxUsers = usersWorst;
-		// }
-
-		// int generationWorkLoad = Integer.valueOf(workLoad
-		// .getGeneration());
-
-		// if ((generationWorkLoad >= generation)) {
-
-		// Random mutRandom = new Random();
-
-		// int probabilty = mutRandom.nextInt(10);
-
-		/*
-		 * if ((probabilty < 2)) {
-		 * 
-		 * WorkLoad workloadMutation = WorkLoadUtil.mutant( workLoad, users,
-		 * maxUsers, maxThreads, generationTrack);
-		 * listAux.add(workloadMutation); listRemove.add(workLoad); }
-		 */
-		// }
-		// } catch (ClassNotFoundException e) {
-		// TODO Auto-generated catch block
-		// e.printStackTrace();
-		// } catch (SQLException e) {
-		// TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// }
-
-		// list.removeAll(listRemove);
-		// list.addAll(listAux);
 
 		return list;
 
@@ -266,7 +229,8 @@ public abstract class JMeterPluginsUtils {
 			try {
 				workload.setFit(MySQLDatabase.updateFitValue(
 						workload.getName(), testPlan, generation,
-						Long.valueOf(maxTime), tg));
+						Long.valueOf(maxTime), tg,
+						Long.valueOf(tg.getResponseTimeMaxPenalty())));
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -326,6 +290,7 @@ public abstract class JMeterPluginsUtils {
 			rowObject.add(agent.getName());
 			rowObject.add(agent.getRunning());
 			rowObject.add(agent.getIp());
+			rowObject.add(agent.getDate());
 			model.addRow(rowObject.toArray());
 		}
 		model.fireTableDataChanged();

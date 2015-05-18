@@ -3,6 +3,7 @@ package br.unifor.iadapter.agent;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.jorphan.logging.LoggingManager;
@@ -12,6 +13,16 @@ import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 
 public class Agent {
+	
+	private String date;
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
 
 	private static final Logger log = LoggingManager.getLoggerForClass();
 
@@ -131,6 +142,7 @@ public class Agent {
 		} catch (UnknownHostException e) {
 			log.error(e.getMessage());
 		}
+		listAgent.add(new Date());
 
 		try {
 			MySQLDatabase.updateAgentOrCreateIfNotExist(listAgent,
@@ -155,6 +167,7 @@ public class Agent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		listAgent.add(new Date());
 
 		try {
 			MySQLDatabase.updateAgentOrCreateIfNotExist(listAgent,

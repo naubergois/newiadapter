@@ -13,7 +13,6 @@ package br.unifor.iadapter.genetic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
 import org.jgap.BaseGeneticOperator;
 import org.jgap.Configuration;
@@ -21,11 +20,9 @@ import org.jgap.Gene;
 import org.jgap.Genotype;
 import org.jgap.IChromosome;
 import org.jgap.ICompositeGene;
-import org.jgap.IGeneticOperatorConstraint;
 import org.jgap.IUniversalRateCalculator;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.Population;
-import org.jgap.RandomGenerator;
 
 public class CrossoverOperator extends BaseGeneticOperator implements
 		Comparable {
@@ -33,9 +30,6 @@ public class CrossoverOperator extends BaseGeneticOperator implements
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	/** String containing the CVS revision. Read out via reflection! */
-	private final static String CVS_REVISION = "$Revision: 1.45 $";
 
 	/**
 	 * The current crossover rate used by this crossover operator (mutual
@@ -352,7 +346,15 @@ public class CrossoverOperator extends BaseGeneticOperator implements
 			IChromosome firstMate = (IChromosome) chrom1.clone();
 			IChromosome secondMate = (IChromosome) chrom2.clone();
 
-			doCrossover(firstMate, secondMate, a_candidateChromosomes);
+			Random order = new Random();
+			int numOrder = order.nextInt(2);
+
+			if (numOrder == 0) {
+
+				doCrossover(firstMate, secondMate, a_candidateChromosomes);
+			} else {
+				doCrossover(secondMate, firstMate, a_candidateChromosomes);
+			}
 			list.add(firstMate);
 			list.add(secondMate);
 		}
@@ -538,6 +540,6 @@ public class CrossoverOperator extends BaseGeneticOperator implements
 
 	public void operate(Population a_population, List a_candidateChromosomes) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
