@@ -970,7 +970,7 @@ public class MySQLDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement(""
-				+ "select *  FROM  agent ");
+				+ "select name,running,ip,date  FROM  agent ");
 
 		ResultSet rs = ps.executeQuery();
 
