@@ -1184,7 +1184,7 @@ public class WorkLoadUtil {
 		if (terms.length > 0) {
 			int max = 0;
 			for (String string : terms) {
-				System.out.print(string);
+				
 				if (string.length() > 0) {
 					if (string.substring(0, 1).equals("G")) {
 						String stringNumber = string.replace('G', '0');
