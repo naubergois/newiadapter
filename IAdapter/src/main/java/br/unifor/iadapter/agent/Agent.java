@@ -2,6 +2,8 @@ package br.unifor.iadapter.agent;
 
 import java.net.UnknownHostException;
 import java.sql.SQLException;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +15,7 @@ import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 
 public class Agent {
-	
+
 	private String date;
 
 	public String getDate() {
@@ -142,7 +144,9 @@ public class Agent {
 		} catch (UnknownHostException e) {
 			log.error(e.getMessage());
 		}
-		listAgent.add(new Date());
+		Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String s = formatter.format(new Date());
+		listAgent.add(s);
 
 		try {
 			MySQLDatabase.updateAgentOrCreateIfNotExist(listAgent,
@@ -167,7 +171,9 @@ public class Agent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		listAgent.add(new Date());
+		Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String s = formatter.format(new Date());
+		listAgent.add(s);
 
 		try {
 			MySQLDatabase.updateAgentOrCreateIfNotExist(listAgent,
