@@ -50,7 +50,7 @@ public class GeneWorkLoad {
 
 	public static List<WorkLoad> mutationPopulation(WorkLoadThreadGroup tg,
 			List<WorkLoad> list, List<TestElement> nodes) {
-		int maxUsers = Integer.valueOf(tg.getNumberOfThreads());
+		int maxUsers = Integer.valueOf(tg.getThreadNumberMax());
 		int generation = tg.getGeneration();
 		MutationOperator cs = new MutationOperator();
 		List<WorkLoad> mutant = new ArrayList<WorkLoad>();
