@@ -37,13 +37,13 @@ public class GeneWorkLoad {
 		return index;
 	}
 
-	public static List<IChromosome> crossOverPopulation(Population population,
+	public static List<IChromosome> crossOverPopulation(List<Chromosome> listPopulation,
 			List<Chromosome> list) throws InvalidConfigurationException {
-		getConfiguration().setPopulationSize(population.size());
+		getConfiguration().setPopulationSize(listPopulation.size());
 
 		List<IChromosome> newlist = new ArrayList<IChromosome>();
 		CrossoverOperator cs = new CrossoverOperator(getConfiguration(), 1);
-		newlist = cs.operateBestIndividuals(population.getChromosomes(), list);
+		newlist = cs.operateBestIndividuals(listPopulation, list);
 		return newlist;
 
 	}

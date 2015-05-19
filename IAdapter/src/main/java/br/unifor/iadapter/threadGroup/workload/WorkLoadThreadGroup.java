@@ -519,6 +519,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					CSVReadStats.setPercentiles(new HashMap());
 					CSVReadStats.setRequestsMaxTime(new HashMap());
 					CSVReadStats.setWorkloads(new HashMap());
+					
 
 					startEngine();
 

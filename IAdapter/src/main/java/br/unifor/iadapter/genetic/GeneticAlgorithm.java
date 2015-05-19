@@ -33,9 +33,12 @@ public class GeneticAlgorithm {
 			List<Chromosome> bestI = GeneWorkLoad.selectBestIndividualsList(
 					population, Integer.valueOf(tg.getBestIndividuals()));
 
+			List<Chromosome> bestP = GeneWorkLoad.selectBestIndividualsList(
+					population, Integer.valueOf(tg.getPopulationSize()));
+
 			List<IChromosome> newList = null;
 
-			newList = GeneWorkLoad.crossOverPopulation(population, bestI);
+			newList = GeneWorkLoad.crossOverPopulation(bestP, bestI);
 
 			List<WorkLoad> listWorkloads = JMeterPluginsUtils
 					.getListWorkLoadFromPopulationTestPlan(newList, tg, gui);
