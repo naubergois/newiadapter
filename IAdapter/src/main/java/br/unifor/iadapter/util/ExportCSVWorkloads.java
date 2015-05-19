@@ -215,6 +215,18 @@ public class ExportCSVWorkloads {
 					+ users + "\n");
 
 		}
+
+		generationFITSum = new HashMap<String, Double>();
+		generationGenes = new HashMap<String, String>();
+		generationCount = new HashMap<String, Integer>();
+		generationUserCount = new HashMap<String, Integer>();
+		functionCount = new HashMap<String, Integer>();
+		functions = new HashMap<String, Integer>();
+		generationFITAverage = new HashMap<String, Double>();
+		generationFITAveragePerUser = new HashMap<String, Double>();
+		generationFITMax = new HashMap<String, Double>();
+		generationFITMin = new HashMap<String, Double>();
+
 		return buffer.toString();
 	}
 }

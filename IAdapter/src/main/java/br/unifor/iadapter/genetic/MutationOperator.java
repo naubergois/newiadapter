@@ -38,6 +38,12 @@ public class MutationOperator {
 			}
 			workloadClone.setName("Mutant:G" + generation + ":"
 					+ workloadClone.getName());
+			
+			int newGenerationAux = WorkLoadUtil.getGenerationFromName(workload
+					.getName());
+			
+			workloadClone.setGeneration(newGenerationAux);
+		
 		}
 		return workloadClone;
 
