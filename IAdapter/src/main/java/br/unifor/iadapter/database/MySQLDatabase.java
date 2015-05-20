@@ -1298,11 +1298,10 @@ public class MySQLDatabase {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
 				+ "  FROM  workload WHERE TESTPLAN=? "
 				+ "  ORDER BY FIT*1 DESC LIMIT " + populationSize);
 		ps.setString(1, testPlan);
-		
 
 		ResultSet rs = ps.executeQuery();
 
