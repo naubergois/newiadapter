@@ -3,6 +3,7 @@ package br.unifor.iadapter.database;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -905,6 +906,30 @@ public class MySQLDatabase {
 
 	}
 
+	public static int verifyRunningIp() throws ClassNotFoundException,
+			SQLException, InterruptedException, UnknownHostException {
+
+		Thread.sleep(1000);
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement(""
+				+ "SELECT count(*) FROM agent WHERE running='true' and ip=?");
+		ps.setString(1, java.net.InetAddress.getLocalHost().toString());
+
+		ResultSet rs = ps.executeQuery();
+
+		int count = 0;
+		while (rs.next()) {
+			count = rs.getInt(1);
+		}
+
+		rs = null;
+		ps = null;
+		return count;
+
+	}
+
 	public static int verifyRunningFinal() throws ClassNotFoundException,
 			SQLException, InterruptedException {
 
@@ -1264,6 +1289,29 @@ public class MySQLDatabase {
 
 		return users;
 
+	}
+
+	public static List<WorkLoad> listWorstWorkloadGeneticPopulationSize(
+			String testPlan, String populationSize)
+			throws ClassNotFoundException, SQLException {
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
+				+ "  FROM  workload WHERE TESTPLAN=? "
+				+ "  ORDER BY FIT*1 DESC LIMIT " + populationSize);
+		ps.setString(1, testPlan);
+		ps.setString(2, populationSize);
+
+		ResultSet rs = ps.executeQuery();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
 	}
 
 	public static int listMaxUserWithNoErroWorkloadGenetic(String testPlan)

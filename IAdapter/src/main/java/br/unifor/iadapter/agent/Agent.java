@@ -102,6 +102,23 @@ public class Agent {
 
 	}
 
+	public static void sinchronizeIp() {
+		try {
+			while (MySQLDatabase.verifyRunningIp() > 0)
+				;
+		} catch (ClassNotFoundException e) {
+			log.error(e.getMessage());
+		} catch (SQLException e) {
+			log.error(e.getMessage());
+		} catch (InterruptedException e) {
+			log.error(e.getMessage());
+		} catch (UnknownHostException e) {
+
+			log.error(e.getMessage());
+		}
+
+	}
+
 	public static void sinchronizeFinal() {
 		try {
 			while (MySQLDatabase.verifyRunningFinal() > 0)

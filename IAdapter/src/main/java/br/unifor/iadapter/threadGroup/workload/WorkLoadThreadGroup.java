@@ -519,7 +519,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 					CSVReadStats.setPercentiles(new HashMap());
 					CSVReadStats.setRequestsMaxTime(new HashMap());
 					CSVReadStats.setWorkloads(new HashMap());
-					
 
 					startEngine();
 
@@ -586,6 +585,15 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	@Override
 	public void start(int groupCount, ListenerNotifier notifier,
 			ListedHashTree threadGroupTree, StandardJMeterEngine engine) {
+
+		while (!(this.verifyThreadsStopped()))
+			;
+
+		if (this.currentTest > 0) {
+			Agent.sinchronizeIp();
+		}
+		Agent.sinchronizeFinal();
+
 		if (generation == 0) {
 			generation = Integer.valueOf(this.getInitialGeneration());
 		}

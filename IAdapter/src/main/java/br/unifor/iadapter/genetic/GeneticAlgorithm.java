@@ -8,6 +8,7 @@ import org.jgap.Chromosome;
 import org.jgap.IChromosome;
 import org.jgap.Population;
 
+import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.util.FindService;
@@ -33,8 +34,12 @@ public class GeneticAlgorithm {
 			List<Chromosome> bestI = GeneWorkLoad.selectBestIndividualsList(
 					population, Integer.valueOf(tg.getBestIndividuals()));
 
-			List<Chromosome> bestP = GeneWorkLoad.selectBestIndividualsList(
-					population, Integer.valueOf(tg.getPopulationSize()));
+			List<WorkLoad> workLoads = MySQLDatabase
+					.listWorstWorkloadGeneticPopulationSize(tg.getName(),
+							tg.getPopulationSize());
+
+			List<Chromosome> bestP = GeneWorkLoad.getChromossomes(workLoads,
+					tg.getTree(), false);
 
 			List<IChromosome> newList = null;
 
