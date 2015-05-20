@@ -37,13 +37,19 @@ public class GeneWorkLoad {
 		return index;
 	}
 
-	public static List<IChromosome> crossOverPopulation(List<Chromosome> listPopulation,
-			List<Chromosome> list) throws InvalidConfigurationException {
-		getConfiguration().setPopulationSize(listPopulation.size());
+	public static List<IChromosome> crossOverPopulation(
+			List<Chromosome> listPopulation, List<Chromosome> list)
+			throws InvalidConfigurationException {
 
 		List<IChromosome> newlist = new ArrayList<IChromosome>();
-		CrossoverOperator cs = new CrossoverOperator(getConfiguration(), 1);
-		newlist = cs.operateBestIndividuals(listPopulation, list);
+
+		if (listPopulation.size() > 0) {
+
+			getConfiguration().setPopulationSize(listPopulation.size());
+
+			CrossoverOperator cs = new CrossoverOperator(getConfiguration(), 1);
+			newlist = cs.operateBestIndividuals(listPopulation, list);
+		}
 		return newlist;
 
 	}
@@ -76,54 +82,59 @@ public class GeneWorkLoad {
 					.searchWorkLoadControllerWithGui();
 			list = WorkLoadThreadGroup.testNodeToTestElement(nodes);
 		}
-		Gene[] wgenes = new Gene[22];
 
-		wgenes[0] = new IntegerGene(getConfiguration());
-		wgenes[0].setAllele(Arrays.asList(WorkLoad.getTypes()).indexOf(
-				workload.getType()));
-		wgenes[1] = new IntegerGene(getConfiguration());
-		wgenes[1].setAllele(workload.getNumThreads());
-		wgenes[2] = new IntegerGene(getConfiguration());
-		wgenes[2].setAllele(indexOf(list, workload.getFunction1()));
-		wgenes[3] = new IntegerGene(getConfiguration());
-		wgenes[3].setAllele(workload.getUsers1());
-		wgenes[4] = new IntegerGene(getConfiguration());
-		wgenes[4].setAllele(indexOf(list, workload.getFunction2()));
-		wgenes[5] = new IntegerGene(getConfiguration());
-		wgenes[5].setAllele(workload.getUsers2());
-		wgenes[6] = new IntegerGene(getConfiguration());
-		wgenes[6].setAllele(indexOf(list, workload.getFunction3()));
-		wgenes[7] = new IntegerGene(getConfiguration());
-		wgenes[7].setAllele(workload.getUsers3());
-		wgenes[8] = new IntegerGene(getConfiguration());
-		wgenes[8].setAllele(indexOf(list, workload.getFunction4()));
-		wgenes[9] = new IntegerGene(getConfiguration());
-		wgenes[9].setAllele(workload.getUsers4());
-		wgenes[10] = new IntegerGene(getConfiguration());
-		wgenes[10].setAllele(indexOf(list, workload.getFunction5()));
-		wgenes[11] = new IntegerGene(getConfiguration());
-		wgenes[11].setAllele(workload.getUsers5());
-		wgenes[12] = new IntegerGene(getConfiguration());
-		wgenes[12].setAllele(indexOf(list, workload.getFunction6()));
-		wgenes[13] = new IntegerGene(getConfiguration());
-		wgenes[13].setAllele(workload.getUsers6());
-		wgenes[14] = new IntegerGene(getConfiguration());
-		wgenes[14].setAllele(indexOf(list, workload.getFunction7()));
-		wgenes[15] = new IntegerGene(getConfiguration());
-		wgenes[15].setAllele(workload.getUsers7());
-		wgenes[16] = new IntegerGene(getConfiguration());
-		wgenes[16].setAllele(indexOf(list, workload.getFunction8()));
-		wgenes[17] = new IntegerGene(getConfiguration());
-		wgenes[17].setAllele(workload.getUsers8());
-		wgenes[18] = new IntegerGene(getConfiguration());
-		wgenes[18].setAllele(indexOf(list, workload.getFunction9()));
-		wgenes[19] = new IntegerGene(getConfiguration());
-		wgenes[19].setAllele(workload.getUsers9());
-		wgenes[20] = new IntegerGene(getConfiguration());
-		wgenes[20].setAllele(indexOf(list, workload.getFunction10()));
-		wgenes[21] = new IntegerGene(getConfiguration());
-		wgenes[21].setAllele(workload.getUsers10());
-		return wgenes;
+		if (list != null) {
+			Gene[] wgenes = new Gene[22];
+
+			wgenes[0] = new IntegerGene(getConfiguration());
+			wgenes[0].setAllele(Arrays.asList(WorkLoad.getTypes()).indexOf(
+					workload.getType()));
+			wgenes[1] = new IntegerGene(getConfiguration());
+			wgenes[1].setAllele(workload.getNumThreads());
+			wgenes[2] = new IntegerGene(getConfiguration());
+			wgenes[2].setAllele(indexOf(list, workload.getFunction1()));
+			wgenes[3] = new IntegerGene(getConfiguration());
+			wgenes[3].setAllele(workload.getUsers1());
+			wgenes[4] = new IntegerGene(getConfiguration());
+			wgenes[4].setAllele(indexOf(list, workload.getFunction2()));
+			wgenes[5] = new IntegerGene(getConfiguration());
+			wgenes[5].setAllele(workload.getUsers2());
+			wgenes[6] = new IntegerGene(getConfiguration());
+			wgenes[6].setAllele(indexOf(list, workload.getFunction3()));
+			wgenes[7] = new IntegerGene(getConfiguration());
+			wgenes[7].setAllele(workload.getUsers3());
+			wgenes[8] = new IntegerGene(getConfiguration());
+			wgenes[8].setAllele(indexOf(list, workload.getFunction4()));
+			wgenes[9] = new IntegerGene(getConfiguration());
+			wgenes[9].setAllele(workload.getUsers4());
+			wgenes[10] = new IntegerGene(getConfiguration());
+			wgenes[10].setAllele(indexOf(list, workload.getFunction5()));
+			wgenes[11] = new IntegerGene(getConfiguration());
+			wgenes[11].setAllele(workload.getUsers5());
+			wgenes[12] = new IntegerGene(getConfiguration());
+			wgenes[12].setAllele(indexOf(list, workload.getFunction6()));
+			wgenes[13] = new IntegerGene(getConfiguration());
+			wgenes[13].setAllele(workload.getUsers6());
+			wgenes[14] = new IntegerGene(getConfiguration());
+			wgenes[14].setAllele(indexOf(list, workload.getFunction7()));
+			wgenes[15] = new IntegerGene(getConfiguration());
+			wgenes[15].setAllele(workload.getUsers7());
+			wgenes[16] = new IntegerGene(getConfiguration());
+			wgenes[16].setAllele(indexOf(list, workload.getFunction8()));
+			wgenes[17] = new IntegerGene(getConfiguration());
+			wgenes[17].setAllele(workload.getUsers8());
+			wgenes[18] = new IntegerGene(getConfiguration());
+			wgenes[18].setAllele(indexOf(list, workload.getFunction9()));
+			wgenes[19] = new IntegerGene(getConfiguration());
+			wgenes[19].setAllele(workload.getUsers9());
+			wgenes[20] = new IntegerGene(getConfiguration());
+			wgenes[20].setAllele(indexOf(list, workload.getFunction10()));
+			wgenes[21] = new IntegerGene(getConfiguration());
+			wgenes[21].setAllele(workload.getUsers10());
+			return wgenes;
+		} else {
+			return null;
+		}
 
 	}
 
@@ -165,10 +176,13 @@ public class GeneWorkLoad {
 		List<Chromosome> listC = new ArrayList<Chromosome>();
 		for (WorkLoad workload : list) {
 			Gene[] genes = geneFromWorkLoad(workload, threadGroupTree, gui);
-			Chromosome chromossome = new Chromosome(getConfiguration());
-			chromossome.setGenes(genes);
-			chromossome.setFitnessValueDirectly(workload.getFit());
-			listC.add(chromossome);
+			if (genes != null) {
+				Chromosome chromossome = new Chromosome(getConfiguration());
+
+				chromossome.setGenes(genes);
+				chromossome.setFitnessValueDirectly(workload.getFit());
+				listC.add(chromossome);
+			}
 		}
 
 		return listC;

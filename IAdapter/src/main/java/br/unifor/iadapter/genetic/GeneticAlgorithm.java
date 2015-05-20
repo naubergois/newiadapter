@@ -39,7 +39,7 @@ public class GeneticAlgorithm {
 							tg.getPopulationSize());
 
 			List<Chromosome> bestP = GeneWorkLoad.getChromossomes(workLoads,
-					tg.getTree(), false);
+					tg.getTree(), gui);
 
 			List<IChromosome> newList = null;
 

@@ -66,24 +66,29 @@ public class FindService {
 
 	public static List<TestElement> searchWorkLoadControllerWithNoGui(
 			ListedHashTree threadGroupTree) {
-		try {
 
-			ArrayList<Object> objects = new ArrayList<Object>();
-			Set keys = threadGroupTree.keySet();
-			for (Object object : keys) {
-				HashTree tree = threadGroupTree.getTree(object);
-				Object[] objects2 = tree.getArray();
-				for (Object object3 : objects2) {
-					objects.add(object3);
+		if (threadGroupTree != null) {
+			try {
+
+				ArrayList<Object> objects = new ArrayList<Object>();
+				Set keys = threadGroupTree.keySet();
+				for (Object object : keys) {
+					HashTree tree = threadGroupTree.getTree(object);
+					Object[] objects2 = tree.getArray();
+					for (Object object3 : objects2) {
+						objects.add(object3);
+					}
+
 				}
 
+				return searchTransactionNoGui(objects.toArray(),
+						new ArrayList<TestElement>());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
 			}
-
-			return searchTransactionNoGui(objects.toArray(),
-					new ArrayList<TestElement>());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} else {
 			return null;
 		}
 

@@ -315,38 +315,30 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		}
 
 		try {
-			int generations = Integer.valueOf(tg.getGenNumber());
-			if (tg.getGeneration() <= generations) {
 
-				for (WorkLoad workLoad : listBest) {
+			for (WorkLoad workLoad : listBest) {
+				MySQLDatabase.insertWorkLoads(
+						WorkLoadUtil.getObjectList(workLoad), tg.getName(),
+						String.valueOf(tg.getGeneration()));
+			}
+
+			if ((listTABUnewGeneration != null)
+					&& (listTABUnewGeneration.size() > 0)) {
+				for (WorkLoad workLoad : listTABUnewGeneration) {
+					MySQLDatabase.insertWorkLoads(
+							WorkLoadUtil.getObjectList(workLoad), tg.getName(),
+							String.valueOf(tg.getGeneration()));
+				}
+			}
+
+			if (listSA.size() > 0) {
+
+				for (WorkLoad workLoad : listNewSA) {
 					MySQLDatabase.insertWorkLoads(
 							WorkLoadUtil.getObjectList(workLoad), tg.getName(),
 							String.valueOf(tg.getGeneration()));
 				}
 
-				if ((listTABUnewGeneration != null)
-						&& (listTABUnewGeneration.size() > 0)) {
-					for (WorkLoad workLoad : listTABUnewGeneration) {
-						MySQLDatabase.insertWorkLoads(
-								WorkLoadUtil.getObjectList(workLoad),
-								tg.getName(),
-								String.valueOf(tg.getGeneration()));
-					}
-				}
-			}
-			int minTempInt = Integer.valueOf(tg.getMinTemp());
-
-			if (minTempInt <= tg.getTemperature()) {
-				if (listSA.size() > 0) {
-
-					for (WorkLoad workLoad : listNewSA) {
-						MySQLDatabase.insertWorkLoads(
-								WorkLoadUtil.getObjectList(workLoad),
-								tg.getName(),
-								String.valueOf(tg.getGeneration()));
-					}
-
-				}
 			}
 
 		} catch (Exception e) {
