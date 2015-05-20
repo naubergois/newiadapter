@@ -1302,7 +1302,7 @@ public class MySQLDatabase {
 				+ "  FROM  workload WHERE TESTPLAN=? "
 				+ "  ORDER BY FIT*1 DESC LIMIT " + populationSize);
 		ps.setString(1, testPlan);
-		ps.setString(2, populationSize);
+		
 
 		ResultSet rs = ps.executeQuery();
 
