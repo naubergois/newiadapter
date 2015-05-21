@@ -207,6 +207,20 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		return null;
 	}
 
+	public static List<WorkLoad> returnListAlgorithmGeneticWorkLoadsForAllNewGeneration(
+			WorkLoadThreadGroup tg) {
+		try {
+			return MySQLDatabase.listWorkLoadsForAllNewGeneration(tg.getName(),
+					String.valueOf(tg.getGeneration()));
+		} catch (ClassNotFoundException e1) {
+
+			log.error(e1.getMessage());
+		} catch (SQLException e1) {
+			log.error(e1.getMessage());
+		}
+		return null;
+	}
+
 	public static List<WorkLoad> returnListSAWorkLoadsForNewGeneration(
 			WorkLoadThreadGroup tg) {
 		try {
@@ -269,7 +283,13 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		tg.setGeneration(Integer.valueOf(tg.getInitialGeneration()));
 
-		List<WorkLoad> list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
+		List<WorkLoad> list = null;
+
+		if (tg.getCollaborative()) {
+			list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
+		} else {
+			list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
+		}
 		List<WorkLoad> listSA = null;
 		if (tg.getCollaborative()) {
 			listSA = returnListALLWorkLoadsForNewGeneration(tg);
