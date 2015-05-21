@@ -46,7 +46,7 @@ public class ExportCSVWorkloads {
 	public String export(List<WorkLoad> list) {
 
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("Generation,AverageFitPerUSer,AverageFit,Genes,Name,Fit,Users\n");
+		buffer.append("Generation,AverageFitPerUSer,AverageFit,FitMax,FitMin,Genes,Name,Fit,Users\n");
 		for (WorkLoad workLoad : list) {
 			String name = workLoad.getName();
 			int newGenerationAux = WorkLoadUtil.getGenerationFromName(name);
@@ -210,9 +210,13 @@ public class ExportCSVWorkloads {
 					.valueOf(newGenerationAux));
 			String geneString = generationGenes.get(String
 					.valueOf(newGenerationAux));
+			Double fitMax = generationFITMax.get(String
+					.valueOf(newGenerationAux));
+			Double fitMin = generationFITMin.get(String
+					.valueOf(newGenerationAux));
 			buffer.append(newGenerationAux + "," + averagePerUser + ","
-					+ average + "," + geneString + "," + name + "," + fit + ","
-					+ users + "\n");
+					+ average + "," + fitMax + "," + fitMin + "," + geneString
+					+ "," + name + "," + fit + "," + users + "\n");
 
 		}
 
