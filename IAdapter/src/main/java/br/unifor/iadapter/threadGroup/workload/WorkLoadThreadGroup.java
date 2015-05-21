@@ -220,6 +220,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		}
 		return null;
 	}
+	
+	
+	
 
 	public static List<WorkLoad> returnListSAWorkLoadsForNewGeneration(
 			WorkLoadThreadGroup tg) {
@@ -286,7 +289,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		List<WorkLoad> list = null;
 
 		if (tg.getCollaborative()) {
-			list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
+			list = returnListAlgorithmGeneticWorkLoadsForAllNewGeneration(tg);
 		} else {
 			list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
 		}
@@ -376,7 +379,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		List<TestElement> listElement = FindService
 				.searchWorkLoadControllerWithNoGui(tg.getTree());
 
-		List<WorkLoad> list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
+		List<WorkLoad> list = null;
+		
+		if (tg.getCollaborative()) {
+			list = returnListAlgorithmGeneticWorkLoadsForAllNewGeneration(tg);
+		} else {
+			list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
+		}
+		
 		List<WorkLoad> listSA = null;
 		if (tg.getCollaborative()) {
 			listSA = returnListALLWorkLoadsForNewGeneration(tg);

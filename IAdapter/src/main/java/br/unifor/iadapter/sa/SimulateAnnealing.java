@@ -32,7 +32,8 @@ public class SimulateAnnealing {
 					double randomDouble = random.nextDouble();
 					SimulateAnnealing.tries += 1;
 					if (SimulateAnnealing.tries > 3) {
-						newUsers -= 10;
+						int delta = maxUsers / 10;
+						newUsers -= delta;
 						SimulateAnnealing.tries = 0;
 					}
 					double exponential = Math.exp(-1 * (deltaC / users));
@@ -49,11 +50,14 @@ public class SimulateAnnealing {
 			}
 
 		}
-		for (int i = 0; i < 2; i++) {
+
+		int populationSize = Integer.valueOf(tg.getPopulationSize());
+		for (int i = 0; i < populationSize; i++) {
 			int maxUserNoError = Integer.MAX_VALUE;
 			try {
 				maxUserNoError = MySQLDatabase
-						.listMaxUserWithNoErroWorkloadGenetic(tg.getName());
+						.listMaxUserWithNoErroWorkloadGenetic(tg.getName(),
+								String.valueOf(tg.getGeneration()));
 			} catch (ClassNotFoundException e) {
 
 				e.printStackTrace();

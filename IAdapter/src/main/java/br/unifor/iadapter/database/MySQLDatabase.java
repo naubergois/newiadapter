@@ -1338,16 +1338,17 @@ public class MySQLDatabase {
 		return list;
 	}
 
-	public static int listMaxUserWithNoErroWorkloadGenetic(String testPlan)
-			throws ClassNotFoundException, SQLException {
+	public static int listMaxUserWithNoErroWorkloadGenetic(String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
 				+ "  FROM  workload WHERE TESTPLAN=? "
-				+ "AND (CAST(TOTALERROR AS DECIMAL)=0) "
+				+ "AND (CAST(TOTALERROR AS DECIMAL)=0) AND GENERATION=? "
 				+ "ORDER BY USERS*1 DESC");
 		ps.setString(1, testPlan);
+		ps.setString(2, generation);
 
 		ResultSet rs = ps.executeQuery();
 
