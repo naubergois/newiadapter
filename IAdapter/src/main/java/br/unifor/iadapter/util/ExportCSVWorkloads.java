@@ -17,6 +17,7 @@ public class ExportCSVWorkloads {
 	HashMap<String, Double> generationFITAverage = new HashMap<String, Double>();
 	HashMap<String, Double> generationFITAveragePerUser = new HashMap<String, Double>();
 	HashMap<String, Double> generationFITMax = new HashMap<String, Double>();
+	HashMap<String, Double> generationFITMaxAlgorithm = new HashMap<String, Double>();
 	HashMap<String, Double> generationFITMin = new HashMap<String, Double>();
 
 	private void verifyHashMapsFunction(String function) {
@@ -46,10 +47,28 @@ public class ExportCSVWorkloads {
 	public String export(List<WorkLoad> list) {
 
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("Generation,AverageFitPerUSer,AverageFit,FitMax,FitMin,Genes,Name,Fit,Users\n");
+		buffer.append("Generation,AverageFitPerUSer,AverageFit,FitMax,FitMin,FitMaxSearchMethod,Genes,Name,Fit,Users\n");
 		for (WorkLoad workLoad : list) {
 			String name = workLoad.getName();
 			int newGenerationAux = WorkLoadUtil.getGenerationFromName(name);
+
+			if (generationFITSum.containsKey(String.valueOf(newGenerationAux)
+					+ workLoad.getSearchMethod())) {
+				double maxAlgorithm = generationFITMaxAlgorithm
+						.get(String.valueOf(newGenerationAux)
+								+ workLoad.getSearchMethod());
+				if (workLoad.getFit() > maxAlgorithm) {
+					maxAlgorithm = workLoad.getFit();
+					generationFITMaxAlgorithm.put(
+							String.valueOf(newGenerationAux)
+									+ workLoad.getSearchMethod(), maxAlgorithm);
+				}
+			} else {
+				double maxAlgorithm = workLoad.getFit();
+				generationFITMaxAlgorithm.put(String.valueOf(newGenerationAux)
+						+ workLoad.getSearchMethod(), maxAlgorithm);
+			}
+
 			if (generationFITSum.containsKey(String.valueOf(newGenerationAux))) {
 				double sum = generationFITSum.get(String
 						.valueOf(newGenerationAux));
@@ -59,8 +78,10 @@ public class ExportCSVWorkloads {
 						.valueOf(newGenerationAux));
 				double max = generationFITMax.get(String
 						.valueOf(newGenerationAux));
+
 				double min = generationFITMin.get(String
 						.valueOf(newGenerationAux));
+
 				if (workLoad.getFit() > max) {
 					max = workLoad.getFit();
 					generationFITMax.put(String.valueOf(newGenerationAux), max);
@@ -83,6 +104,7 @@ public class ExportCSVWorkloads {
 				sum += workLoad.getFit();
 				int countUser = workLoad.getNumThreads();
 				double max = workLoad.getFit();
+
 				double min = workLoad.getFit();
 
 				generationFITSum.put(String.valueOf(newGenerationAux), sum);
@@ -214,9 +236,12 @@ public class ExportCSVWorkloads {
 					.valueOf(newGenerationAux));
 			Double fitMin = generationFITMin.get(String
 					.valueOf(newGenerationAux));
+			Double fitSearchMethod = generationFITMaxAlgorithm.get(String
+					.valueOf(newGenerationAux) + workLoad.getSearchMethod());
 			buffer.append(newGenerationAux + "," + averagePerUser + ","
-					+ average + "," + fitMax + "," + fitMin + "," + geneString
-					+ "," + name + "," + fit + "," + users + "\n");
+					+ average + "," + fitMax + "," + fitMin + ","
+					+ fitSearchMethod + "," + geneString + "," + name + ","
+					+ fit + "," + users + "\n");
 
 		}
 
@@ -230,6 +255,7 @@ public class ExportCSVWorkloads {
 		generationFITAveragePerUser = new HashMap<String, Double>();
 		generationFITMax = new HashMap<String, Double>();
 		generationFITMin = new HashMap<String, Double>();
+		generationFITMaxAlgorithm = new HashMap<String, Double>();
 
 		return buffer.toString();
 	}
