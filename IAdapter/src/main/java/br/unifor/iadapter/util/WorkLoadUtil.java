@@ -953,7 +953,7 @@ public class WorkLoadUtil {
 			workload.setUsers9(Integer.valueOf(rs.getString(33)));
 		}
 		if (rs.getString(34) != null) {
-			workload.setUsers10(Integer.valueOf(rs.getString(33)));
+			workload.setUsers10(Integer.valueOf(rs.getString(34)));
 		}
 		return workload;
 	}
