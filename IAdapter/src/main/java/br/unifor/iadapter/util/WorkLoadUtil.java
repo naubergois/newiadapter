@@ -590,7 +590,7 @@ public class WorkLoadUtil {
 			WorkLoad workload = workLoad.clone();
 			workload.setSearchMethod("SA");
 
-			workload.setName("SA:" + workload.getType() + "-"
+			workload.setName("G1:SA:" + workload.getType() + "-"
 					+ workload.getNumThreads() + "-" + workload.getFunction1()
 					+ "-" + workload.getFunction2() + "-"
 					+ workload.getFunction3() + "-" + workload.getFunction4()
@@ -617,7 +617,7 @@ public class WorkLoadUtil {
 			WorkLoad workload = workLoad.clone();
 			workload.setSearchMethod("TABU");
 
-			workload.setName("TABU:" + workload.getType() + "-"
+			workload.setName("G1:TABU:" + workload.getType() + "-"
 					+ workload.getNumThreads() + "-" + workload.getFunction1()
 					+ "-" + workload.getFunction2() + "-"
 					+ workload.getFunction3() + "-" + workload.getFunction4()
@@ -859,11 +859,12 @@ public class WorkLoadUtil {
 		workload.setUsers9(gene19.intValue());
 		workload.setFunction10(getName(nodes, gene20));
 		workload.setUsers10(gene21.intValue());
-		workload.setNumThreads(workload.getUsers1() + workload.getUsers2()
+		int users=workload.getUsers1() + workload.getUsers2()
 				+ workload.getUsers3() + workload.getUsers4()
 				+ workload.getUsers5() + workload.getUsers6()
 				+ workload.getUsers7() + workload.getUsers8()
-				+ workload.getUsers9() + workload.getUsers10());
+				+ workload.getUsers9() + workload.getUsers10();
+		workload.setNumThreads(users);
 		workload.setName("G1:" + workload.getType() + "-"
 				+ workload.getNumThreads() + "-" + workload.getFunction1()
 				+ "-" + workload.getFunction2() + "-" + workload.getFunction3()
@@ -872,6 +873,10 @@ public class WorkLoadUtil {
 				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
 				+ "-" + workload.getFunction10());
 
+		System.out.println(users+"-"+workload.getName()+"-"+workload.getUsers1()+"-"+
+		workload.getUsers2()+"-"+workload.getUsers3()+"-"+workload.getUsers4()+"-"+
+				workload.getUsers5()+"-"+workload.getUsers6()+"-"+workload.getUsers7()+"-"
+		+workload.getUsers8()+"-"+workload.getUsers9()+"-"+workload.getUsers10());
 		workload.setGeneration(generation);
 		workload.setSearchMethod("GENETICALGORITHM");
 		workload.setActive(true);
@@ -1169,7 +1174,6 @@ public class WorkLoadUtil {
 				workload.setName("G" + generation + ":" + workload.getName());
 			}
 
-			// workload.calcUsers();
 		}
 
 		return workload;
