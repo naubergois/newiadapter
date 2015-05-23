@@ -311,6 +311,36 @@ public class WorkLoadUtil {
 		return newWorkload;
 	}
 
+	public static WorkLoad getNeighBorHoodSA(WorkLoad workload,
+			List<TestElement> nodes, int maxUsers, Integer generationTrack) {
+
+		List<Integer> parameters = new ArrayList<Integer>();
+		parameters.add(getIndexType(workload.getType()));
+
+		parameters = mutateParameter(parameters, nodes, workload);
+
+		Random random = new Random();
+
+		int probabilty = random.nextInt(10);
+
+		int newUsers = 0;
+
+		if (probabilty < 1) {
+
+			newUsers = random.nextInt(maxUsers);
+		} else {
+			newUsers = (workload.getNumThreads());
+		}
+
+		parameters.add(newUsers);
+		parameters.add(workload.getGeneration() + 1);
+
+		WorkLoad newWorkload = createWorkLoad(nodes, parameters, "SA",
+				generationTrack, workload);
+
+		return newWorkload;
+	}
+
 	public static WorkLoad createWorkLoadMutant(List<TestElement> nodes,
 			List<Integer> parametros, String search) {
 		WorkLoad workload = null;
