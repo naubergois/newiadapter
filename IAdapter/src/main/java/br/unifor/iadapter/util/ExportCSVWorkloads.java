@@ -12,11 +12,15 @@ public class ExportCSVWorkloads {
 	HashMap<String, Double> generationFITSumAlgorithm = new HashMap<String, Double>();
 	HashMap<String, String> generationGenes = new HashMap<String, String>();
 	HashMap<String, Integer> generationCount = new HashMap<String, Integer>();
+	HashMap<String, Integer> searchMethodCount = new HashMap<String, Integer>();
+	HashMap<String, Integer> searchMethodUserCount = new HashMap<String, Integer>();
 	HashMap<String, Integer> generationUserCount = new HashMap<String, Integer>();
 	HashMap<String, Integer> functionCount = new HashMap<String, Integer>();
 	HashMap<String, Integer> functions = new HashMap<String, Integer>();
 	HashMap<String, Double> generationFITAverage = new HashMap<String, Double>();
+	HashMap<String, Double> generationFITAverageAlgorithm = new HashMap<String, Double>();
 	HashMap<String, Double> generationFITAveragePerUser = new HashMap<String, Double>();
+	HashMap<String, Double> generationFITAveragePerUserAlgorithm = new HashMap<String, Double>();
 	HashMap<String, Double> generationFITMax = new HashMap<String, Double>();
 	HashMap<String, Double> generationFITMaxAlgorithm = new HashMap<String, Double>();
 	HashMap<String, Double> generationFITMin = new HashMap<String, Double>();
@@ -48,7 +52,7 @@ public class ExportCSVWorkloads {
 	public String export(List<WorkLoad> list) {
 
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("Generation,AverageFitPerUSer,AverageFit,FitMax,FitMin,FitMaxSearchMethod,Genes,Name,Fit,Users\n");
+		buffer.append("Generation,AverageFitPerUSer,AverageFit,FitMax,FitMin,FitMaxSearchMethodMax,FitAverageSearchMethodPerUSer,Genes,Name,Fit,Users\n");
 		for (WorkLoad workLoad : list) {
 			String name = workLoad.getName();
 			int newGenerationAux = WorkLoadUtil.getGenerationFromName(name);
@@ -76,13 +80,40 @@ public class ExportCSVWorkloads {
 						.get(String.valueOf(newGenerationAux)
 								+ workLoad.getSearchMethod());
 				sum += workLoad.getFit();
-				generationFITSum.put(String.valueOf(newGenerationAux)+workLoad.getSearchMethod(), sum);
+				generationFITSumAlgorithm.put(String.valueOf(newGenerationAux)
+						+ workLoad.getSearchMethod(), sum);
 
 			} else {
-				
+
 				double sum = 0;
 				sum += workLoad.getFit();
-				generationFITSum.put(String.valueOf(newGenerationAux)+workLoad.getSearchMethod(), sum);
+				generationFITSum.put(String.valueOf(newGenerationAux)
+						+ workLoad.getSearchMethod(), sum);
+
+			}
+
+			if (searchMethodCount.containsKey(String.valueOf(newGenerationAux)
+					+ workLoad.getSearchMethod())) {
+				int count = searchMethodCount
+						.get(String.valueOf(newGenerationAux)
+								+ workLoad.getSearchMethod());
+
+				int users = searchMethodUserCount
+						.get(String.valueOf(newGenerationAux)
+								+ workLoad.getSearchMethod());
+				users = users + workLoad.getNumThreads();
+				count++;
+				searchMethodCount.put(String.valueOf(newGenerationAux)
+						+ workLoad.getSearchMethod(), count);
+				searchMethodUserCount.put(String.valueOf(newGenerationAux)
+						+ workLoad.getSearchMethod(), users);
+			} else {
+				int count = 1;
+				int users = workLoad.getNumThreads();
+				searchMethodCount.put(String.valueOf(newGenerationAux)
+						+ workLoad.getSearchMethod(), count);
+				searchMethodUserCount.put(String.valueOf(newGenerationAux)
+						+ workLoad.getSearchMethod(), users);
 
 			}
 
@@ -197,6 +228,24 @@ public class ExportCSVWorkloads {
 			generationFITAverage.put(key, average);
 			generationFITAveragePerUser.put(key, averagePerUser);
 
+			String[] searchMethods = { "SA", "TABU", "GENETICALGORITHM" };
+
+			for (String string : searchMethods) {
+
+				int totalUsersSearch = searchMethodUserCount.get(key + string);
+				double fitsumAlgorithm = generationFITSumAlgorithm.get(key
+						+ string);
+				int countAlgorithm = searchMethodCount.get(key + string);
+				double averageAlgorithm = fitsumAlgorithm / countAlgorithm;
+				double averagePerUserAlgorithm = fitsumAlgorithm
+						/ totalUsersSearch;
+				generationFITAverageAlgorithm.put(key + string,
+						averageAlgorithm);
+				generationFITAveragePerUserAlgorithm.put(key + string,
+						averagePerUserAlgorithm);
+
+			}
+
 			for (Object object1 : keysFunctionSet) {
 				String keyFunction = object1.toString() + key;
 				if (functionCount.containsKey(keyFunction)) {
@@ -255,10 +304,13 @@ public class ExportCSVWorkloads {
 					.valueOf(newGenerationAux));
 			Double fitSearchMethod = generationFITMaxAlgorithm.get(String
 					.valueOf(newGenerationAux) + workLoad.getSearchMethod());
+			Double fitUserAlgo = generationFITAveragePerUserAlgorithm
+					.get(String.valueOf(newGenerationAux)
+							+ workLoad.getSearchMethod());
 			buffer.append(newGenerationAux + "," + averagePerUser + ","
 					+ average + "," + fitMax + "," + fitMin + ","
-					+ fitSearchMethod + "," + geneString + "," + name + ","
-					+ fit + "," + users + "\n");
+					+ fitSearchMethod + "," + fitUserAlgo + "," + geneString
+					+ "," + name + "," + fit + "," + users + "\n");
 
 		}
 
