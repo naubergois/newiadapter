@@ -230,20 +230,24 @@ public class ExportCSVWorkloads {
 
 			String[] searchMethods = { "SA", "TABU", "GENETICALGORITHM" };
 
-			for (String string : searchMethods) {
+			if (!(key.equals("1"))) {
 
-				int totalUsersSearch = searchMethodUserCount.get(key + string);
-				double fitsumAlgorithm = generationFITSumAlgorithm.get(key
-						+ string);
-				int countAlgorithm = searchMethodCount.get(key + string);
-				double averageAlgorithm = fitsumAlgorithm / countAlgorithm;
-				double averagePerUserAlgorithm = fitsumAlgorithm
-						/ totalUsersSearch;
-				generationFITAverageAlgorithm.put(key + string,
-						averageAlgorithm);
-				generationFITAveragePerUserAlgorithm.put(key + string,
-						averagePerUserAlgorithm);
+				for (String string : searchMethods) {
 
+					int totalUsersSearch = searchMethodUserCount.get(key
+							+ string);
+					double fitsumAlgorithm = generationFITSumAlgorithm.get(key
+							+ string);
+					int countAlgorithm = searchMethodCount.get(key + string);
+					double averageAlgorithm = fitsumAlgorithm / countAlgorithm;
+					double averagePerUserAlgorithm = fitsumAlgorithm
+							/ totalUsersSearch;
+					generationFITAverageAlgorithm.put(key + string,
+							averageAlgorithm);
+					generationFITAveragePerUserAlgorithm.put(key + string,
+							averagePerUserAlgorithm);
+
+				}
 			}
 
 			for (Object object1 : keysFunctionSet) {
@@ -302,11 +306,16 @@ public class ExportCSVWorkloads {
 					.valueOf(newGenerationAux));
 			Double fitMin = generationFITMin.get(String
 					.valueOf(newGenerationAux));
-			Double fitSearchMethod = generationFITMaxAlgorithm.get(String
-					.valueOf(newGenerationAux) + workLoad.getSearchMethod());
-			Double fitUserAlgo = generationFITAveragePerUserAlgorithm
-					.get(String.valueOf(newGenerationAux)
-							+ workLoad.getSearchMethod());
+			Double fitSearchMethod = 0.0;
+			Double fitUserAlgo = 0.0;
+			if (newGenerationAux > 1) {
+				fitSearchMethod = generationFITMaxAlgorithm
+						.get(String.valueOf(newGenerationAux)
+								+ workLoad.getSearchMethod());
+				fitUserAlgo = generationFITAveragePerUserAlgorithm
+						.get(String.valueOf(newGenerationAux)
+								+ workLoad.getSearchMethod());
+			}
 			buffer.append(newGenerationAux + "," + averagePerUser + ","
 					+ average + "," + fitMax + "," + fitMin + ","
 					+ fitSearchMethod + "," + fitUserAlgo + "," + geneString
