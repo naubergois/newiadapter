@@ -604,9 +604,6 @@ public class WorkLoadUtil {
 		return list;
 
 	}
-	
-	
-	
 
 	public static List<WorkLoad> createWorkLoadTABUWithGuiSame(
 			List<WorkLoad> workloadSource, int generation, int maxUsers) {
@@ -859,7 +856,7 @@ public class WorkLoadUtil {
 		workload.setUsers9(gene19.intValue());
 		workload.setFunction10(getName(nodes, gene20));
 		workload.setUsers10(gene21.intValue());
-		int users=workload.getUsers1() + workload.getUsers2()
+		int users = workload.getUsers1() + workload.getUsers2()
 				+ workload.getUsers3() + workload.getUsers4()
 				+ workload.getUsers5() + workload.getUsers6()
 				+ workload.getUsers7() + workload.getUsers8()
@@ -873,10 +870,12 @@ public class WorkLoadUtil {
 				+ "-" + workload.getFunction8() + "-" + workload.getFunction9()
 				+ "-" + workload.getFunction10());
 
-		System.out.println(users+"-"+workload.getName()+"-"+workload.getUsers1()+"-"+
-		workload.getUsers2()+"-"+workload.getUsers3()+"-"+workload.getUsers4()+"-"+
-				workload.getUsers5()+"-"+workload.getUsers6()+"-"+workload.getUsers7()+"-"
-		+workload.getUsers8()+"-"+workload.getUsers9()+"-"+workload.getUsers10());
+		System.out.println(users + "-" + workload.getName() + "-"
+				+ workload.getUsers1() + "-" + workload.getUsers2() + "-"
+				+ workload.getUsers3() + "-" + workload.getUsers4() + "-"
+				+ workload.getUsers5() + "-" + workload.getUsers6() + "-"
+				+ workload.getUsers7() + "-" + workload.getUsers8() + "-"
+				+ workload.getUsers9() + "-" + workload.getUsers10());
 		workload.setGeneration(generation);
 		workload.setSearchMethod("GENETICALGORITHM");
 		workload.setActive(true);
@@ -1191,7 +1190,7 @@ public class WorkLoadUtil {
 		if (terms.length > 0) {
 			int max = 0;
 			for (String string : terms) {
-				
+
 				if (string.length() > 0) {
 					if (string.substring(0, 1).equals("G")) {
 						String stringNumber = string.replace('G', '0');
@@ -1295,32 +1294,16 @@ public class WorkLoadUtil {
 		int users9 = 0;
 		int users10 = 0;
 
-		int maxUser = parametros.get(11) / 10;
-		if ((search.equals("TABU")) || (search.equals("GENETICALGORITHM"))) {
-
-			users1 = source.getUsers1() + deltaUsers();
-			users2 = source.getUsers2() + deltaUsers();
-			users3 = source.getUsers3() + deltaUsers();
-			users4 = source.getUsers4() + deltaUsers();
-			users5 = source.getUsers5() + deltaUsers();
-			users6 = source.getUsers6() + deltaUsers();
-			users7 = source.getUsers7() + deltaUsers();
-			users8 = source.getUsers8() + deltaUsers();
-			users9 = source.getUsers9() + deltaUsers();
-			users10 = source.getUsers10() + deltaUsers();
-		}
-		if (search.equals("SA")) {
-			users1 = maxUser;
-			users2 = maxUser;
-			users3 = maxUser;
-			users4 = maxUser;
-			users5 = maxUser;
-			users6 = maxUser;
-			users7 = maxUser;
-			users8 = maxUser;
-			users9 = maxUser;
-			users10 = maxUser;
-		}
+		users1 = source.getUsers1() + deltaUsers();
+		users2 = source.getUsers2() + deltaUsers();
+		users3 = source.getUsers3() + deltaUsers();
+		users4 = source.getUsers4() + deltaUsers();
+		users5 = source.getUsers5() + deltaUsers();
+		users6 = source.getUsers6() + deltaUsers();
+		users7 = source.getUsers7() + deltaUsers();
+		users8 = source.getUsers8() + deltaUsers();
+		users9 = source.getUsers9() + deltaUsers();
+		users10 = source.getUsers10() + deltaUsers();
 
 		workload.setUsers1(users1);
 		workload.setUsers2(users2);

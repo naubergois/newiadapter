@@ -29,13 +29,28 @@ public class SimulateAnnealing {
 					double deltaC = place.getFit() - newPlace.getFit();
 					if (deltaC < 0) {
 						tg.setWorkloadCurrentSA(newPlace);
+
 					} else {
 						Random random = new Random();
 						double randomDouble = random.nextDouble();
 						SimulateAnnealing.tries += 1;
 						if (SimulateAnnealing.tries > 3) {
-							int delta = maxUsers / 10;
-							newUsers -= delta;
+							Random signal = new Random();
+							int signalInt = signal.nextInt(2);
+							if (signalInt == 0) {
+								Random incrementRandom = new Random();
+								int newTempIncrement = incrementRandom
+										.nextInt(11);
+								newUsers = tg.getWorkloadCurrentSA()
+										.getNumThreads() - newTempIncrement;
+							} else {
+								Random incrementRandom = new Random();
+								int newTempIncrement = incrementRandom
+										.nextInt(11);
+								newUsers = tg.getWorkloadCurrentSA()
+										.getNumThreads() + newTempIncrement;
+
+							}
 							SimulateAnnealing.tries = 0;
 						}
 						double exponential = Math.exp(-1 * (deltaC / users));
