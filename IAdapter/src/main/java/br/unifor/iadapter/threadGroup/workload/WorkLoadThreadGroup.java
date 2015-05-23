@@ -378,14 +378,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		List<WorkLoad> list = null;
 
-		if (tg.getCollaborative()) {
+		if (tg.getCollaborative()|| (tg.getGeneration() == 1)) {
 			list = returnListAlgorithmGeneticWorkLoadsForAllNewGeneration(tg);
 		} else {
 			list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
 		}
 
 		List<WorkLoad> listSA = null;
-		if (tg.getCollaborative()) {
+		if (tg.getCollaborative()|| (tg.getGeneration() == 1)) {
 			listSA = returnListALLWorkLoadsForNewGeneration(tg);
 
 		} else {
@@ -395,7 +395,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		List<WorkLoad> listTABU = null;
 
-		if (tg.getCollaborative()) {
+		if (tg.getCollaborative()|| (tg.getGeneration() == 1)) {
 			listTABU = returnListALLWorkLoadsForNewGeneration(tg);
 		} else {
 			listTABU = returnListTABUWorkLoadsForNewGeneration(tg);
