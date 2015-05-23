@@ -34,9 +34,16 @@ public class GeneticAlgorithm {
 			List<Chromosome> bestI = GeneWorkLoad.selectBestIndividualsList(
 					population, Integer.valueOf(tg.getBestIndividuals()));
 
-			List<WorkLoad> workLoads = MySQLDatabase
-					.listWorstWorkloadGeneticPopulationSize(tg.getName(),
-							tg.getPopulationSize());
+			List<WorkLoad> workLoads = null;
+			if ((tg.getCollaborative()) || (tg.getGeneration() == 1)) {
+				workLoads = MySQLDatabase.listBESTWorkloadAllPopulationSize(
+						tg.getName(), tg.getPopulationSize());
+
+			} else {
+				workLoads = MySQLDatabase
+						.listBESTWorkloadGeneticPopulationSize(tg.getName(),
+								tg.getPopulationSize());
+			}
 
 			List<Chromosome> bestP = GeneWorkLoad.getChromossomes(workLoads,
 					tg.getTree(), gui);
