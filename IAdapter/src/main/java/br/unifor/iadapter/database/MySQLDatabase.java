@@ -1184,8 +1184,9 @@ public class MySQLDatabase {
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
 				+ "  FROM  workload WHERE TESTPLAN=? "
-				+ "AND SEARCHMETHOD='TABU' ORDER BY FIT*1 DESC LIMIT 10");
+				+ "AND SEARCHMETHOD='TABU' and GENERATION=? ORDER BY FIT*1 DESC LIMIT 10");
 		ps.setString(1, testPlan);
+		ps.setString(2, generation);
 
 		ResultSet rs = ps.executeQuery();
 

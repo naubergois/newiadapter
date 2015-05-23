@@ -64,13 +64,14 @@ public class AddRowWorkloadAction implements ActionListener {
 
 			List<WorkLoad> listSA = new ArrayList<WorkLoad>();
 			List<WorkLoad> listTABU = new ArrayList<WorkLoad>();
-			if (!(sender.getColaborative().isSelected())) {
-				listSA = WorkLoadUtil.createWorkLoadTemperatureWithGuiSame(
-						workloadList, 1, users);
-				listTABU = WorkLoadUtil.createWorkLoadTABUWithGuiSame(
-						workloadList, 1, users);
-
-			}
+			/*
+			 * if (!(sender.getColaborative().isSelected())) { listSA =
+			 * WorkLoadUtil.createWorkLoadTemperatureWithGuiSame( workloadList,
+			 * 1, users); listTABU = WorkLoadUtil.createWorkLoadTABUWithGuiSame(
+			 * workloadList, 1, users);
+			 * 
+			 * }
+			 */
 
 			workloadList.addAll(listSA);
 			workloadList.addAll(listTABU);
