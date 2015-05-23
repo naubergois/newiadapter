@@ -1353,7 +1353,7 @@ public class MySQLDatabase {
 				.prepareStatement(""
 						+ "SELECT "
 						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? AND SEARCHMETHOD='GENETICALGORITHM "
+						+ "  FROM  workload WHERE TESTPLAN=? AND SEARCHMETHOD='GENETICALGORITH "
 						+ "  ORDER BY FIT*1 DESC LIMIT " + populationSize);
 		ps.setString(1, testPlan);
 
