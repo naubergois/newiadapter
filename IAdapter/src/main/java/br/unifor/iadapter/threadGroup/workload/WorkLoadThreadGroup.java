@@ -220,9 +220,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		}
 		return null;
 	}
-	
-	
-	
 
 	public static List<WorkLoad> returnListSAWorkLoadsForNewGeneration(
 			WorkLoadThreadGroup tg) {
@@ -332,9 +329,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		}
 
 		if (listSA.size() > 0) {
-			tg.temperature = SimulateAnnealing.sa(tg.temperature,
-					listSA.get(0), Integer.valueOf(tg.getThreadNumberMax()),
-					listNewSA, tg.getGeneration(), tg, listElement);
+			tg.temperature = SimulateAnnealing.sa(tg.temperature, listSA,
+					Integer.valueOf(tg.getThreadNumberMax()), listNewSA,
+					tg.getGeneration(), tg, listElement);
 		}
 
 		try {
@@ -380,13 +377,13 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				.searchWorkLoadControllerWithNoGui(tg.getTree());
 
 		List<WorkLoad> list = null;
-		
+
 		if (tg.getCollaborative()) {
 			list = returnListAlgorithmGeneticWorkLoadsForAllNewGeneration(tg);
 		} else {
 			list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
 		}
-		
+
 		List<WorkLoad> listSA = null;
 		if (tg.getCollaborative()) {
 			listSA = returnListALLWorkLoadsForNewGeneration(tg);
@@ -426,9 +423,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		}
 
 		if (listSA.size() > 0) {
-			tg.temperature = SimulateAnnealing.sa(tg.temperature,
-					listSA.get(0), Integer.valueOf(tg.getThreadNumberMax()),
-					listNewSA, tg.getGeneration(), tg, listElement);
+			tg.temperature = SimulateAnnealing.sa(tg.temperature, listSA,
+					Integer.valueOf(tg.getThreadNumberMax()), listNewSA,
+					tg.getGeneration(), tg, listElement);
 		}
 
 		try {

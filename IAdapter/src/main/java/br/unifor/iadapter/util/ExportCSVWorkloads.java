@@ -9,6 +9,7 @@ import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 public class ExportCSVWorkloads {
 
 	HashMap<String, Double> generationFITSum = new HashMap<String, Double>();
+	HashMap<String, Double> generationFITSumAlgorithm = new HashMap<String, Double>();
 	HashMap<String, String> generationGenes = new HashMap<String, String>();
 	HashMap<String, Integer> generationCount = new HashMap<String, Integer>();
 	HashMap<String, Integer> generationUserCount = new HashMap<String, Integer>();
@@ -52,8 +53,8 @@ public class ExportCSVWorkloads {
 			String name = workLoad.getName();
 			int newGenerationAux = WorkLoadUtil.getGenerationFromName(name);
 
-			if (generationFITSum.containsKey(String.valueOf(newGenerationAux)
-					+ workLoad.getSearchMethod())) {
+			if (generationFITMaxAlgorithm.containsKey(String
+					.valueOf(newGenerationAux) + workLoad.getSearchMethod())) {
 				double maxAlgorithm = generationFITMaxAlgorithm
 						.get(String.valueOf(newGenerationAux)
 								+ workLoad.getSearchMethod());
@@ -67,6 +68,22 @@ public class ExportCSVWorkloads {
 				double maxAlgorithm = workLoad.getFit();
 				generationFITMaxAlgorithm.put(String.valueOf(newGenerationAux)
 						+ workLoad.getSearchMethod(), maxAlgorithm);
+			}
+
+			if (generationFITSumAlgorithm.containsKey(String
+					.valueOf(newGenerationAux) + workLoad.getSearchMethod())) {
+				double sum = generationFITSumAlgorithm
+						.get(String.valueOf(newGenerationAux)
+								+ workLoad.getSearchMethod());
+				sum += workLoad.getFit();
+				generationFITSum.put(String.valueOf(newGenerationAux)+workLoad.getSearchMethod(), sum);
+
+			} else {
+				
+				double sum = 0;
+				sum += workLoad.getFit();
+				generationFITSum.put(String.valueOf(newGenerationAux)+workLoad.getSearchMethod(), sum);
+
 			}
 
 			if (generationFITSum.containsKey(String.valueOf(newGenerationAux))) {
