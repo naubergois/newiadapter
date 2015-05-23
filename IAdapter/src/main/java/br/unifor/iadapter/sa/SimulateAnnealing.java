@@ -34,28 +34,10 @@ public class SimulateAnnealing {
 						Random random = new Random();
 						double randomDouble = random.nextDouble();
 						SimulateAnnealing.tries += 1;
-						if (SimulateAnnealing.tries > 3) {
-							Random signal = new Random();
-							int signalInt = signal.nextInt(2);
-							if (signalInt == 0) {
-								Random incrementRandom = new Random();
-								int newTempIncrement = incrementRandom
-										.nextInt(11);
-								newUsers = tg.getWorkloadCurrentSA()
-										.getNumThreads() - newTempIncrement;
-							} else {
-								Random incrementRandom = new Random();
-								int newTempIncrement = incrementRandom
-										.nextInt(11);
-								newUsers = tg.getWorkloadCurrentSA()
-										.getNumThreads() + newTempIncrement;
-
-							}
-							SimulateAnnealing.tries = 0;
-						}
 						double exponential = Math.exp(-1 * (deltaC / users));
 						if (randomDouble > exponential) {
 							tg.setWorkloadCurrentSA(newPlace);
+
 						}
 
 					}
@@ -67,6 +49,24 @@ public class SimulateAnnealing {
 				}
 
 			}
+		}
+
+		if (SimulateAnnealing.tries > 3) {
+			Random signal = new Random();
+			int signalInt = signal.nextInt(2);
+			if (signalInt == 0) {
+				Random incrementRandom = new Random();
+				int newTempIncrement = incrementRandom.nextInt(11);
+				newUsers = tg.getWorkloadCurrentSA().getNumThreads()
+						- newTempIncrement;
+			} else {
+				Random incrementRandom = new Random();
+				int newTempIncrement = incrementRandom.nextInt(11);
+				newUsers = tg.getWorkloadCurrentSA().getNumThreads()
+						+ newTempIncrement;
+
+			}
+			SimulateAnnealing.tries = 0;
 		}
 
 		int populationSize = Integer.valueOf(tg.getPopulationSize());
