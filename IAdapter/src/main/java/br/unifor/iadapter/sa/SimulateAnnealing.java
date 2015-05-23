@@ -56,14 +56,24 @@ public class SimulateAnnealing {
 			int signalInt = signal.nextInt(2);
 			if (signalInt == 0) {
 				Random incrementRandom = new Random();
-				int newTempIncrement = incrementRandom.nextInt(11);
+				int newTempIncrement = incrementRandom.nextInt(Integer
+						.valueOf(tg.getThreadNumberMax()));
+
 				newUsers = tg.getWorkloadCurrentSA().getNumThreads()
 						- newTempIncrement;
+
+				if (newUsers <= 0) {
+					newUsers = 1;
+				}
 			} else {
 				Random incrementRandom = new Random();
-				int newTempIncrement = incrementRandom.nextInt(11);
+				int newTempIncrement = incrementRandom.nextInt(Integer
+						.valueOf(tg.getThreadNumberMax()));
 				newUsers = tg.getWorkloadCurrentSA().getNumThreads()
 						+ newTempIncrement;
+				if (newUsers > (Integer.valueOf(tg.getThreadNumberMax()))) {
+					newUsers = Integer.valueOf(tg.getThreadNumberMax());
+				}
 
 			}
 			SimulateAnnealing.tries = 0;

@@ -325,7 +325,7 @@ public class WorkLoadUtil {
 
 		int newUsers = 0;
 
-		if (probabilty < 1) {
+		if (probabilty < 5) {
 
 			newUsers = random.nextInt(maxUsers);
 		} else {
