@@ -1308,6 +1308,10 @@ public class WorkLoadUtil {
 		String prefix = "";
 		if (search.equals("SA")) {
 			prefix = "SA";
+			int threads = Integer.valueOf(parametros.get(11));
+			workload.setNumThreads(threads);
+			workload.calcUsers();
+
 		}
 		if (search.equals("TABU")) {
 			prefix = "TABU";
@@ -1324,16 +1328,32 @@ public class WorkLoadUtil {
 		int users9 = 0;
 		int users10 = 0;
 
-		users1 = source.getUsers1() + deltaUsers();
-		users2 = source.getUsers2() + deltaUsers();
-		users3 = source.getUsers3() + deltaUsers();
-		users4 = source.getUsers4() + deltaUsers();
-		users5 = source.getUsers5() + deltaUsers();
-		users6 = source.getUsers6() + deltaUsers();
-		users7 = source.getUsers7() + deltaUsers();
-		users8 = source.getUsers8() + deltaUsers();
-		users9 = source.getUsers9() + deltaUsers();
-		users10 = source.getUsers10() + deltaUsers();
+		if (!(search.equals("SA"))) {
+
+			users1 = source.getUsers1() + deltaUsers();
+			users2 = source.getUsers2() + deltaUsers();
+			users3 = source.getUsers3() + deltaUsers();
+			users4 = source.getUsers4() + deltaUsers();
+			users5 = source.getUsers5() + deltaUsers();
+			users6 = source.getUsers6() + deltaUsers();
+			users7 = source.getUsers7() + deltaUsers();
+			users8 = source.getUsers8() + deltaUsers();
+			users9 = source.getUsers9() + deltaUsers();
+			users10 = source.getUsers10() + deltaUsers();
+		} else {
+
+			users1 = workload.getUsers1() + deltaUsers();
+			users2 = workload.getUsers2() + deltaUsers();
+			users3 = workload.getUsers3() + deltaUsers();
+			users4 = workload.getUsers4() + deltaUsers();
+			users5 = workload.getUsers5() + deltaUsers();
+			users6 = workload.getUsers6() + deltaUsers();
+			users7 = workload.getUsers7() + deltaUsers();
+			users8 = workload.getUsers8() + deltaUsers();
+			users9 = workload.getUsers9() + deltaUsers();
+			users10 = workload.getUsers10() + deltaUsers();
+
+		}
 
 		workload.setUsers1(users1);
 		workload.setUsers2(users2);

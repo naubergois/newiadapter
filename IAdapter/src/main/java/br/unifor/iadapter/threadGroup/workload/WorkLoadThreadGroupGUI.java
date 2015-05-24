@@ -41,6 +41,7 @@ import br.unifor.iadapter.action.AddRowWorkloadAction;
 import br.unifor.iadapter.action.DeleteAgentAction;
 import br.unifor.iadapter.action.DeleteRowAction;
 import br.unifor.iadapter.action.DesactiveRowWorkloadAction;
+import br.unifor.iadapter.action.ExportPositiveWorkloadAction;
 import br.unifor.iadapter.action.ExportWorkloadAction;
 import br.unifor.iadapter.action.NewGenerationWorkloadAction;
 import br.unifor.iadapter.action.RefreshRowWorkloadAction;
@@ -321,7 +322,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 				"dna2.png"));
 		button8.setIcon(dna2);
 
+		JButton button9 = new JButton("Export +");
+
 		buttons.add(button8);
+		buttons.add(button9);
 
 		button1.addActionListener(new AddRowWorkloadAction(this, grid,
 				wtableModel, null, null));
@@ -342,6 +346,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		button7.addActionListener(new ExportWorkloadAction());
 
 		button8.addActionListener(new NewGenerationWorkloadAction());
+
+		button9.addActionListener(new ExportPositiveWorkloadAction());
 		southPanel.add(buttons, BorderLayout.SOUTH);
 		southPanel.add(database, BorderLayout.SOUTH);
 
