@@ -668,10 +668,20 @@ public class ExportCSVWorkloads {
 			int users9 = workLoad.getUsers9();
 			int users10 = workLoad.getUsers10();
 
-			double average = generationFITAverage.get(String
-					.valueOf(newGenerationAux));
-			double averagePerUser = generationFITAveragePerUser.get(String
-					.valueOf(newGenerationAux));
+			double average = 0;
+			if (generationFITAverage.containsKey(String
+					.valueOf(newGenerationAux))) {
+
+				average = generationFITAverage.get(String
+						.valueOf(newGenerationAux));
+			}
+
+			double averagePerUser = 0;
+			if (generationFITAveragePerUser.containsKey(String
+					.valueOf(newGenerationAux))) {
+				averagePerUser = generationFITAveragePerUser.get(String
+						.valueOf(newGenerationAux));
+			}
 			String geneString = generationGenes.get(String
 					.valueOf(newGenerationAux));
 			Double fitMax = generationFITMax.get(String
