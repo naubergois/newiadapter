@@ -5,11 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class SimulateConcurrentAcess {
-
 	@Test
-	public void test() {
-
-		int x;
+	public void test() {		
 
 		synchronized (StaticClass.class) {
 			for (int i = 0; i <= 1000; i++) {
@@ -17,13 +14,10 @@ public class SimulateConcurrentAcess {
 			}
 			StaticClass.x = 0;
 		}
-
 	}
-
+	
 	@Test
 	public void test20() {
-
-		int x;
 
 		synchronized (StaticClass.class) {
 			for (int i = 0; i <= 20000; i++) {
@@ -135,8 +129,7 @@ public class SimulateConcurrentAcess {
 	@Test
 	public void test100() {
 
-		int x;
-
+		
 		synchronized (StaticClass.class) {
 			for (int i = 0; i <=99000000; i++) {
 				StaticClass.x += i;

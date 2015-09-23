@@ -682,12 +682,20 @@ public class ExportCSVWorkloads {
 				averagePerUser = generationFITAveragePerUser.get(String
 						.valueOf(newGenerationAux));
 			}
-			String geneString = generationGenes.get(String
-					.valueOf(newGenerationAux));
-			Double fitMax = generationFITMax.get(String
-					.valueOf(newGenerationAux));
-			Double fitMin = generationFITMin.get(String
-					.valueOf(newGenerationAux));
+			String geneString = "";
+			if (generationGenes.containsKey(String.valueOf(newGenerationAux))) {
+
+				geneString = generationGenes.get(String
+						.valueOf(newGenerationAux));
+			}
+			Double fitMax = 0.0;
+			if (generationFITMax.containsKey(String.valueOf(newGenerationAux))) {
+				fitMax = generationFITMax.get(String.valueOf(newGenerationAux));
+			}
+			Double fitMin = 0.0;
+			if (generationFITMin.containsKey(String.valueOf(newGenerationAux))) {
+				fitMin = generationFITMin.get(String.valueOf(newGenerationAux));
+			}
 			Double fitSearchMethod = 0.0;
 			Double fitUserAlgo = 0.0;
 			Double fitAverageAlgo = 0.0;
