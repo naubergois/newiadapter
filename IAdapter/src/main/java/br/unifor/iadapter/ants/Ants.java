@@ -1,5 +1,7 @@
 package br.unifor.iadapter.ants;
 
+import br.unifor.iadapter.threadGroup.workload.WorkLoad;
+
 /**
  * ACO algorithms for the TSP
  * 
@@ -105,7 +107,7 @@ public class Ants {
 
     static double trail_0; /* initial pheromone level in ACS and BWAS */
 
-    static double HEURISTIC(int m, int n) {
+    static double HEURISTIC(WorkLoad workload) {
 	return (1.0 / ((double) Tsp.instance.distance[m][n] + 0.1));
     }
 
