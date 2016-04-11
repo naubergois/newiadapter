@@ -16,7 +16,6 @@ package br.unifor.iadapter.tabu;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.jmeter.testelement.TestElement;
 
