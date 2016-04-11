@@ -1,3 +1,17 @@
+/*Copyright [2016] [Francisco Nauber Bernardo Gois]
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+
 package br.unifor.iadapter.threadGroup;
 
 import java.util.ArrayList;
@@ -6,7 +20,7 @@ import java.util.Collections;
 public class Tour{
 
     // Holds our tour of cities
-    private ArrayList tour = new ArrayList<City>();
+    private ArrayList<City> tour = new ArrayList<City>();
     // Cache
     private double fitness = 0;
     private int distance = 0;
@@ -18,7 +32,7 @@ public class Tour{
         }
     }
     
-    public Tour(ArrayList tour){
+    public Tour(ArrayList<City> tour){
         this.tour = tour;
     }
 

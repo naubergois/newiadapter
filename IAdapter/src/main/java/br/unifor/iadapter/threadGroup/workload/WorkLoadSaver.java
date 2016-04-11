@@ -44,8 +44,6 @@ import br.unifor.iadapter.util.FileWriter;
 // TODO - perhaps save other items such as headers?
 public class WorkLoadSaver extends AbstractTestElement implements Serializable,
 		SampleListener {
-	private static final Logger log = LoggingManager.getLoggerForClass();
-
 	private static final long serialVersionUID = 240L;
 
 	private static final Object LOCK = new Object();

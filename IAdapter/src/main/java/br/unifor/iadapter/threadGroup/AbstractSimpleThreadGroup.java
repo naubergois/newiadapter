@@ -31,7 +31,12 @@ import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
 
 public abstract class AbstractSimpleThreadGroup extends AbstractThreadGroup {
-    private static final Logger log = LoggingManager.getLoggerForClass();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private static final Logger log = LoggingManager.getLoggerForClass();
 
     private static final long WAIT_TO_DIE = JMeterUtils.getPropDefault("jmeterengine.threadstop.wait", 5 * 1000); // 5 seconds
 

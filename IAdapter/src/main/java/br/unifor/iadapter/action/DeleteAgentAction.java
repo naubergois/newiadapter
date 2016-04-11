@@ -49,7 +49,7 @@ public class DeleteAgentAction implements ActionListener {
 
 			try {
 				MySQLDatabase.deleteAgent(
-						new ArrayList(Arrays.asList(workloadData)), null);
+						new ArrayList<Object>(Arrays.asList(workloadData)), null);
 			} catch (ClassNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

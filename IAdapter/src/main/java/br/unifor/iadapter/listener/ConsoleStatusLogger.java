@@ -41,8 +41,6 @@ public class ConsoleStatusLogger extends AbstractListenerElement implements
 	private int errors;
 	private long begin;
 
-	private static final String SAVE_CONFIG = "saveConfig"; // $NON-NLS-1$
-
 	private static class JMeterLoggerOutputStream extends PrintStream {
 
 		public JMeterLoggerOutputStream(Logger log) {
@@ -166,9 +164,9 @@ public class ConsoleStatusLogger extends AbstractListenerElement implements
 
 	public void testEnded() {
 
-		Set keys = this.getReponseTimes().keySet();
+		Set keys = ConsoleStatusLogger.getReponseTimes().keySet();
 		for (Object object : keys) {
-			String responseTime = this.getReponseTimes().get(object);
+			String responseTime = ConsoleStatusLogger.getReponseTimes().get(object);
 
 		}
 		System.out.println("Teste console terminou");

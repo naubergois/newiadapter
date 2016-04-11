@@ -30,7 +30,7 @@ public class CSVReadStats {
 		return requestsMaxTime;
 	}
 
-	public static void setRequestsMaxTime(HashMap requestsMaxTime) {
+	public static void setRequestsMaxTime(HashMap<?, ?> requestsMaxTime) {
 		CSVReadStats.requestsMaxTime = requestsMaxTime;
 	}
 

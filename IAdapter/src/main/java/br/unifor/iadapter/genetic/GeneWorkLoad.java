@@ -75,7 +75,7 @@ public class GeneWorkLoad {
 		MutationOperator cs = new MutationOperator();
 		List<WorkLoad> mutant = new ArrayList<WorkLoad>();
 		for (WorkLoad workLoad2 : list) {
-			mutant.add(cs.mutantWorkload(workLoad2, 3, nodes, maxUsers,
+			mutant.add(MutationOperator.mutantWorkload(workLoad2, 3, nodes, maxUsers,
 					generation, Integer.valueOf(tg.getMutantProbability())));
 		}
 

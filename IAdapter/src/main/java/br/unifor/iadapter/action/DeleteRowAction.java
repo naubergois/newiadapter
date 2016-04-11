@@ -31,14 +31,12 @@ public class DeleteRowAction implements ActionListener {
 
 	private JTable grid;
 	private PowerTableModel tableModel;
-	private JButton deleteRowButton;
 	private final JComponent sender;
 
 	public DeleteRowAction(JComponent aSender, JTable grid,
 			PowerTableModel tableModel, JButton deleteRowButton) {
 		this.grid = grid;
 		this.tableModel = tableModel;
-		this.deleteRowButton = deleteRowButton;
 		this.sender = aSender;
 	}
 

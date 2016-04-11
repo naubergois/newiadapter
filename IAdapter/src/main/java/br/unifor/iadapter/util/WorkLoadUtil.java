@@ -673,7 +673,7 @@ public class WorkLoadUtil {
 
 	}
 
-	public static WorkLoad getWorkLoad(ArrayList object) {
+	public static WorkLoad getWorkLoad(ArrayList<?> object) {
 
 		if (object != null) {
 
@@ -739,7 +739,8 @@ public class WorkLoadUtil {
 
 			String name = nodes.get(gene.intValue()).getTestElement().getName();
 			if (name == null) {
-				name = nodes.get(gene.intValue()).getTestElement().NAME;
+				nodes.get(gene.intValue()).getTestElement();
+				name = TestElement.NAME;
 			}
 			return name;
 		} else {
@@ -753,7 +754,8 @@ public class WorkLoadUtil {
 
 			String name = nodes.get(gene.intValue()).getTestElement().getName();
 			if (name == null) {
-				name = nodes.get(gene.intValue()).getTestElement().NAME;
+				nodes.get(gene.intValue()).getTestElement();
+				name = TestElement.NAME;
 			}
 			return name;
 		} else {
@@ -766,7 +768,8 @@ public class WorkLoadUtil {
 
 			String name = nodes.get(i).getTestElement().getName();
 			if (name == null) {
-				name = nodes.get(i).getTestElement().NAME;
+				nodes.get(i).getTestElement();
+				name = TestElement.NAME;
 			}
 			return name;
 		} else {
@@ -1259,7 +1262,8 @@ public class WorkLoadUtil {
 
 			String name = nodes.get(i).getName();
 			if (name == null) {
-				name = nodes.get(i).NAME;
+				nodes.get(i);
+				name = TestElement.NAME;
 			}
 			return name;
 		} else {

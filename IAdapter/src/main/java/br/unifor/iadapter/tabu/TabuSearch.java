@@ -31,7 +31,7 @@ public class TabuSearch {
 
 	public static List<WorkLoad> verify(List<WorkLoad> list,
 			List<TestElement> nodes) {
-		List<WorkLoad> workLoadForRemove = new ArrayList();
+		List<WorkLoad> workLoadForRemove = new ArrayList<WorkLoad>();
 		for (WorkLoad workLoad : list) {
 			for (TabuElement tabuElement : tabuTable) {
 				TabuElement tabu = WorkLoadUtil.convertTabu(workLoad, nodes);
@@ -42,7 +42,7 @@ public class TabuSearch {
 		}
 		TabuSearch.setTabuExpires(TabuSearch.getTabuExpires() + 1);
 		if (TabuSearch.getTabuExpires() > 5) {
-			TabuSearch.setTabuTable(new ArrayList());
+			TabuSearch.setTabuTable(new ArrayList<TabuElement>());
 			TabuSearch.setTabuExpires(0);
 		}
 		list.removeAll(workLoadForRemove);

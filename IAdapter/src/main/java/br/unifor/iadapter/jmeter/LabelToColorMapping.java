@@ -22,7 +22,7 @@ public class LabelToColorMapping {
 	
 
 	public Color parseStandardHtmlColor(String someKindOfColorDescription) {
-		Color c =  this.standardHtmlColorNames.get( someKindOfColorDescription.toLowerCase() );
+		Color c =  LabelToColorMapping.standardHtmlColorNames.get( someKindOfColorDescription.toLowerCase() );
 		if (c==null) {
 			if (someKindOfColorDescription.trim().startsWith("#") && someKindOfColorDescription.length() >= 2) {
 				String hexColor = someKindOfColorDescription.substring(1);
@@ -36,7 +36,7 @@ public class LabelToColorMapping {
 	}
 
 	public void addStandardHtmlColor(String colorName, Color c) {
-		this.standardHtmlColorNames.put(colorName.toLowerCase().trim(), c);
+		LabelToColorMapping.standardHtmlColorNames.put(colorName.toLowerCase().trim(), c);
 	}
 	public Color getColorForLabel(String label) {
 		Iterator<Map.Entry<String, Color>> it = labelToColorMapping.entrySet().iterator();

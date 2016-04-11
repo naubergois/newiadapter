@@ -13,14 +13,11 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package br.unifor.iadapter.sa;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import org.apache.jmeter.testelement.TestElement;
 
-import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.util.WorkLoadUtil;
@@ -29,6 +26,7 @@ public class SimulateAnnealing {
 
 	private static int tries;
 
+	//Simulate Annealing method
 	// temp is users
 	public static int sa(int users, List<WorkLoad> newPlaces, int maxUsers,
 			List<WorkLoad> list, int generation, WorkLoadThreadGroup tg,

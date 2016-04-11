@@ -43,8 +43,6 @@ public class SimulateConcurrentAcess {
 	@Test
 	public void test30() {
 
-		int x;
-
 		synchronized (StaticClass.class) {
 			for (int i = 0; i <= 300000; i++) {
 				StaticClass.x += i;
@@ -56,8 +54,6 @@ public class SimulateConcurrentAcess {
 
 	@Test
 	public void test40() {
-
-		int x;
 
 		synchronized (StaticClass.class) {
 			for (int i = 0; i <= 4000000; i++) {
@@ -71,8 +67,6 @@ public class SimulateConcurrentAcess {
 	@Test
 	public void test50() {
 
-		int x;
-
 		synchronized (StaticClass.class) {
 			for (int i = 0; i <= 50000000; i++) {
 				StaticClass.x += i;
@@ -84,8 +78,6 @@ public class SimulateConcurrentAcess {
 
 	@Test
 	public void test60() {
-
-		int x;
 
 		synchronized (StaticClass.class) {
 			for (int i = 0; i <= 600000000; i++) {
@@ -99,8 +91,6 @@ public class SimulateConcurrentAcess {
 	@Test
 	public void test70() {
 
-		int x;
-
 		synchronized (StaticClass.class) {
 			for (int i = 0; i <= 700000000; i++) {
 				StaticClass.x += i;
@@ -113,8 +103,6 @@ public class SimulateConcurrentAcess {
 	@Test
 	public void test80() {
 
-		int x;
-
 		synchronized (StaticClass.class) {
 			for (int i = 0; i <= 800000000; i++) {
 				StaticClass.x += i;
@@ -126,8 +114,6 @@ public class SimulateConcurrentAcess {
 
 	@Test
 	public void test90() {
-
-		int x;
 
 		synchronized (StaticClass.class) {
 			for (int i = 0; i <= 900000000; i++) {

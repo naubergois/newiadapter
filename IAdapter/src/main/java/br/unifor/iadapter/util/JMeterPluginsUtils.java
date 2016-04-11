@@ -467,7 +467,7 @@ public abstract class JMeterPluginsUtils {
 		}
 	}
 
-	private static Object convertToClass(StringProperty value, Class aClass) {
+	private static Object convertToClass(StringProperty value, Class<?> aClass) {
 		if (Boolean.class.equals(aClass)) {
 			return Boolean.valueOf(value.getStringValue());
 		}
