@@ -50,6 +50,7 @@ import org.apache.log.Logger;
 
 import br.unifor.iadapter.agent.Agent;
 import br.unifor.iadapter.database.MySQLDatabase;
+import br.unifor.iadapter.docker.webservice.DockerClient;
 import br.unifor.iadapter.genetic.GeneticAlgorithm;
 import br.unifor.iadapter.sa.SimulateAnnealing;
 import br.unifor.iadapter.tabu.TabuSearch;
@@ -58,6 +59,7 @@ import br.unifor.iadapter.threadGroup.SingletonEngine;
 import br.unifor.iadapter.util.CSVReadStats;
 import br.unifor.iadapter.util.FindService;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
+import br.unifor.iadapter.util.PropertieUtil;
 import br.unifor.iadapter.util.WorkLoadUtil;
 
 /***
@@ -616,7 +618,15 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			Agent agent = new Agent(this);
 
 			agent.running();
+			
+			
+			
 			WorkLoad workload = list.get(this.getCurrentTest());
+			
+			
+
+			DockerClient client=new DockerClient();
+			client.startDocker(PropertieUtil.getProperty("ipws"), this.getDockerImage(), workload.getMemory(), workload.getCpuShare());
 
 			int newGeneration = 0;
 

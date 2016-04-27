@@ -1,32 +1,27 @@
 package br.unifor.iadapter.shell;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class ShellScript {
 
-	public int run(String command) {
-		ProcessBuilder ps = new ProcessBuilder("bash", "-c", command);
-		// use this to capture messages sent to stderr
-		ps.redirectErrorStream(true);
-		Process shell = null;
-		int shellExitStatus = -1;
-		try {
-			shell = ps.start();
-		} catch (IOException e) {
-			e.printStackTrace();
+	public int run(String command) throws IOException, InterruptedException {
+		Runtime r = Runtime.getRuntime();
+		String[] commands = new String[1];
+		commands[0] = " docker";
+
+		Process p = r.exec("sh", commands);
+		p.waitFor();
+		BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String line = "";
+
+		while ((line = b.readLine()) != null) {
+			System.out.println(line);
 		}
-		InputStream shellIn = shell.getInputStream();
-		try {
-			shellExitStatus = shell.waitFor();
-			// logger.info("call exit status:" + shellExitStatus);
-			// logger.info("If exit status is not zero then call is not
-			// successful. Check log file.");
-		} catch (InterruptedException e) {
-			// logger.error("error while call" + e);
-			e.printStackTrace();
-		} // wait for the shell to finish and get the return code
-		return shellExitStatus;
+
+		b.close();
+		return 1;
 	}
 
 }

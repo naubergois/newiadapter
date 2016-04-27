@@ -1,5 +1,7 @@
 package br.unifor.iadapter.shell;
 
+import java.io.IOException;
+
 import br.unifor.iadapter.docker.Docker;
 
 public class DockerShell {
@@ -24,14 +26,32 @@ public class DockerShell {
 
 	public void run(Docker docker) {
 		ShellScript shell = new ShellScript();
-		shell.run(DOCKERCOMMAND + DOCKERMEMORYOPTION + docker.getMemory() + DOCKERCPUSHAREOPTION + docker.getCpuShare()
-				+ this.getDockerImage());
+		try {
+			shell.run(DOCKERCOMMAND + DOCKERMEMORYOPTION + docker.getMemory() + DOCKERCPUSHAREOPTION + docker.getCpuShare()
+					+ this.getDockerImage());
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			System.out.println(e.getMessage());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
 	public void stop() {
 		ShellScript shell = new ShellScript();
-		shell.run(DOCKERSTOPCOMMAND + DOCKERMEMORYOPTION + this.getDockerImage());
+		try {
+			shell.run(DOCKERSTOPCOMMAND + DOCKERMEMORYOPTION + this.getDockerImage());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
