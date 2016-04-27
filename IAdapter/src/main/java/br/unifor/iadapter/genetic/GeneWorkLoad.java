@@ -69,14 +69,14 @@ public class GeneWorkLoad {
 	}
 
 	public static List<WorkLoad> mutationPopulation(WorkLoadThreadGroup tg,
-			List<WorkLoad> list, List<TestElement> nodes) {
+			List<WorkLoad> list, List<TestElement> nodes,int maxMemory,int maxCpuShare) {
 		int maxUsers = Integer.valueOf(tg.getThreadNumberMax());
 		int generation = tg.getGeneration();
 		MutationOperator cs = new MutationOperator();
 		List<WorkLoad> mutant = new ArrayList<WorkLoad>();
 		for (WorkLoad workLoad2 : list) {
 			mutant.add(MutationOperator.mutantWorkload(workLoad2, 3, nodes, maxUsers,
-					generation, Integer.valueOf(tg.getMutantProbability())));
+					generation, Integer.valueOf(tg.getMutantProbability()),maxMemory,maxCpuShare));
 		}
 
 		return mutant;
@@ -98,7 +98,7 @@ public class GeneWorkLoad {
 		}
 
 		if (list != null) {
-			Gene[] wgenes = new Gene[22];
+			Gene[] wgenes = new Gene[24];
 
 			wgenes[0] = new IntegerGene(getConfiguration());
 			wgenes[0].setAllele(Arrays.asList(WorkLoad.getTypes()).indexOf(
@@ -145,6 +145,10 @@ public class GeneWorkLoad {
 			wgenes[20].setAllele(indexOf(list, workload.getFunction10()));
 			wgenes[21] = new IntegerGene(getConfiguration());
 			wgenes[21].setAllele(workload.getUsers10());
+			wgenes[22] = new IntegerGene(getConfiguration());
+			wgenes[22].setAllele(workload.getMemory());
+			wgenes[23] = new IntegerGene(getConfiguration());
+			wgenes[23].setAllele(workload.getCpuShare());
 			return wgenes;
 		} else {
 			return null;
@@ -216,13 +220,13 @@ public class GeneWorkLoad {
 	}
 
 	public static List<WorkLoad> createWorkLoadsSAWithGui(int userNumbers,
-			int generation) throws InvalidConfigurationException {
+			int generation,int maxMemory,int maxCpuShare) throws InvalidConfigurationException {
 
 		List<WorkLoad> workLoads = new ArrayList<WorkLoad>();
 		for (int i = 0; i <= 10; i++) {
 
 			WorkLoad workload = WorkLoadUtil.createWorkLoadTemperatureWithGui(
-					generation, userNumbers);
+					generation, userNumbers,maxMemory,maxCpuShare);
 			workLoads.add(workload);
 		}
 
@@ -230,9 +234,9 @@ public class GeneWorkLoad {
 	}
 
 	public static List<WorkLoad> createWorkLoadsFromChromossomeWithGui(
-			int userNumbers, int generation, int population)
+			int userNumbers, int generation, int population,int memory,int cpuShare)
 			throws InvalidConfigurationException {
-		IChromosome[] list = createPopulation(userNumbers, population);
+		IChromosome[] list = createPopulation(userNumbers, population,memory,cpuShare);
 		List<WorkLoad> workLoads = new ArrayList<WorkLoad>();
 		for (IChromosome iChromosome : list) {
 			Gene[] gene = iChromosome.getGenes();
@@ -245,9 +249,9 @@ public class GeneWorkLoad {
 	}
 
 	public static IChromosome[] createPopulation(int userNumbers,
-			int populationSize) throws InvalidConfigurationException {
+			int populationSize,int memory,int cpuShare) throws InvalidConfigurationException {
 
-		Gene[] gene = createGeneWithGui(userNumbers);
+		Gene[] gene = createGeneWithGui(userNumbers,memory,cpuShare);
 		Chromosome chromosome = new Chromosome(getConfiguration(), gene);
 		if (!(getConfiguration().isLocked())) {
 			getConfiguration().setSampleChromosome(chromosome);
@@ -260,7 +264,7 @@ public class GeneWorkLoad {
 
 	}
 
-	public static Gene[] createGeneWithGui(int userNumbers)
+	public static Gene[] createGeneWithGui(int userNumbers,int memory,int cpuShare)
 			throws InvalidConfigurationException {
 
 		List<JMeterTreeNode> list = FindService
@@ -268,7 +272,7 @@ public class GeneWorkLoad {
 
 		int userNumberMax = userNumbers;
 		int userMaxGene = userNumberMax / 10;
-		Gene[] wgenes = new Gene[22];
+		Gene[] wgenes = new Gene[24];
 		wgenes[0] = new IntegerGene(getConfiguration(), 0,
 				WorkLoad.getTypes().length - 1);
 		wgenes[1] = new IntegerGene(getConfiguration(), 1, userNumberMax);
@@ -292,6 +296,8 @@ public class GeneWorkLoad {
 		wgenes[19] = new IntegerGene(getConfiguration(), 1, userMaxGene);
 		wgenes[20] = new IntegerGene(getConfiguration(), 0, list.size() - 1);
 		wgenes[21] = new IntegerGene(getConfiguration(), 1, userMaxGene);
+		wgenes[22] = new IntegerGene(getConfiguration(), 1, memory);
+		wgenes[23] = new IntegerGene(getConfiguration(), 1, cpuShare);
 
 		return wgenes;
 	}

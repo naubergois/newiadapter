@@ -61,6 +61,8 @@ public class AddRowWorkloadAction implements ActionListener {
 		}
 
 		int users = 10;
+		int maxMemory= 10;
+		int maxCpuShare= 10;
 		int population = Integer.valueOf(sender.getPopulationSize().getText());
 
 		List<WorkLoad> workloadList = null;
@@ -72,9 +74,22 @@ public class AddRowWorkloadAction implements ActionListener {
 			} catch (NumberFormatException e2) {
 				e2.printStackTrace();
 			}
+			
+			try {
+				maxMemory = Integer.valueOf(sender.getMaxMemory().getText());
+			} catch (NumberFormatException e2) {
+				e2.printStackTrace();
+			}
+			
+			try {
+				maxCpuShare = Integer.valueOf(sender.getMaxCpuShare().getText());
+			} catch (NumberFormatException e2) {
+				e2.printStackTrace();
+			}
+			
 			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(
-					users, 1, population);
-			workloadList.addAll(WorkLoadUtil.createWorkLoadNodes(users, 1));
+					users, 1, population,maxMemory,maxCpuShare);
+			workloadList.addAll(WorkLoadUtil.createWorkLoadNodes(users, 1,maxMemory,maxCpuShare));
 
 			List<WorkLoad> listSA = new ArrayList<WorkLoad>();
 			List<WorkLoad> listTABU = new ArrayList<WorkLoad>();

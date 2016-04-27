@@ -69,7 +69,7 @@ public class GeneticAlgorithm {
 			List<WorkLoad> listWorkloads = JMeterPluginsUtils
 					.getListWorkLoadFromPopulationTestPlan(newList, tg, gui);
 
-			return GeneWorkLoad.mutationPopulation(tg, listWorkloads, nodes);
+			return GeneWorkLoad.mutationPopulation(tg, listWorkloads, nodes,Integer.valueOf(tg.getMaxMemory()),Integer.valueOf(tg.getMaxCpuShare()));
 
 		} catch (Exception e) {
 			e.printStackTrace();

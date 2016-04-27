@@ -43,71 +43,50 @@ public class MySQLDatabase {
 
 	private static Connection conn = null;
 
-	private final static String CREATEDATABASE = "create table workload("
-			+ "NAME VARCHAR(130),RESPONSETIME VARCHAR(30),"
-			+ "TYPE VARCHAR(30),USERS VARCHAR(30),ERROR VARCHAR(30),"
-			+ "FIT VARCHAR(30),FUNCTION1 VARCHAR(30),FUNCTION2 VARCHAR(30),"
-			+ "FUNCTION3 VARCHAR(30),FUNCTION4 VARCHAR(30),"
-			+ "FUNCTION5 VARCHAR(30),FUNCTION6 VARCHAR(30),"
-			+ "FUNCTION7 VARCHAR(30),FUNCTION8 VARCHAR(30),"
-			+ "FUNCTION9 VARCHAR(30),FUNCTION10 VARCHAR(30),TESTPLAN VARCHAR(30),"
-			+ "GENERATION VARCHAR(30),ACTIVE VARCHAR(30))";
+	private final static String COLUMNS = "NAME,TYPE," + "USERS,RESPONSETIME,ERROR,FIT,"
+			+ "FUNCTION1,FUNCTION2,FUNCTION3,FUNCTION4," + "FUNCTION5,FUNCTION6,FUNCTION7,FUNCTION8,"
+			+ "FUNCTION9,FUNCTION10,TESTPLAN,GENERATION," + "ACTIVE,PERCENT90,PERCENT80,PERCENT70,TOTALERROR,"
+			+ "SEARCHMETHOD,USER1,USER2,USER3,USER4,USER5,USER6" + ",USER7,USER8,USER9,USER10,MEMORY,CPUSHARE";
 
-	private final static String COLUMNS = "NAME,TYPE,"
-			+ "USERS,RESPONSETIME,ERROR,FIT,"
-			+ "FUNCTION1,FUNCTION2,FUNCTION3,FUNCTION4,"
-			+ "FUNCTION5,FUNCTION6,FUNCTION7,FUNCTION8,"
-			+ "FUNCTION9,FUNCTION10,TESTPLAN,GENERATION,"
-			+ "ACTIVE,PERCENT90,PERCENT80,PERCENT70,TOTALERROR,"
-			+ "SEARCHMETHOD,USER1,USER2,USER3,USER4,USER5,USER6"
-			+ ",USER7,USER8,USER9,USER10";
+	private final static String COLUMNSAMPLES = "LABEL,RESPONSETIME," + "MESSAGE,INDIVIDUAL,GENERATION,TESTPLAN";
 
-	private final static String COLUMNSAMPLES = "LABEL,RESPONSETIME,"
-			+ "MESSAGE,INDIVIDUAL,GENERATION,TESTPLAN";
-
-	private final static String INSERTSQLSAMPLE = "insert into  samples("
-			+ MySQLDatabase.COLUMNSAMPLES + ") values ("
+	private final static String INSERTSQLSAMPLE = "insert into  samples(" + MySQLDatabase.COLUMNSAMPLES + ") values ("
 			+ MySQLDatabase.PARAMETERSSAMPLE + ")";
 
 	private final static String COLUMNSAGENT = "name,running," + "ip,date";
 
-	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
 
 	private final static String PARAMETERSSAMPLE = "?,?,?,?,?,?";
 
 	private final static String PARAMETERSAGENT = "?,?,?,?";
 
-	private final static String SET = "NAME=?,TYPE=?,"
-			+ "USERS=?,RESPONSETIME=?,ERROR=?,FIT=?,FUNCTION1=?,"
-			+ "FUNCTION2=?,FUNCTION3=?,FUNCTION4=?,FUNCTION5=?,"
-			+ "FUNCTION6=?,FUNCTION7=?,FUNCTION8=?,FUNCTION9=?,"
+	private final static String SET = "NAME=?,TYPE=?," + "USERS=?,RESPONSETIME=?,ERROR=?,FIT=?,FUNCTION1=?,"
+			+ "FUNCTION2=?,FUNCTION3=?,FUNCTION4=?,FUNCTION5=?," + "FUNCTION6=?,FUNCTION7=?,FUNCTION8=?,FUNCTION9=?,"
 			+ "FUNCTION10=?,TESTPLAN=?,GENERATION=?,ACTIVE=?,PERCENT90=?,PERCENT80=?,"
 			+ "PERCENT70=?,TOTALERROR=?,SEARCHMETHOD=?,USER1=?,USER2=?,"
-			+ "USER3=?,USER4=?,USER5=?,USER6=?,USER7=?,USER8=?,USER9=?,USER10=?";
+			+ "USER3=?,USER4=?,USER5=?,USER6=?,USER7=?,USER8=?,USER9=?,USER10=?,MEMORY=?,CPUSHARE=?";
 
 	private final static String SETAGENT = "name=?,running=?," + "ip=?";
 
-	private final static String INSERTSQL = "insert into  workload("
-			+ MySQLDatabase.COLUMNS + ") values (" + MySQLDatabase.PARAMETERS
-			+ ")";
+	private final static String INSERTSQL = "insert into  workload(" + MySQLDatabase.COLUMNS + ") values ("
+			+ MySQLDatabase.PARAMETERS + ")";
 
-	private final static String INSERTSQLLog = "insert into  log("
-			+ "log) values (?)";
+	private final static String INSERTSQLLog = "insert into  log(" + "log) values (?)";
 
-	private final static String INSERTSQLAGENT = "insert into  agent("
-			+ MySQLDatabase.COLUMNSAGENT + ") values ("
+	private final static String INSERTSQLAGENT = "insert into  agent(" + MySQLDatabase.COLUMNSAGENT + ") values ("
 			+ MySQLDatabase.PARAMETERSAGENT + ")";
 
-	public static PreparedStatement setParametersWhere(PreparedStatement ps,
-			List objetos, String where, String testPlan) throws SQLException {
+	public static PreparedStatement setParametersWhere(PreparedStatement ps, List objetos, String where,
+			String testPlan) throws SQLException {
 		ps = setParameters(ps, objetos, testPlan);
-		ps.setString(35, where);
-		ps.setString(36, testPlan);
+		ps.setString(37, where);
+		ps.setString(38, testPlan);
 		return ps;
 	}
 
-	public static PreparedStatement setParameters(PreparedStatement ps,
-			List objetos, String testPlan) throws SQLException {
+	public static PreparedStatement setParameters(PreparedStatement ps, List objetos, String testPlan)
+			throws SQLException {
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ps.setString(2, String.valueOf(objetos.get(1)));
 		ps.setString(3, String.valueOf(objetos.get(2)));
@@ -142,12 +121,13 @@ public class MySQLDatabase {
 		ps.setString(32, String.valueOf(objetos.get(30)));
 		ps.setString(33, String.valueOf(objetos.get(31)));
 		ps.setString(34, String.valueOf(objetos.get(32)));
+		ps.setString(35, String.valueOf(objetos.get(33)));
+		ps.setString(36, String.valueOf(objetos.get(33)));
 		return ps;
 	}
 
-	public static PreparedStatement setParametersSample(PreparedStatement ps,
-			List objetos, String testPlan, String generation)
-			throws SQLException {
+	public static PreparedStatement setParametersSample(PreparedStatement ps, List objetos, String testPlan,
+			String generation) throws SQLException {
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ps.setString(2, String.valueOf(objetos.get(1)));
 		ps.setString(3, String.valueOf(objetos.get(2)));
@@ -157,8 +137,7 @@ public class MySQLDatabase {
 		return ps;
 	}
 
-	public static Connection singleton() throws ClassNotFoundException,
-			SQLException {
+	public static Connection singleton() throws ClassNotFoundException, SQLException {
 		if (MySQLDatabase.conn == null) {
 
 			Properties prop = new Properties();
@@ -193,63 +172,25 @@ public class MySQLDatabase {
 			}
 			Class.forName("com.mysql.jdbc.Driver");
 
-			MySQLDatabase.conn = DriverManager.getConnection("jdbc:mysql://"
-					+ databaseIp + ":3306/workload?" + "user=" + user
-					+ "&password=" + password);
-
-			DatabaseMetaData meta = conn.getMetaData();
-
-			ResultSet tables = meta.getTables(null, null, "workload", null);
-			if (tables.next()) {
-
-			} else {
-
-				PreparedStatement ps = conn
-						.prepareStatement(MySQLDatabase.CREATEDATABASE);
-				ps.executeUpdate();
-
-			}
+			MySQLDatabase.conn = DriverManager.getConnection(
+					"jdbc:mysql://" + databaseIp + ":3306/workload?" + "user=" + user + "&password=" + password);
 
 		}
 		return conn;
 	}
 
-	public static void createDatabase() throws ClassNotFoundException,
-			SQLException {
+	public static void updateResponseTime(Long responseTime, String workload, String testPlan, String generation,
+			PercentileCounter counter, String errors) throws ClassNotFoundException, SQLException {
+		updateResponseTime(String.valueOf(responseTime), workload, testPlan, generation, counter, errors);
+	}
+
+	public static void updateResponseTime(String responseTime, String workload, String testPlan, String generation,
+			PercentileCounter counter, String errors) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con
-				.prepareStatement(MySQLDatabase.CREATEDATABASE);
-
-		try {
-			ps.executeUpdate();
-		} catch (SQLException e) {
-
-			if (!(e.getLocalizedMessage()
-					.contains("Table/View 'WORKLOAD' already exists"))) {
-				e.printStackTrace();
-			}
-		}
-
-	}
-
-	public static void updateResponseTime(Long responseTime, String workload,
-			String testPlan, String generation, PercentileCounter counter,
-			String errors) throws ClassNotFoundException, SQLException {
-		updateResponseTime(String.valueOf(responseTime), workload, testPlan,
-				generation, counter, errors);
-	}
-
-	public static void updateResponseTime(String responseTime, String workload,
-			String testPlan, String generation, PercentileCounter counter,
-			String errors) throws ClassNotFoundException, SQLException {
-
-		Connection con = singleton();
-
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=? AND ACTIVE='true'");
+		PreparedStatement ps = con.prepareStatement(
+				"" + "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=? AND ACTIVE='true'");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -284,12 +225,9 @@ public class MySQLDatabase {
 			}
 
 			long responseTimeDatabaseLong = Long.valueOf(responseTimeDatabase);
-			long responseTimeDatabaseLongPercent90 = Long
-					.valueOf(responseTimeDatabasePercent90);
-			long responseTimeDatabaseLongPercent80 = Long
-					.valueOf(responseTimeDatabasePercent80);
-			long responseTimeDatabaseLongPercent70 = Long
-					.valueOf(responseTimeDatabasePercent70);
+			long responseTimeDatabaseLongPercent90 = Long.valueOf(responseTimeDatabasePercent90);
+			long responseTimeDatabaseLongPercent80 = Long.valueOf(responseTimeDatabasePercent80);
+			long responseTimeDatabaseLongPercent70 = Long.valueOf(responseTimeDatabasePercent70);
 			long totalErrorLong = 0;
 			if (totalError != null) {
 				totalErrorLong = Long.valueOf(totalError);
@@ -300,8 +238,7 @@ public class MySQLDatabase {
 			}
 			totalErrorLong += errorsLong;
 
-			ps = con.prepareStatement(""
-					+ "update workload set "
+			ps = con.prepareStatement("" + "update workload set "
 
 					+ "TOTALERROR=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'  AND GENERATION=?");
 			ps.setString(1, String.valueOf(totalErrorLong));
@@ -316,8 +253,7 @@ public class MySQLDatabase {
 
 				if (responseTimeLong > responseTimeDatabaseLong) {
 
-					ps = con.prepareStatement(""
-							+ "update workload set "
+					ps = con.prepareStatement("" + "update workload set "
 
 							+ "RESPONSETIME=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
 					ps.setString(1, responseTime);
@@ -337,8 +273,7 @@ public class MySQLDatabase {
 
 					if (responseTime90 > responseTimeDatabaseLongPercent90) {
 
-						ps = con.prepareStatement(""
-								+ "update workload set "
+						ps = con.prepareStatement("" + "update workload set "
 
 								+ "PERCENT90=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
 						ps.setString(1, String.valueOf(responseTime90));
@@ -349,8 +284,7 @@ public class MySQLDatabase {
 
 					if (responseTime80 > responseTimeDatabaseLongPercent80) {
 
-						ps = con.prepareStatement(""
-								+ "update workload set "
+						ps = con.prepareStatement("" + "update workload set "
 
 								+ "PERCENT80=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
 						ps.setString(1, String.valueOf(responseTime80));
@@ -361,8 +295,7 @@ public class MySQLDatabase {
 
 					if (responseTime70 > responseTimeDatabaseLongPercent70) {
 
-						ps = con.prepareStatement(""
-								+ "update workload set "
+						ps = con.prepareStatement("" + "update workload set "
 
 								+ "PERCENT70=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
 						ps.setString(1, String.valueOf(responseTime70));
@@ -378,18 +311,16 @@ public class MySQLDatabase {
 
 	}
 
-	public static void updateError(String error, String workload,
-			String testPlan, String generation) throws ClassNotFoundException,
-			SQLException {
+	public static void updateError(String error, String workload, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 		if (error != null) {
 
 			if (error.equals("true")) {
 
 				Connection con = singleton();
 
-				PreparedStatement ps = con
-						.prepareStatement(""
-								+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=? AND ACTIVE='true'");
+				PreparedStatement ps = con.prepareStatement(""
+						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=? AND ACTIVE='true'");
 				ps.setString(1, workload);
 				ps.setString(2, testPlan);
 				ps.setString(3, generation);
@@ -404,7 +335,7 @@ public class MySQLDatabase {
 
 					ps = con.prepareStatement("" + "update workload set "
 
-					+ "ERROR=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
+							+ "ERROR=? WHERE NAME=? and TESTPLAN=? AND ACTIVE='true'");
 					ps.setString(1, error);
 					ps.setString(2, workload);
 					ps.setString(3, testPlan);
@@ -416,17 +347,15 @@ public class MySQLDatabase {
 
 	}
 
-	public static long selectResponseTimePercent90(String workload,
-			String testPlan, String generation) throws ClassNotFoundException,
-			SQLException {
+	public static long selectResponseTimePercent90(String workload, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		long rst = 0;
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT PERCENT90 FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+				.prepareStatement("" + "SELECT PERCENT90 FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -443,17 +372,15 @@ public class MySQLDatabase {
 
 	}
 
-	public static long selectResponseTimePercent70(String workload,
-			String testPlan, String generation) throws ClassNotFoundException,
-			SQLException {
+	public static long selectResponseTimePercent70(String workload, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		long rst = 0;
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT PERCENT70 FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+				.prepareStatement("" + "SELECT PERCENT70 FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -470,17 +397,15 @@ public class MySQLDatabase {
 
 	}
 
-	public static long selectResponseTimePercent80(String workload,
-			String testPlan, String generation) throws ClassNotFoundException,
-			SQLException {
+	public static long selectResponseTimePercent80(String workload, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		long rst = 0;
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT PERCENT80 FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+				.prepareStatement("" + "SELECT PERCENT80 FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -497,16 +422,15 @@ public class MySQLDatabase {
 
 	}
 
-	public static long selectResponseTime(String workload, String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
+	public static long selectResponseTime(String workload, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		long rst = 0;
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT RESPONSETIME FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+		PreparedStatement ps = con.prepareStatement(
+				"" + "SELECT RESPONSETIME FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -523,14 +447,13 @@ public class MySQLDatabase {
 
 	}
 
-	public static String selectError(String workload, String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
+	public static String selectError(String workload, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT error FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=? AND ACTIVE='true'");
+		PreparedStatement ps = con.prepareStatement(
+				"" + "SELECT error FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=? AND ACTIVE='true'");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -546,14 +469,13 @@ public class MySQLDatabase {
 
 	}
 
-	public static long selectTotalError(String workload, String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
+	public static long selectTotalError(String workload, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT TOTALERROR FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=? AND ACTIVE='true'");
+		PreparedStatement ps = con.prepareStatement(
+				"" + "SELECT TOTALERROR FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=? AND ACTIVE='true'");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -569,20 +491,17 @@ public class MySQLDatabase {
 
 	}
 
-	public static int deleteTestPlan(String testPlan)
-			throws ClassNotFoundException, SQLException {
+	public static int deleteTestPlan(String testPlan) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "DELETE FROM  samples WHERE  TESTPLAN=? ");
+		PreparedStatement ps = con.prepareStatement("" + "DELETE FROM  samples WHERE  TESTPLAN=? ");
 
 		ps.setString(1, testPlan);
 
 		ps.executeUpdate();
 
-		ps = con.prepareStatement(""
-				+ "DELETE FROM  workload WHERE  TESTPLAN=? ");
+		ps = con.prepareStatement("" + "DELETE FROM  workload WHERE  TESTPLAN=? ");
 
 		ps.setString(1, testPlan);
 
@@ -590,16 +509,15 @@ public class MySQLDatabase {
 
 	}
 
-	public static double selectFit(String workload, String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
+	public static double selectFit(String workload, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		double rst = 0;
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT FIT FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+				.prepareStatement("" + "SELECT FIT FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -616,16 +534,15 @@ public class MySQLDatabase {
 
 	}
 
-	public static long selectUsers(String workload, String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
+	public static long selectUsers(String workload, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		long rst = 0;
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT USERS FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+				.prepareStatement("" + "SELECT USERS FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -642,14 +559,12 @@ public class MySQLDatabase {
 
 	}
 
-	public static void updateActiveValue(String workload, String testPlan,
-			String generation, long maxTime) throws ClassNotFoundException,
-			SQLException {
+	public static void updateActiveValue(String workload, String testPlan, String generation, long maxTime)
+			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "UPDATE workload SET ACTIVE='false' WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+		PreparedStatement ps = con.prepareStatement(
+				"" + "UPDATE workload SET ACTIVE='false' WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
@@ -659,13 +574,11 @@ public class MySQLDatabase {
 
 	}
 
-	public static void desactiveValue(String testPlan)
-			throws ClassNotFoundException, SQLException {
+	public static void desactiveValue(String testPlan) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "UPDATE workload SET ACTIVE='false' WHERE FIT!=0  and TESTPLAN=? ");
+				.prepareStatement("" + "UPDATE workload SET ACTIVE='false' WHERE FIT!=0  and TESTPLAN=? ");
 
 		ps.setString(1, testPlan);
 
@@ -673,19 +586,14 @@ public class MySQLDatabase {
 
 	}
 
-	public static double updateFitValue(String workload, String testPlan,
-			String generation, long maxTime, WorkLoadThreadGroup tg,
-			long responseTimeMaxPenalty) throws ClassNotFoundException,
-			SQLException {
+	public static double updateFitValue(String workload, String testPlan, String generation, long maxTime,
+			WorkLoadThreadGroup tg, long responseTimeMaxPenalty) throws ClassNotFoundException, SQLException {
 
 		double fit = 0;
 		long responseTime = selectResponseTime(workload, testPlan, generation);
-		long responseTime90Percent = selectResponseTimePercent90(workload,
-				testPlan, generation);
-		long responseTime80Percent = selectResponseTimePercent80(workload,
-				testPlan, generation);
-		long responseTime70Percent = selectResponseTimePercent80(workload,
-				testPlan, generation);
+		long responseTime90Percent = selectResponseTimePercent90(workload, testPlan, generation);
+		long responseTime80Percent = selectResponseTimePercent80(workload, testPlan, generation);
+		long responseTime70Percent = selectResponseTimePercent80(workload, testPlan, generation);
 
 		long users = selectUsers(workload, testPlan, generation);
 
@@ -695,8 +603,7 @@ public class MySQLDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=? ");
+				.prepareStatement("" + "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=? AND GENERATION=? ");
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
@@ -729,22 +636,17 @@ public class MySQLDatabase {
 
 			if (responseTime > 0) {
 
-				fit = responseTime90Percent
-						* Double.valueOf(tg.getResponse90FitWeight())
-						+ responseTime80Percent
-						* Double.valueOf(tg.getResponse80FitWeight())
-						+ responseTime70Percent
-						* Double.valueOf(tg.getResponse70FitWeight())
-						+ responseTime
-						* Double.valueOf(tg.getResponseMaxFitWeight())
-						+ totalError
-						* Double.valueOf(tg.getTotalErrorFitWeight()) + users
-						* Double.valueOf(tg.getUserFitWeight()) + penalty;
+				fit = responseTime90Percent * Double.valueOf(tg.getResponse90FitWeight())
+						+ responseTime80Percent * Double.valueOf(tg.getResponse80FitWeight())
+						+ responseTime70Percent * Double.valueOf(tg.getResponse70FitWeight())
+						+ responseTime * Double.valueOf(tg.getResponseMaxFitWeight())
+						+ totalError * Double.valueOf(tg.getTotalErrorFitWeight())
+						+ users * Double.valueOf(tg.getUserFitWeight()) + penalty;
 
 				if ((fitDatabase >= 0) && (fitDatabase != 0.5)) {
 					if ((fit < 0) || (fit > fitDatabase) || (fit == 0.5)) {
-						ps = con.prepareStatement(""
-								+ "UPDATE workload SET FIT=? WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+						ps = con.prepareStatement(
+								"" + "UPDATE workload SET FIT=? WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 						ps.setString(1, String.valueOf(fit));
 						ps.setString(2, workload);
 						ps.setString(3, testPlan);
@@ -768,18 +670,17 @@ public class MySQLDatabase {
 
 	}
 
-	public static void insertWorkLoads(Object[] objetos, String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
+	public static void insertWorkLoads(Object[] objetos, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 		insertWorkLoads(Arrays.asList(objetos), testPlan, generation);
 	}
 
-	public static void insertWorkLoads(List objetos, String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
+	public static void insertWorkLoads(List objetos, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=?");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ps.setString(2, String.valueOf(testPlan));
 
@@ -794,10 +695,8 @@ public class MySQLDatabase {
 			MySQLDatabase.setParameters(ps, objetos, testPlan);
 		} else {
 
-			ps = con.prepareStatement("" + "update workload set "
-					+ MySQLDatabase.SET + " WHERE NAME=? AND TESTPLAN=?");
-			MySQLDatabase.setParametersWhere(ps, objetos,
-					String.valueOf(objetos.get(0)), testPlan);
+			ps = con.prepareStatement("" + "update workload set " + MySQLDatabase.SET + " WHERE NAME=? AND TESTPLAN=?");
+			MySQLDatabase.setParametersWhere(ps, objetos, String.valueOf(objetos.get(0)), testPlan);
 
 		}
 
@@ -805,14 +704,13 @@ public class MySQLDatabase {
 		ps.close();
 	}
 
-	public static void insertSample(List objetos, String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
+	public static void insertSample(List objetos, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT count(*) FROM  samples WHERE LABEL=? AND INDIVIDUAL=? AND TESTPLAN=?");
+				.prepareStatement("" + "SELECT count(*) FROM  samples WHERE LABEL=? AND INDIVIDUAL=? AND TESTPLAN=?");
 		ps.setString(1, objetos.get(0).toString());
 		ps.setString(2, objetos.get(3).toString());
 		ps.setString(3, testPlan);
@@ -826,8 +724,7 @@ public class MySQLDatabase {
 		if (count == 0) {
 
 			ps = con.prepareStatement(MySQLDatabase.INSERTSQLSAMPLE);
-			MySQLDatabase
-					.setParametersSample(ps, objetos, testPlan, generation);
+			MySQLDatabase.setParametersSample(ps, objetos, testPlan, generation);
 
 			ps.executeUpdate();
 		} else {
@@ -862,8 +759,7 @@ public class MySQLDatabase {
 
 	}
 
-	public static void insertLog(String message) throws ClassNotFoundException,
-			SQLException {
+	public static void insertLog(String message) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
@@ -873,13 +769,12 @@ public class MySQLDatabase {
 
 	}
 
-	public static void createWorkLoadIfNotExist(List objetos, String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
+	public static void createWorkLoadIfNotExist(List objetos, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=?");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT count(*) FROM  workload WHERE NAME=? AND TESTPLAN=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ps.setString(2, String.valueOf(testPlan));
 
@@ -897,15 +792,13 @@ public class MySQLDatabase {
 
 	}
 
-	public static int verifyRunning() throws ClassNotFoundException,
-			SQLException, InterruptedException {
+	public static int verifyRunning() throws ClassNotFoundException, SQLException, InterruptedException {
 
 		Thread.sleep(1000);
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM agent WHERE running='true'");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT count(*) FROM agent WHERE running='true'");
 
 		ResultSet rs = ps.executeQuery();
 
@@ -920,15 +813,14 @@ public class MySQLDatabase {
 
 	}
 
-	public static int verifyRunningIp() throws ClassNotFoundException,
-			SQLException, InterruptedException, UnknownHostException {
+	public static int verifyRunningIp()
+			throws ClassNotFoundException, SQLException, InterruptedException, UnknownHostException {
 
 		Thread.sleep(1000);
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM agent WHERE running='true' and ip=?");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT count(*) FROM agent WHERE running='true' and ip=?");
 		ps.setString(1, java.net.InetAddress.getLocalHost().toString());
 
 		ResultSet rs = ps.executeQuery();
@@ -944,15 +836,13 @@ public class MySQLDatabase {
 
 	}
 
-	public static int verifyRunningFinal() throws ClassNotFoundException,
-			SQLException, InterruptedException {
+	public static int verifyRunningFinal() throws ClassNotFoundException, SQLException, InterruptedException {
 
 		Thread.sleep(1000);
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM agent WHERE running='final'");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT count(*) FROM agent WHERE running='final'");
 
 		ResultSet rs = ps.executeQuery();
 
@@ -967,49 +857,43 @@ public class MySQLDatabase {
 
 	}
 
-	public static void deleteAgent(List objetos, String testPlan)
-			throws ClassNotFoundException, SQLException {
+	public static void deleteAgent(List objetos, String testPlan) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "DELETE  FROM  agent WHERE NAME=? AND IP=?");
+		PreparedStatement ps = con.prepareStatement("" + "DELETE  FROM  agent WHERE NAME=? AND IP=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ps.setString(2, String.valueOf(objetos.get(2)));
 		ps.executeUpdate();
 
 	}
 
-	public static void deleteWorkLoad(String name, String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
+	public static void deleteWorkLoad(String name, String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "DELETE  FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
+				.prepareStatement("" + "DELETE  FROM  workload WHERE NAME=? AND TESTPLAN=? and GENERATION=?");
 		ps.setString(1, name);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
 		ps.executeUpdate();
 
-		ps = con.prepareStatement(""
-				+ "DELETE  FROM  samples WHERE INDIVIDUAL=? AND TESTPLAN=?");
+		ps = con.prepareStatement("" + "DELETE  FROM  samples WHERE INDIVIDUAL=? AND TESTPLAN=?");
 		ps.setString(1, name);
 		ps.setString(2, testPlan);
 		ps.executeUpdate();
 
 	}
 
-	public static List<Agent> selectAgents() throws ClassNotFoundException,
-			SQLException {
+	public static List<Agent> selectAgents() throws ClassNotFoundException, SQLException {
 
 		List<Agent> list = new ArrayList<Agent>();
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "select name,running,ip,date  FROM  agent ");
+		PreparedStatement ps = con.prepareStatement("" + "select name,running,ip,date  FROM  agent ");
 
 		ResultSet rs = ps.executeQuery();
 
@@ -1029,14 +913,12 @@ public class MySQLDatabase {
 
 	}
 
-	public static void updateAgentOrCreateIfNotExist(
-			@SuppressWarnings("rawtypes") List objetos, String testPlan)
+	public static void updateAgentOrCreateIfNotExist(@SuppressWarnings("rawtypes") List objetos, String testPlan)
 			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(""
-				+ "SELECT count(*) FROM  agent WHERE name=?");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT count(*) FROM  agent WHERE name=?");
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ResultSet rs = ps.executeQuery();
 
@@ -1064,192 +946,174 @@ public class MySQLDatabase {
 
 	}
 
-	public static List<WorkLoad> listWorkLoads(String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
-
-		Connection con = singleton();
-
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT "
-						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? AND ACTIVE='true' ORDER BY FIT*1 DESC");
-		ps.setString(1, testPlan);
-		ps.setString(2, generation);
-
-		ResultSet rs = ps.executeQuery();
-
-		List<WorkLoad> list = new ArrayList<WorkLoad>();
-
-		while (rs.next()) {
-			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
-			list.add(workload);
-		}
-
-		return list;
-
-	}
-
-	public static List<WorkLoad> listWorkLoadsOrderName(String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
-
-		Connection con = singleton();
-
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT "
-						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=?  AND ACTIVE='true' ORDER BY NAME ");
-		ps.setString(1, testPlan);
-		ps.setString(2, generation);
-
-		ResultSet rs = ps.executeQuery();
-
-		List<WorkLoad> list = new ArrayList<WorkLoad>();
-
-		while (rs.next()) {
-			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
-			list.add(workload);
-		}
-
-		return list;
-
-	}
-
-	public static List<WorkLoad> listWorkLoadsForNewGeneration(String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
-
-		Connection con = singleton();
-
-		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? "
-				+ "AND SEARCHMETHOD='GENETICALGORITHM' ORDER BY FIT*1 DESC");
-		ps.setString(1, testPlan);
-		ps.setString(2, generation);
-
-		ResultSet rs = ps.executeQuery();
-
-		List<WorkLoad> list = new ArrayList<WorkLoad>();
-
-		while (rs.next()) {
-			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
-			list.add(workload);
-		}
-
-		return list;
-
-	}
-
-	public static List<WorkLoad> listWorkLoadsForAllNewGeneration(
-			String testPlan, String generation) throws ClassNotFoundException,
-			SQLException {
-
-		Connection con = singleton();
-
-		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? "
-				+ "  ORDER BY FIT*1 DESC");
-		ps.setString(1, testPlan);
-		ps.setString(2, generation);
-
-		ResultSet rs = ps.executeQuery();
-
-		List<WorkLoad> list = new ArrayList<WorkLoad>();
-
-		while (rs.next()) {
-			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
-			list.add(workload);
-		}
-
-		return list;
-
-	}
-
-	public static List<WorkLoad> listWorkLoadsSAForNewGeneration(
-			String testPlan, String generation) throws ClassNotFoundException,
-			SQLException {
-
-		Connection con = singleton();
-
-		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? "
-				+ "AND SEARCHMETHOD='SA' ORDER BY FIT*1 DESC");
-		ps.setString(1, testPlan);
-		ps.setString(2, generation);
-
-		ResultSet rs = ps.executeQuery();
-
-		List<WorkLoad> list = new ArrayList<WorkLoad>();
-
-		while (rs.next()) {
-			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
-			list.add(workload);
-		}
-
-		return list;
-
-	}
-
-	public static List<WorkLoad> listWorkLoadsTABUForNewGeneration(
-			String testPlan, String generation) throws ClassNotFoundException,
-			SQLException {
-
-		Connection con = singleton();
-
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT "
-						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? "
-						+ "AND SEARCHMETHOD='TABU' and GENERATION=? ORDER BY FIT*1 DESC LIMIT 10");
-		ps.setString(1, testPlan);
-		ps.setString(2, generation);
-
-		ResultSet rs = ps.executeQuery();
-
-		List<WorkLoad> list = new ArrayList<WorkLoad>();
-
-		while (rs.next()) {
-			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
-			list.add(workload);
-		}
-
-		return list;
-
-	}
-
-	public static List<WorkLoad> listWorkLoadsALlForNewGeneration(
-			String testPlan, String generation) throws ClassNotFoundException,
-			SQLException {
-
-		Connection con = singleton();
-
-		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=? and  GENERATION=? "
-				+ " ORDER BY FIT*1 DESC LIMIT 10");
-		ps.setString(1, testPlan);
-		ps.setString(2, generation);
-
-		ResultSet rs = ps.executeQuery();
-
-		List<WorkLoad> list = new ArrayList<WorkLoad>();
-
-		while (rs.next()) {
-			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
-			list.add(workload);
-		}
-
-		return list;
-
-	}
-
-	public static List<WorkLoad> listAllWorkLoads(String testPlan)
+	public static List<WorkLoad> listWorkLoads(String testPlan, String generation)
 			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=?  ORDER BY FIT*1 DESC");
+				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? AND ACTIVE='true' ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
+	public static List<WorkLoad> listWorkLoadsOrderName(String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
+				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=?  AND ACTIVE='true' ORDER BY NAME ");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
+	public static List<WorkLoad> listWorkLoadsForNewGeneration(String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? "
+						+ "AND SEARCHMETHOD='GENETICALGORITHM' ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
+	public static List<WorkLoad> listWorkLoadsForAllNewGeneration(String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
+				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? " + "  ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
+	public static List<WorkLoad> listWorkLoadsSAForNewGeneration(String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
+				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? " + "AND SEARCHMETHOD='SA' ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
+	public static List<WorkLoad> listWorkLoadsTABUForNewGeneration(String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? "
+				+ "AND SEARCHMETHOD='TABU' and GENERATION=? ORDER BY FIT*1 DESC LIMIT 10");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
+	public static List<WorkLoad> listWorkLoadsALlForNewGeneration(String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
+				+ "  FROM  workload WHERE TESTPLAN=? and  GENERATION=? " + " ORDER BY FIT*1 DESC LIMIT 10");
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+
+	public static List<WorkLoad> listAllWorkLoads(String testPlan) throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=?  ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 
 		ResultSet rs = ps.executeQuery();
@@ -1270,9 +1134,8 @@ public class MySQLDatabase {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
-				+ "  FROM  workload WHERE TESTPLAN=? "
-				+ " AND TYPE=? ORDER BY FIT*1 DESC");
+		PreparedStatement ps = con.prepareStatement(
+				"" + "SELECT USERS" + "  FROM  workload WHERE TESTPLAN=? " + " AND TYPE=? ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, type);
 
@@ -1288,14 +1151,12 @@ public class MySQLDatabase {
 
 	}
 
-	public static int listBestWorkloadGenetic(String testPlan)
-			throws ClassNotFoundException, SQLException {
+	public static int listBestWorkloadGenetic(String testPlan) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
-				+ "  FROM  workload WHERE TESTPLAN=? "
-				+ "  ORDER BY FIT*1 DESC");
+		PreparedStatement ps = con
+				.prepareStatement("" + "SELECT USERS" + "  FROM  workload WHERE TESTPLAN=? " + "  ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 
 		ResultSet rs = ps.executeQuery();
@@ -1315,10 +1176,8 @@ public class MySQLDatabase {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
-				+ "  FROM  workload WHERE TESTPLAN=? "
-				+ "AND (ERROR='true' OR CAST(FIT AS DECIMAL)<0) "
-				+ "AND TYPE=? ORDER BY FIT*1 DESC");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS" + "  FROM  workload WHERE TESTPLAN=? "
+				+ "AND (ERROR='true' OR CAST(FIT AS DECIMAL)<0) " + "AND TYPE=? ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, type);
 
@@ -1334,15 +1193,13 @@ public class MySQLDatabase {
 
 	}
 
-	public static List<WorkLoad> listBESTWorkloadAllPopulationSize(
-			String testPlan, String populationSize)
+	public static List<WorkLoad> listBESTWorkloadAllPopulationSize(String testPlan, String populationSize)
 			throws ClassNotFoundException, SQLException {
 
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=? "
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? "
 				+ "  ORDER BY FIT*1 DESC LIMIT " + populationSize);
 		ps.setString(1, testPlan);
 
@@ -1356,18 +1213,14 @@ public class MySQLDatabase {
 		return list;
 	}
 
-	public static List<WorkLoad> listBESTWorkloadGeneticPopulationSize(
-			String testPlan, String populationSize)
+	public static List<WorkLoad> listBESTWorkloadGeneticPopulationSize(String testPlan, String populationSize)
 			throws ClassNotFoundException, SQLException {
 
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 		Connection con = singleton();
 
-		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT "
-						+ COLUMNS
-						+ "  FROM  workload WHERE TESTPLAN=? AND SEARCHMETHOD='GENETICALGORITHM' "
+		PreparedStatement ps = con.prepareStatement(
+				"" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? AND SEARCHMETHOD='GENETICALGORITHM' "
 						+ "  ORDER BY FIT*1 DESC LIMIT " + populationSize);
 		ps.setString(1, testPlan);
 
@@ -1381,15 +1234,13 @@ public class MySQLDatabase {
 		return list;
 	}
 
-	public static int listMaxUserWithNoErroWorkloadGenetic(String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
+	public static int listMaxUserWithNoErroWorkloadGenetic(String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
-				+ "  FROM  workload WHERE TESTPLAN=? "
-				+ "AND (CAST(TOTALERROR AS DECIMAL)=0) AND GENERATION=? "
-				+ "ORDER BY USERS*1 DESC");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS" + "  FROM  workload WHERE TESTPLAN=? "
+				+ "AND (CAST(TOTALERROR AS DECIMAL)=0) AND GENERATION=? " + "ORDER BY USERS*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
@@ -1405,15 +1256,12 @@ public class MySQLDatabase {
 
 	}
 
-	public static int listWorstWorkloadGenetic(String testPlan)
-			throws ClassNotFoundException, SQLException {
+	public static int listWorstWorkloadGenetic(String testPlan) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS"
-				+ "  FROM  workload WHERE TESTPLAN=? "
-				+ "AND (ERROR='true' OR CAST(FIT AS DECIMAL)<0) "
-				+ " ORDER BY FIT*1 DESC");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT USERS" + "  FROM  workload WHERE TESTPLAN=? "
+				+ "AND (ERROR='true' OR CAST(FIT AS DECIMAL)<0) " + " ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 
 		ResultSet rs = ps.executeQuery();
@@ -1428,14 +1276,13 @@ public class MySQLDatabase {
 
 	}
 
-	public static List<WorkLoad> listWorkLoadsByGeneration(String testPlan,
-			String generation) throws ClassNotFoundException, SQLException {
+	public static List<WorkLoad> listWorkLoadsByGeneration(String testPlan, String generation)
+			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=?"
-				+ " AND ACTIVE='true'  ORDER BY FIT*1 DESC");
+				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=?" + " AND ACTIVE='true'  ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
@@ -1452,14 +1299,13 @@ public class MySQLDatabase {
 
 	}
 
-	public static long getResponseTime(String ip, String workLoad,
-			String testPlan) throws ClassNotFoundException, SQLException {
+	public static long getResponseTime(String ip, String workLoad, String testPlan)
+			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con
-				.prepareStatement(""
-						+ "SELECT RESPONSETIME FROM  workload WHERE NAME=? AND TESTPLAN=?");
+				.prepareStatement("" + "SELECT RESPONSETIME FROM  workload WHERE NAME=? AND TESTPLAN=?");
 		ps.setString(1, workLoad);
 		ps.setString(2, testPlan);
 

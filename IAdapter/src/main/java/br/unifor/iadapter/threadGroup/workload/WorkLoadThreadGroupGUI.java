@@ -12,7 +12,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-
 package br.unifor.iadapter.threadGroup.workload;
 
 import java.awt.BorderLayout;
@@ -68,8 +67,7 @@ import br.unifor.iadapter.jmeter.GraphRowSumValues;
 import br.unifor.iadapter.jmeter.GuiBuilderHelper;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
 
-public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
-		TableModelListener, CellEditorListener {
+public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements TableModelListener, CellEditorListener {
 
 	/**
 	 * 
@@ -94,56 +92,50 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	private JTextField initialGeneration;
 	private JTextField responseTimeMaxPenalty;
 	private JTextField mutantProbability;
+	private JTextField maxMemory;
+	private JTextField maxCpuShare;
+	private JTextField dockerImage;
 	/**
-     *
-     */
+	 *
+	 */
 	protected ConcurrentHashMap<String, AbstractGraphRow> model;
 	private GraphPanelChart chart;
 	/**
-     *
-     */
+	 *
+	 */
 
-	public static final String[] columnIdentifiers = new String[] { "Name",
-			"Kind", "Users", "Response Time", "Error", "Fit", "Function1",
-			"Function2", "Function3", "Function4", "Function5", "Function6",
-			"Function7", "Function8", "Function9", "Function10", "Generation",
-			"Active", "Percentile90", "Percentile80", "Percentile70",
-			"TotalError", "SearchMethod", "USER1", "USER2", "USER3", "USER4",
-			"USER5", "USER6", "USER7", "USER8", "USER9", "USER10" };
+	public static final String[] columnIdentifiers = new String[] { "Name", "Kind", "Users", "Response Time", "Error",
+			"Fit", "Function1", "Function2", "Function3", "Function4", "Function5", "Function6", "Function7",
+			"Function8", "Function9", "Function10", "Generation", "Active", "Percentile90", "Percentile80",
+			"Percentile70", "TotalError", "SearchMethod", "USER1", "USER2", "USER3", "USER4", "USER5", "USER6", "USER7",
+			"USER8", "USER9", "USER10", "MEMORY", "CPUSHARE" };
 
-	public static final String[] columnIdentifiersAgent = new String[] {
-			"Name", "Running", "IP", "Date" };
+	public static final String[] columnIdentifiersAgent = new String[] { "Name", "Running", "IP", "Date" };
 
 	public static final String[] columnIdentifiersLog = new String[] { "Log" };
 	/**
-     *
-     */
+	 *
+	 */
 	@SuppressWarnings("rawtypes")
-	public static final Class[] columnClasses = new Class[] { String.class,
-			String.class, String.class, String.class, String.class,
-			String.class, String.class, String.class, String.class,
-			String.class, String.class, String.class, String.class,
-			String.class, String.class, String.class, String.class,
-			String.class, String.class, String.class, String.class,
-			String.class, String.class, String.class, String.class,
-			String.class, String.class, String.class, String.class,
-			String.class, String.class, String.class, String.class };
+	public static final Class[] columnClasses = new Class[] { String.class, String.class, String.class, String.class,
+			String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+			String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+			String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+			String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+			String.class, String.class, String.class };
 
 	@SuppressWarnings("rawtypes")
-	public static final Class[] columnClassesAgent = new Class[] {
-			String.class, String.class, String.class, String.class };
+	public static final Class[] columnClassesAgent = new Class[] { String.class, String.class, String.class,
+			String.class };
 
 	@SuppressWarnings("rawtypes")
 	public static final Class[] columnClassesLog = new Class[] { String.class };
 
-	public static final String[] defaultValues = new String[] { "1", "1", "1",
-			"1", "1", "1", "None", "None", "None", "None", "None", "None",
-			"None", "None", "None", "None", "None", "None", "None", "None",
-			"None", "None", "None", "None", "None", "None", "None", "None",
-			"None", "None", "None" };
+	public static final String[] defaultValues = new String[] { "1", "1", "1", "1", "1", "1", "None", "None", "None",
+			"None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None",
+			"None", "None", "None", "None", "None", "None", "None", "None", "None","None","None" };
 
-	public static final String[] defaultValuesAgent = new String[] { "1", "1",
-			"1", "1" };
+	public static final String[] defaultValuesAgent = new String[] { "1", "1", "1", "1" };
 
 	private LoopControlPanel loopPanel;
 	protected PowerTableModel wtableModel;
@@ -173,6 +165,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		tabbedPane.addTab("Main", containerPanel);
 		tabbedPane.addTab("WorkLoad", createWorkloadPanel());
 		tabbedPane.addTab("Graph", createGraphPanel());
+		createTabDocker(tabbedPane);
 		createTabAgent(tabbedPane);
 		createTabParameters(tabbedPane);
 		createLogPanel(tabbedPane);
@@ -218,8 +211,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		grid.setSize(800, 800);
 		grid.getColumnModel().getColumn(0).setWidth(100);
 
-		grid.addMouseListener(new WorkLoadTableClicked(grid, this, wtableModel,
-				chart));
+		grid.addMouseListener(new WorkLoadTableClicked(grid, this, wtableModel, chart));
 
 		return grid;
 	}
@@ -249,8 +241,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		panel.setPreferredSize(new Dimension(200, 200));
 
-		ImageIcon iadapter = new javax.swing.ImageIcon(getClass().getResource(
-				"iadapter.png"));
+		ImageIcon iadapter = new javax.swing.ImageIcon(getClass().getResource("iadapter.png"));
 
 		JLabel icon = new JLabel(iadapter);
 
@@ -277,8 +268,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		JPanel database = new JPanel();
 
-		ImageIcon iadapter = new javax.swing.ImageIcon(getClass().getResource(
-				"iadapter1.png"));
+		ImageIcon iadapter = new javax.swing.ImageIcon(getClass().getResource("iadapter1.png"));
 
 		JLabel icon = new JLabel(iadapter);
 
@@ -286,54 +276,46 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		JButton button1 = new JButton();
 		button1.setToolTipText("This button create the workloads");
-		ImageIcon create = new javax.swing.ImageIcon(getClass().getResource(
-				"create.png"));
+		ImageIcon create = new javax.swing.ImageIcon(getClass().getResource("create.png"));
 		button1.setIcon(create);
 		buttons.add(button1);
 
 		JButton button2 = new JButton();
 		button1.setToolTipText("This button get data from the database");
-		ImageIcon refresh = new javax.swing.ImageIcon(getClass().getResource(
-				"refresh1.png"));
+		ImageIcon refresh = new javax.swing.ImageIcon(getClass().getResource("refresh1.png"));
 		button2.setIcon(refresh);
 		buttons.add(button2);
 
 		JButton button3 = new JButton();
 		button1.setToolTipText("This button delete all the workloads");
-		ImageIcon trash = new javax.swing.ImageIcon(getClass().getResource(
-				"trash1.png"));
+		ImageIcon trash = new javax.swing.ImageIcon(getClass().getResource("trash1.png"));
 		button3.setIcon(trash);
 		buttons.add(button3);
 
 		JButton button4 = new JButton();
 		button1.setToolTipText("This button delete the selected workload");
-		ImageIcon delete = new javax.swing.ImageIcon(getClass().getResource(
-				"delete1.png"));
+		ImageIcon delete = new javax.swing.ImageIcon(getClass().getResource("delete1.png"));
 		button4.setIcon(delete);
 		buttons.add(button4);
 
 		JButton button5 = new JButton();
-		ImageIcon save = new javax.swing.ImageIcon(getClass().getResource(
-				"save1.png"));
+		ImageIcon save = new javax.swing.ImageIcon(getClass().getResource("save1.png"));
 		button5.setIcon(save);
 		buttons.add(button5);
 
 		JButton button6 = new JButton();
-		ImageIcon turnoff = new javax.swing.ImageIcon(getClass().getResource(
-				"turnoff.png"));
+		ImageIcon turnoff = new javax.swing.ImageIcon(getClass().getResource("turnoff.png"));
 		button6.setIcon(turnoff);
 		buttons.add(button6);
 
 		JButton button7 = new JButton();
-		ImageIcon export = new javax.swing.ImageIcon(getClass().getResource(
-				"export.jpeg"));
+		ImageIcon export = new javax.swing.ImageIcon(getClass().getResource("export.jpeg"));
 		button7.setIcon(export);
 
 		buttons.add(button7);
 
 		JButton button8 = new JButton();
-		ImageIcon dna2 = new javax.swing.ImageIcon(getClass().getResource(
-				"dna2.png"));
+		ImageIcon dna2 = new javax.swing.ImageIcon(getClass().getResource("dna2.png"));
 		button8.setIcon(dna2);
 
 		JButton button9 = new JButton("Export +");
@@ -341,21 +323,16 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		buttons.add(button8);
 		buttons.add(button9);
 
-		button1.addActionListener(new AddRowWorkloadAction(this, grid,
-				wtableModel, null, null));
+		button1.addActionListener(new AddRowWorkloadAction(this, grid, wtableModel, null, null));
 		button2.addActionListener(new RefreshRowWorkloadAction(this));
 
-		button3.addActionListener(new ClearRowWorkloadAction(this, grid,
-				wtableModel, null, null));
+		button3.addActionListener(new ClearRowWorkloadAction(this, grid, wtableModel, null, null));
 
-		button4.addActionListener(new DeleteRowAction(this, grid, wtableModel,
-				null));
+		button4.addActionListener(new DeleteRowAction(this, grid, wtableModel, null));
 
-		button5.addActionListener(new SaveRowAction(this, wtableModel, null,
-				null));
+		button5.addActionListener(new SaveRowAction(this, wtableModel, null, null));
 
-		button6.addActionListener(new DesactiveRowWorkloadAction(this,
-				wtableModel));
+		button6.addActionListener(new DesactiveRowWorkloadAction(this, wtableModel));
 
 		button7.addActionListener(new ExportWorkloadAction());
 
@@ -376,8 +353,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		JPanel containerPanel = new VerticalPanel();
 
-		containerPanel.add(GuiBuilderHelper.getComponentWithMargin(
-				createChart(), 2, 2, 0, 2), BorderLayout.CENTER);
+		containerPanel.add(GuiBuilderHelper.getComponentWithMargin(createChart(), 2, 2, 0, 2), BorderLayout.CENTER);
 
 		return containerPanel;
 	}
@@ -447,6 +423,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			utg.setInitialGeneration(initialGeneration.getText());
 			utg.setResponseTimeMaxPenalty(responseTimeMaxPenalty.getText());
 			utg.setMutantProbabilty(mutantProbability.getText());
+			utg.setMaxMemory(maxMemory.getText());
+			utg.setMaxCpuShare(maxCpuShare.getText());
+			utg.setDockerImage(dockerImage.getText());
+			
 
 			if (grid == null) {
 				createGrid();
@@ -456,14 +436,12 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 				grid.getCellEditor().stopCellEditing();
 			}
 
-			CollectionProperty rows = JMeterPluginsUtils
-					.tableModelRowsToCollectionProperty(wtableModel,
-							WorkLoadThreadGroup.DATA_PROPERTY);
+			CollectionProperty rows = JMeterPluginsUtils.tableModelRowsToCollectionProperty(wtableModel,
+					WorkLoadThreadGroup.DATA_PROPERTY);
 
 			utg.setData(rows);
 
-			LoopController controler = (LoopController) loopPanel
-					.createTestElement();
+			LoopController controler = (LoopController) loopPanel.createTestElement();
 			controler.setLoops(1);
 			utg.setSamplerController(controler);
 
@@ -494,20 +472,20 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 		initialGeneration.setText(utg.getInitialGeneration());
 		responseTimeMaxPenalty.setText(utg.getResponseTimeMaxPenalty());
 		mutantProbability.setText(utg.getMutantProbability());
+		maxCpuShare.setText(utg.getMaxCpuShare());
+		maxMemory.setText(utg.getMaxMemory());
+		dockerImage.setText(utg.getDockerImage());
 
 		JMeterProperty threadValues = utg.getData();
 		if (!(threadValues instanceof NullProperty)) {
 			CollectionProperty columns = (CollectionProperty) threadValues;
 
 			wtableModel.removeTableModelListener(this);
-			JMeterPluginsUtils.collectionPropertyToTableModelRows(columns,
-					wtableModel);
+			JMeterPluginsUtils.collectionPropertyToTableModelRows(columns, wtableModel);
 
 			try {
-				JMeterPluginsUtils
-						.derbyAgentToTableModelRows(wtableModelAgents);
-				JMeterPluginsUtils.collectionPropertyToDerby(columns, utg,
-						String.valueOf(utg.getGeneration()));
+				JMeterPluginsUtils.derbyAgentToTableModelRows(wtableModelAgents);
+				JMeterPluginsUtils.collectionPropertyToDerby(columns, utg, String.valueOf(utg.getGeneration()));
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -518,8 +496,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			log.warn("Received null property instead of collection");
 		}
 
-		TestElement te = (TestElement) tg.getProperty(
-				AbstractThreadGroup.MAIN_CONTROLLER).getObjectValue();
+		TestElement te = (TestElement) tg.getProperty(AbstractThreadGroup.MAIN_CONTROLLER).getObjectValue();
 		if (te != null) {
 			loopPanel.configure(te);
 		}
@@ -562,8 +539,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		JPanel buttons = new JPanel();
 		JButton button1 = new JButton("Delete");
-		button1.addActionListener(new DeleteAgentAction(gridAgents,
-				wtableModelAgents, this));
+		button1.addActionListener(new DeleteAgentAction(gridAgents, wtableModelAgents, this));
 
 		JButton button2 = new JButton("Refresh");
 		button2.addActionListener(new RefreshRowWorkloadAction(this));
@@ -620,6 +596,55 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 
 		return tab1;
 
+	}
+	
+	
+	public Component createTabDocker(JTabbedPane tab1) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+
+		JPanel param = new JPanel();
+		param.setLayout(new GridLayout(0, 2));
+		maxMemory = new JTextField("10", 5);
+		maxCpuShare = new JTextField("10", 5);
+		dockerImage = new JTextField("image", 5);
+		
+		param.add(new JLabel("Max Memory"));
+		param.add(maxMemory);
+		param.add(new JLabel("Max Cpu Share"));
+		param.add(maxCpuShare);
+		param.add(new JLabel("Docker Image"));
+		param.add(dockerImage);
+		panel.add(param, BorderLayout.CENTER);
+
+		tab1.addTab("Docker", panel);
+
+		return tab1;
+
+	}
+
+	public JTextField getMaxMemory() {
+		return maxMemory;
+	}
+
+	public void setMaxMemory(JTextField maxMemory) {
+		this.maxMemory = maxMemory;
+	}
+
+	public JTextField getMaxCpuShare() {
+		return maxCpuShare;
+	}
+
+	public void setMaxCpuShare(JTextField maxCpuShare) {
+		this.maxCpuShare = maxCpuShare;
+	}
+
+	public JTextField getDockerImage() {
+		return dockerImage;
+	}
+
+	public void setDockerImage(JTextField dockerImage) {
+		this.dockerImage = dockerImage;
 	}
 
 	public Component createPopulationParameters(JTabbedPane tab1) {
@@ -692,8 +717,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 			chart.getChartSettings().setDrawFinalZeroingLines(true);
 			chart.setxAxisLabel("Elapsed time");
 			chart.setYAxisLabel("Number of active threads");
-			chart.setBorder(javax.swing.BorderFactory
-					.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+			chart.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 		}
 		return chart;
 	}
@@ -717,8 +741,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements
 	}
 
 	private void createTableModelAgent() {
-		wtableModelAgents = new PowerTableModel(columnIdentifiersAgent,
-				columnClassesAgent);
+		wtableModelAgents = new PowerTableModel(columnIdentifiersAgent, columnClassesAgent);
 		wtableModelAgents.addTableModelListener(this);
 
 		if (gridAgents == null) {

@@ -38,7 +38,7 @@ public class MutationOperator {
 
 	public static WorkLoad mutantWorkload(WorkLoad workload, int n,
 			List<TestElement> nodes, int maxUsers, int generation,
-			int mutantionProbability) {
+			int mutantionProbability,int maxMemory,int maxCpuShare) {
 		Random random = new Random();
 
 		int evolute = random.nextInt(10);
@@ -47,7 +47,7 @@ public class MutationOperator {
 
 			for (int i = 0; i <= n; i++) {
 				workloadClone = WorkLoadUtil.getNeighBorHoodMutant(
-						workloadClone, nodes, maxUsers);
+						workloadClone, nodes, maxUsers,maxMemory,maxCpuShare);
 
 			}
 			workloadClone.setName("Mutant:G" + generation + ":"

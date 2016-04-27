@@ -84,6 +84,26 @@ public class WorkLoad {
 
 	}
 
+	private int memory;
+	
+	private int cpuShare;
+	
+	public int getMemory() {
+		return memory;
+	}
+
+	public void setMemory(int memory) {
+		this.memory = memory;
+	}
+
+	public int getCpuShare() {
+		return cpuShare;
+	}
+
+	public void setCpuShare(int cpuShare) {
+		this.cpuShare = cpuShare;
+	}
+
 	private int users1;
 
 	private int users2;
@@ -559,6 +579,8 @@ public class WorkLoad {
 		workload.setUsers9(this.getUsers9());
 		workload.setUsers10(this.getUsers10());
 		workload.setWorstResponseTime(this.getWorstResponseTime());
+		workload.setCpuShare(this.getCpuShare());
+		workload.setMemory(this.getMemory());
 
 		return workload;
 	}

@@ -17,6 +17,26 @@ package br.unifor.iadapter.tabu;
 
 public class TabuElement {
 	
+	private int memory;
+	
+	private int cpuShare;
+	
+	public int getMemory() {
+		return memory;
+	}
+
+	public void setMemory(int memory) {
+		this.memory = memory;
+	}
+
+	public int getCpuShare() {
+		return cpuShare;
+	}
+
+	public void setCpuShare(int cpuShare) {
+		this.cpuShare = cpuShare;
+	}
+
 	private int expires;
 	
 	public int getExpires() {

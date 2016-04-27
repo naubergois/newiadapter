@@ -66,8 +66,8 @@ import br.unifor.iadapter.util.WorkLoadUtil;
  * @author naubergois
  *
  */
-public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
-		Serializable, TestStateListener, SampleListener, LoopIterationListener {
+public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
+		implements Serializable, TestStateListener, SampleListener, LoopIterationListener {
 
 	/**
 	 * 
@@ -126,8 +126,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		this.listWorkLoads = listWorkLoads;
 	}
 
-	public static List<JMeterTreeNode> findWorkLoadThreadGroup(
-			JMeterTreeNode rootNode, List<JMeterTreeNode> list) {
+	public static List<JMeterTreeNode> findWorkLoadThreadGroup(JMeterTreeNode rootNode, List<JMeterTreeNode> list) {
 
 		Enumeration<JMeterTreeNode> enumr = rootNode.children();
 
@@ -168,8 +167,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	 * @param generation
 	 */
 	@SuppressWarnings("unchecked")
-	public static void finishTest(Agent agent, WorkLoadThreadGroup tg,
-			String generation) {
+	public static void finishTest(Agent agent, WorkLoadThreadGroup tg, String generation) {
 		agent.runningFinal();
 
 		while (!(tg.verifyThreadsStopped()))
@@ -182,17 +180,12 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		List<WorkLoad> list = null;
 		try {
-			list = MySQLDatabase.listWorkLoads(tg.getName(),
-					String.valueOf(tg.getGeneration()));
-			JMeterPluginsUtils.updateResponseTime(CSVReadStats.getWorkloads(),
-					CSVReadStats.getPercentiles(),
+			list = MySQLDatabase.listWorkLoads(tg.getName(), String.valueOf(tg.getGeneration()));
+			JMeterPluginsUtils.updateResponseTime(CSVReadStats.getWorkloads(), CSVReadStats.getPercentiles(),
 					CSVReadStats.getErrorsTotal(), list, tg);
-			JMeterPluginsUtils.updateSamples(CSVReadStats.getRequestsMaxTime(),
-					tg, String.valueOf(generation));
-			JMeterPluginsUtils.updateErrorValue(CSVReadStats.getErrors(), list,
-					tg);
-			JMeterPluginsUtils.updateFit(list, tg.getName(),
-					String.valueOf(tg.getGeneration()), tg.getMaxTime(), tg);
+			JMeterPluginsUtils.updateSamples(CSVReadStats.getRequestsMaxTime(), tg, String.valueOf(generation));
+			JMeterPluginsUtils.updateErrorValue(CSVReadStats.getErrors(), list, tg);
+			JMeterPluginsUtils.updateFit(list, tg.getName(), String.valueOf(tg.getGeneration()), tg.getMaxTime(), tg);
 
 		} catch (ClassNotFoundException e1) {
 			log.error(e1.getMessage());
@@ -204,11 +197,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		agent.delete();
 	}
 
-	public static List<WorkLoad> returnListAlgorithmGeneticWorkLoadsForNewGeneration(
-			WorkLoadThreadGroup tg) {
+	public static List<WorkLoad> returnListAlgorithmGeneticWorkLoadsForNewGeneration(WorkLoadThreadGroup tg) {
 		try {
-			return MySQLDatabase.listWorkLoadsForNewGeneration(tg.getName(),
-					String.valueOf(tg.getGeneration()));
+			return MySQLDatabase.listWorkLoadsForNewGeneration(tg.getName(), String.valueOf(tg.getGeneration()));
 		} catch (ClassNotFoundException e1) {
 
 			log.error(e1.getMessage());
@@ -218,11 +209,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		return null;
 	}
 
-	public static List<WorkLoad> returnListAlgorithmGeneticWorkLoadsForAllNewGeneration(
-			WorkLoadThreadGroup tg) {
+	public static List<WorkLoad> returnListAlgorithmGeneticWorkLoadsForAllNewGeneration(WorkLoadThreadGroup tg) {
 		try {
-			return MySQLDatabase.listWorkLoadsForAllNewGeneration(tg.getName(),
-					String.valueOf(tg.getGeneration()));
+			return MySQLDatabase.listWorkLoadsForAllNewGeneration(tg.getName(), String.valueOf(tg.getGeneration()));
 		} catch (ClassNotFoundException e1) {
 
 			log.error(e1.getMessage());
@@ -232,11 +221,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		return null;
 	}
 
-	public static List<WorkLoad> returnListSAWorkLoadsForNewGeneration(
-			WorkLoadThreadGroup tg) {
+	public static List<WorkLoad> returnListSAWorkLoadsForNewGeneration(WorkLoadThreadGroup tg) {
 		try {
-			return MySQLDatabase.listWorkLoadsSAForNewGeneration(tg.getName(),
-					String.valueOf(tg.getGeneration()));
+			return MySQLDatabase.listWorkLoadsSAForNewGeneration(tg.getName(), String.valueOf(tg.getGeneration()));
 		} catch (ClassNotFoundException e1) {
 
 			log.error(e1.getMessage());
@@ -246,11 +233,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		return null;
 	}
 
-	public static List<WorkLoad> returnListTABUWorkLoadsForNewGeneration(
-			WorkLoadThreadGroup tg) {
+	public static List<WorkLoad> returnListTABUWorkLoadsForNewGeneration(WorkLoadThreadGroup tg) {
 		try {
-			return MySQLDatabase.listWorkLoadsTABUForNewGeneration(
-					tg.getName(), String.valueOf(tg.getGeneration()));
+			return MySQLDatabase.listWorkLoadsTABUForNewGeneration(tg.getName(), String.valueOf(tg.getGeneration()));
 		} catch (ClassNotFoundException e1) {
 
 			log.error(e1.getMessage());
@@ -260,11 +245,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		return null;
 	}
 
-	public static List<WorkLoad> returnListALLWorkLoadsForNewGeneration(
-			WorkLoadThreadGroup tg) {
+	public static List<WorkLoad> returnListALLWorkLoadsForNewGeneration(WorkLoadThreadGroup tg) {
 		try {
-			return MySQLDatabase.listWorkLoadsALlForNewGeneration(tg.getName(),
-					String.valueOf(tg.getGeneration()));
+			return MySQLDatabase.listWorkLoadsALlForNewGeneration(tg.getName(), String.valueOf(tg.getGeneration()));
 		} catch (ClassNotFoundException e1) {
 
 			log.error(e1.getMessage());
@@ -274,8 +257,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		return null;
 	}
 
-	public static List<TestElement> testNodeToTestElement(
-			List<JMeterTreeNode> nodes) {
+	public static List<TestElement> testNodeToTestElement(List<JMeterTreeNode> nodes) {
 		List<TestElement> list = new ArrayList<TestElement>();
 		for (JMeterTreeNode jMeterTreeNode : nodes) {
 			list.add(jMeterTreeNode.getTestElement());
@@ -284,11 +266,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	}
 
-	public static void createNextGenerationElementsWithGui(
-			WorkLoadThreadGroup tg) {
+	public static void createNextGenerationElementsWithGui(WorkLoadThreadGroup tg) {
 
-		List<JMeterTreeNode> nodes = FindService
-				.searchWorkLoadControllerWithGui();
+		List<JMeterTreeNode> nodes = FindService.searchWorkLoadControllerWithGui();
 
 		List<TestElement> listElement = testNodeToTestElement(nodes);
 
@@ -320,8 +300,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		tg.setGeneration(tg.getGeneration() + 1);
 
-		List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(tg, list,
-				listElement, true);
+		List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(tg, list, listElement, true);
 
 		List<WorkLoad> listNewSA = new ArrayList<WorkLoad>();
 
@@ -333,31 +312,26 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 			TabuSearch.addTabuTable(listTABU.get(0), listElement);
 
-			List<WorkLoad> neighboors = WorkLoadUtil.getNeighborHood(
-					listTABU.get(0), listElement, tg);
+			List<WorkLoad> neighboors = WorkLoadUtil.getNeighborHood(listTABU.get(0), listElement, tg);
 			listTABUnewGeneration = TabuSearch.verify(neighboors, listElement);
 
 		}
 
 		if (listSA.size() > 0) {
-			tg.temperature = SimulateAnnealing.sa(tg.temperature, listSA,
-					Integer.valueOf(tg.getThreadNumberMax()), listNewSA,
-					tg.getGeneration(), tg, listElement);
+			tg.temperature = SimulateAnnealing.sa(tg.temperature, listSA, Integer.valueOf(tg.getThreadNumberMax()),
+					listNewSA, tg.getGeneration(), tg, listElement);
 		}
 
 		try {
 
 			for (WorkLoad workLoad : listBest) {
-				MySQLDatabase.insertWorkLoads(
-						WorkLoadUtil.getObjectList(workLoad), tg.getName(),
+				MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
 						String.valueOf(tg.getGeneration()));
 			}
 
-			if ((listTABUnewGeneration != null)
-					&& (listTABUnewGeneration.size() > 0)) {
+			if ((listTABUnewGeneration != null) && (listTABUnewGeneration.size() > 0)) {
 				for (WorkLoad workLoad : listTABUnewGeneration) {
-					MySQLDatabase.insertWorkLoads(
-							WorkLoadUtil.getObjectList(workLoad), tg.getName(),
+					MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
 							String.valueOf(tg.getGeneration()));
 				}
 			}
@@ -365,8 +339,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			if (listSA.size() > 0) {
 
 				for (WorkLoad workLoad : listNewSA) {
-					MySQLDatabase.insertWorkLoads(
-							WorkLoadUtil.getObjectList(workLoad), tg.getName(),
+					MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
 							String.valueOf(tg.getGeneration()));
 				}
 
@@ -376,27 +349,24 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			e.printStackTrace();
 		}
 
-		JMeterPluginsUtils.listWorkLoadToCollectionProperty(listBest,
-				WorkLoadThreadGroup.DATA_PROPERTY);
+		JMeterPluginsUtils.listWorkLoadToCollectionProperty(listBest, WorkLoadThreadGroup.DATA_PROPERTY);
 
 	}
 
-	public static void createNextGenerationElementsWithNoGui(
-			WorkLoadThreadGroup tg) {
+	public static void createNextGenerationElementsWithNoGui(WorkLoadThreadGroup tg) {
 
-		List<TestElement> listElement = FindService
-				.searchWorkLoadControllerWithNoGui(tg.getTree());
+		List<TestElement> listElement = FindService.searchWorkLoadControllerWithNoGui(tg.getTree());
 
 		List<WorkLoad> list = null;
 
-		if (tg.getCollaborative()|| (tg.getGeneration() == 1)) {
+		if (tg.getCollaborative() || (tg.getGeneration() == 1)) {
 			list = returnListAlgorithmGeneticWorkLoadsForAllNewGeneration(tg);
 		} else {
 			list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
 		}
 
 		List<WorkLoad> listSA = null;
-		if (tg.getCollaborative()|| (tg.getGeneration() == 1)) {
+		if (tg.getCollaborative() || (tg.getGeneration() == 1)) {
 			listSA = returnListALLWorkLoadsForNewGeneration(tg);
 
 		} else {
@@ -406,7 +376,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		List<WorkLoad> listTABU = null;
 
-		if (tg.getCollaborative()|| (tg.getGeneration() == 1)) {
+		if (tg.getCollaborative() || (tg.getGeneration() == 1)) {
 			listTABU = returnListALLWorkLoadsForNewGeneration(tg);
 		} else {
 			listTABU = returnListTABUWorkLoadsForNewGeneration(tg);
@@ -414,8 +384,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		tg.setGeneration(tg.getGeneration() + 1);
 
-		List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(tg, list,
-				listElement, false);
+		List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(tg, list, listElement, false);
 
 		List<WorkLoad> listNewSA = new ArrayList<WorkLoad>();
 
@@ -427,16 +396,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 			TabuSearch.addTabuTable(listTABU.get(0), listElement);
 
-			List<WorkLoad> neighboors = WorkLoadUtil.getNeighborHood(
-					listTABU.get(0), listElement, tg);
+			List<WorkLoad> neighboors = WorkLoadUtil.getNeighborHood(listTABU.get(0), listElement, tg);
 			listTABUnewGeneration = TabuSearch.verify(neighboors, listElement);
 
 		}
 
 		if (listSA.size() > 0) {
-			tg.temperature = SimulateAnnealing.sa(tg.temperature, listSA,
-					Integer.valueOf(tg.getThreadNumberMax()), listNewSA,
-					tg.getGeneration(), tg, listElement);
+			tg.temperature = SimulateAnnealing.sa(tg.temperature, listSA, Integer.valueOf(tg.getThreadNumberMax()),
+					listNewSA, tg.getGeneration(), tg, listElement);
 		}
 
 		try {
@@ -444,17 +411,13 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			if (tg.getGeneration() <= generations) {
 
 				for (WorkLoad workLoad : listBest) {
-					MySQLDatabase.insertWorkLoads(
-							WorkLoadUtil.getObjectList(workLoad), tg.getName(),
+					MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
 							String.valueOf(tg.getGeneration()));
 				}
 
-				if ((listTABUnewGeneration != null)
-						&& (listTABUnewGeneration.size() > 0)) {
+				if ((listTABUnewGeneration != null) && (listTABUnewGeneration.size() > 0)) {
 					for (WorkLoad workLoad : listTABUnewGeneration) {
-						MySQLDatabase.insertWorkLoads(
-								WorkLoadUtil.getObjectList(workLoad),
-								tg.getName(),
+						MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
 								String.valueOf(tg.getGeneration()));
 					}
 				}
@@ -465,9 +428,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				if (listSA.size() > 0) {
 
 					for (WorkLoad workLoad : listNewSA) {
-						MySQLDatabase.insertWorkLoads(
-								WorkLoadUtil.getObjectList(workLoad),
-								tg.getName(),
+						MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
 								String.valueOf(tg.getGeneration()));
 					}
 
@@ -478,8 +439,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			e.printStackTrace();
 		}
 
-		JMeterPluginsUtils.listWorkLoadToCollectionProperty(listBest,
-				WorkLoadThreadGroup.DATA_PROPERTY);
+		JMeterPluginsUtils.listWorkLoadToCollectionProperty(listBest, WorkLoadThreadGroup.DATA_PROPERTY);
 
 	}
 
@@ -501,8 +461,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			Agent.sinchronize();
 
 			try {
-				workLoads = MySQLDatabase.listWorkLoadsByGeneration(
-						this.getName(), String.valueOf(this.getGeneration()));
+				workLoads = MySQLDatabase.listWorkLoadsByGeneration(this.getName(),
+						String.valueOf(this.getGeneration()));
 			} catch (ClassNotFoundException e2) {
 
 				log.error(e2.getMessage());
@@ -516,8 +476,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			this.setCurrentTest(this.getCurrentTest() + 1);
 			if (this.getCurrentTest() < size) {
 
-				WorkLoadThreadGroup.finishTest(agent, this,
-						String.valueOf(generation));
+				WorkLoadThreadGroup.finishTest(agent, this, String.valueOf(generation));
 
 				Agent.sinchronizeFinal();
 
@@ -525,8 +484,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 			} else {
 
-				WorkLoadThreadGroup.finishTest(agent, this,
-						String.valueOf(generation));
+				WorkLoadThreadGroup.finishTest(agent, this, String.valueOf(generation));
 
 				agent.runningFinal();
 
@@ -538,8 +496,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 				agent.delete();
 
 				Agent.sinchronizeFinal();
-				if ((getGeneration() <= generations)
-						|| (minTempInt <= temperature)) {
+				if ((getGeneration() <= generations) || (minTempInt <= temperature)) {
 					this.currentTest = 0;
 
 					File file = new File("tempResults.csv");
@@ -598,6 +555,12 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	private static final String POPULATION_SIZE = "populationsize";
 
+	private static final String MAXMEMORY = "maxmemory";
+
+	private static final String MAXCPUSHARE = "maxcpushare";
+
+	private static final String DOCKERIMAGE = "dockerimage";
+
 	private static final String RESPONSEMAX_FIT_WEIGHT = "responsemaxfitweigth";
 
 	private static final String TOTALERROR_FIT_WEIGHT = "totalerrorfitweigth";
@@ -613,8 +576,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 	private static final String INITIAL_GENERATION = "workloadthreadgroup.initialgeneration";;
 
 	@Override
-	public void start(int groupCount, ListenerNotifier notifier,
-			ListedHashTree threadGroupTree, StandardJMeterEngine engine) {
+	public void start(int groupCount, ListenerNotifier notifier, ListedHashTree threadGroupTree,
+			StandardJMeterEngine engine) {
 
 		while (!(this.verifyThreadsStopped()))
 			;
@@ -630,8 +593,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		List<WorkLoad> list = null;
 		try {
-			list = MySQLDatabase.listWorkLoadsOrderName(this.getName(),
-					String.valueOf(this.getGeneration()));
+			list = MySQLDatabase.listWorkLoadsOrderName(this.getName(), String.valueOf(this.getGeneration()));
 		} catch (ClassNotFoundException e1) {
 
 			log.error(e1.getMessage());
@@ -641,8 +603,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 		this.setTree(threadGroupTree);
 
-		List<TestElement> lista = FindService
-				.searchWorkLoadControllerWithNoGui(threadGroupTree);
+		List<TestElement> lista = FindService.searchWorkLoadControllerWithNoGui(threadGroupTree);
 
 		SingletonEngine.groupCount = groupCount;
 		SingletonEngine.notifier = notifier;
@@ -659,8 +620,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 			int newGeneration = 0;
 
-			int newGenerationAux = WorkLoadUtil.getGenerationFromName(workload
-					.getName());
+			int newGenerationAux = WorkLoadUtil.getGenerationFromName(workload.getName());
 
 			if (newGenerationAux > newGeneration) {
 
@@ -672,16 +632,13 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 			}
 
-			JMeterContextService.getContext().getVariables()
-					.put("currentWorkload", workload.getName());
+			JMeterContextService.getContext().getVariables().put("currentWorkload", workload.getName());
 
-			int numThreads = getThreadNumberCounter(workload,
-					workload.getNumThreads());
+			int numThreads = getThreadNumberCounter(workload, workload.getNumThreads());
 
 			log.info("Starting workload " + workload.getName());
 
-			log.info("Starting thread group number " + groupCount + " threads "
-					+ workload.getNumThreads());
+			log.info("Starting thread group number " + groupCount + " threads " + workload.getNumThreads());
 
 			final JMeterContext context = JMeterContextService.getContext();
 
@@ -693,11 +650,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 				int users = 0;
 
-				String nameWorkloadController = getFunctionNameByID(workload,
-						count);
+				String nameWorkloadController = getFunctionNameByID(workload, count);
 
-				if ((nameWorkloadController != null)
-						&& (!(nameWorkloadController.equals("None")))) {
+				if ((nameWorkloadController != null) && (!(nameWorkloadController.equals("None")))) {
 
 					if (count == 1) {
 						users = workload.getUsers1();
@@ -730,22 +685,17 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 						users = workload.getUsers10();
 					}
 
-					TestElement node = getNodesByName(nameWorkloadController,
-							lista);
+					TestElement node = getNodesByName(nameWorkloadController, lista);
 
 					if (users > 0) {
 
-						log.info("Starting threads " + users + " Func:"
-								+ nameWorkloadController);
+						log.info("Starting threads " + users + " Func:" + nameWorkloadController);
 
 						for (int j = 0; j < users; j++) {
-							JMeterThread jmThread = makeThread(groupCount,
-									notifier, threadGroupTree, engine, j,
+							JMeterThread jmThread = makeThread(groupCount, notifier, threadGroupTree, engine, j,
 									context, workload, node);
-							workload.scheduleThread(log, numThreads, jmThread,
-									count);
-							Thread newThread = new Thread(jmThread,
-									jmThread.getThreadName());
+							workload.scheduleThread(log, numThreads, jmThread, count);
+							Thread newThread = new Thread(jmThread, jmThread.getThreadName());
 
 							registerStartedThread(jmThread, newThread);
 
@@ -858,9 +808,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	}
 
-	private JMeterThread makeThread(int groupCount, ListenerNotifier notifier,
-			ListedHashTree threadGroupTree, JMeterEngine engine, int i,
-			JMeterContext context, WorkLoad workLoad, TestElement node) {
+	private JMeterThread makeThread(int groupCount, ListenerNotifier notifier, ListedHashTree threadGroupTree,
+			JMeterEngine engine, int i, JMeterContext context, WorkLoad workLoad, TestElement node) {
 
 		ListedHashTree clone = cloneTree(threadGroupTree);
 
@@ -906,8 +855,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 			jmeterThread.setThreadNum(i);
 			jmeterThread.setThreadGroup(this);
 			jmeterThread.setInitialContext(context);
-			final String threadName = groupName + " " + (groupCount) + "-"
-					+ workLoad.getName() + "-" + (i + 1);
+			final String threadName = groupName + " " + (groupCount) + "-" + workLoad.getName() + "-" + (i + 1);
 			jmeterThread.setThreadName(threadName);
 
 			jmeterThread.setEngine((StandardJMeterEngine) engine);
@@ -920,8 +868,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 		}
 	}
 
-	private void registerStartedThread(JMeterThread jMeterThread,
-			Thread newThread) {
+	private void registerStartedThread(JMeterThread jMeterThread, Thread newThread) {
 		allThreads.put(jMeterThread, newThread);
 	}
 
@@ -960,6 +907,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	public String getUserFitWeight() {
 		return getPropertyAsString(USER_FIT_WEIGHT);
+	}
+
+	public String getDockerImage() {
+		return getPropertyAsString(DOCKERIMAGE);
+	}
+
+	public void setDockerImage(String value) {
+		setProperty(DOCKERIMAGE, value);
 	}
 
 	public void setResponseTimeMaxPenalty(String delay) {
@@ -1032,6 +987,22 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup implements
 
 	public String getMaxTime() {
 		return getPropertyAsString(THREAD_MAX_TIME);
+	}
+
+	public String getMaxMemory() {
+		return getPropertyAsString(MAXMEMORY);
+	}
+
+	public void setMaxMemory(String value) {
+		setProperty(MAXMEMORY, value);
+	}
+
+	public void setMaxCpuShare(String value) {
+		setProperty(MAXCPUSHARE, value);
+	}
+
+	public String getMaxCpuShare() {
+		return getPropertyAsString(MAXCPUSHARE);
 	}
 
 	public void setMaxTime(String delay) {
