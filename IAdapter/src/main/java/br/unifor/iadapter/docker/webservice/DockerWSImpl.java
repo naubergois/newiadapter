@@ -9,7 +9,7 @@ import br.unifor.iadapter.shell.DockerShell;
 public class DockerWSImpl implements DockerWSInterface {
 
 	@Override
-	public void start(String image, String memory, String cpuShare) {
+	public void start(String image, String memory, String cpuShare,String sourcePort,String destPort) {
 		Docker docker = new Docker();
 		docker.setMemory(Integer.valueOf(memory));
 		docker.setCpuShare(Integer.valueOf(cpuShare));
@@ -18,7 +18,7 @@ public class DockerWSImpl implements DockerWSInterface {
 		dockerS.setDockerImage(image);
 		
 		System.out.println("Running docker image");
-		dockerS.run(docker);
+		dockerS.run(docker,sourcePort,destPort);
 
 		// TODO Auto-generated method stub
 
@@ -26,7 +26,6 @@ public class DockerWSImpl implements DockerWSInterface {
 
 	@Override
 	public void stop(String image) {
-		// TODO Auto-generated method stub
 
 	}
 

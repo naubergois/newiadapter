@@ -3,6 +3,8 @@ package br.unifor.iadapter.docker;
 public class Docker {
 	
 	private int cpuShare;
+	
+	
 		
 	public int getCpuShare() {		
 		

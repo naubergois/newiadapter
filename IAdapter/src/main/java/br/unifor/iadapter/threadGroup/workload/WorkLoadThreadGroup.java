@@ -477,6 +477,10 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 			this.setCurrentTest(this.getCurrentTest() + 1);
 			if (this.getCurrentTest() < size) {
+				
+				DockerClient client=new DockerClient();
+				client.stopDocker(this.getIpDocker(), this.getDockerImage());
+
 
 				WorkLoadThreadGroup.finishTest(agent, this, String.valueOf(generation));
 
@@ -552,6 +556,10 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	private static final String PERCENTILE80_FIT_WEIGHT = "percentile80fitweight";
 
 	private static final String COLABORATIVE = "colaborative";
+	
+	private static final String DOCKERSOURCEPORT = "sourceportdocker";
+	
+	private static final String DOCKERDESTPORT = "destportdocker";
 
 	private static final String PERCENTILE70_FIT_WEIGHT = "percentile70fitweight";
 
@@ -562,6 +570,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	private static final String MAXCPUSHARE = "maxcpushare";
 
 	private static final String DOCKERIMAGE = "dockerimage";
+	
+	private static final String IPDOCKER = "ipdocker";
 
 	private static final String RESPONSEMAX_FIT_WEIGHT = "responsemaxfitweigth";
 
@@ -626,7 +636,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			
 
 			DockerClient client=new DockerClient();
-			client.startDocker(PropertieUtil.getProperty("ipws"), this.getDockerImage(), workload.getMemory(), workload.getCpuShare());
+			client.startDocker(this.getIpDocker(), this.getDockerImage(), workload.getMemory(), workload.getCpuShare(),this.getSourcePortDocker(),this.getDestPortDocker());
+			
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			int newGeneration = 0;
 
@@ -917,6 +934,33 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 	public String getUserFitWeight() {
 		return getPropertyAsString(USER_FIT_WEIGHT);
+	}
+	
+	public String getIpDocker() {
+		return getPropertyAsString(IPDOCKER);
+	}
+	
+	public String getSourcePortDocker() {
+		return getPropertyAsString(DOCKERSOURCEPORT);
+	}
+	
+	public String getDestPortDocker() {
+		return getPropertyAsString(DOCKERDESTPORT);
+	}
+	
+	public void setSourcePortDocker(String value) {
+		setProperty(DOCKERSOURCEPORT, value);
+	}
+	
+	public void setDestPortDocker(String value) {
+		setProperty(DOCKERDESTPORT, value);
+	}
+	
+	
+	
+	
+	public void setIpDocker(String value) {
+		setProperty(IPDOCKER, value);
 	}
 
 	public String getDockerImage() {

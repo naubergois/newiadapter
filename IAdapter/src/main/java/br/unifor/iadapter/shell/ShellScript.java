@@ -8,10 +8,8 @@ public class ShellScript {
 
 	public int run(String command) throws IOException, InterruptedException {
 		Runtime r = Runtime.getRuntime();
-		String[] commands = new String[1];
-		commands[0] = " docker";
-
-		Process p = r.exec("sh", commands);
+		System.out.println("Running command "+command);
+		Process p = r.exec(command);
 		p.waitFor();
 		BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		String line = "";

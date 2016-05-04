@@ -24,11 +24,11 @@ public class DockerShell {
 		this.dockerImage = dockerImage;
 	}
 
-	public void run(Docker docker) {
+	public void run(Docker docker,String sourcePort,String destPort) {
 		ShellScript shell = new ShellScript();
 		try {
-			shell.run(DOCKERCOMMAND + DOCKERMEMORYOPTION + docker.getMemory() + DOCKERCPUSHAREOPTION + docker.getCpuShare()
-					+ this.getDockerImage());
+			shell.run(DOCKERCOMMAND + DOCKERMEMORYOPTION + docker.getMemory()+"MB " + DOCKERCPUSHAREOPTION + docker.getCpuShare()
+					+ " -p "+sourcePort+":"+destPort+" "+this.getDockerImage());
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 			// TODO Auto-generated catch block

@@ -10,7 +10,7 @@ import javax.jws.soap.SOAPBinding.Style;
 public interface DockerWSInterface {
 
 	@WebMethod
-	void start(String image, String memory, String cpuShare);
+	void start(String image, String memory, String cpuShare,String sourcePort,String destPort);
 
 	@WebMethod
 	void stop(String image);
