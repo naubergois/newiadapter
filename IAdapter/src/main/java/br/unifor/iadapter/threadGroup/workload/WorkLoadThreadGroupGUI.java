@@ -98,6 +98,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 	private JTextField ipDocker;
 	private JTextField sourcePortDocker;
 	private JTextField destPortDocker;
+	private JTextField dockerCommandLine;
 	/**
 	 *
 	 */
@@ -432,6 +433,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 			utg.setIpDocker(ipDocker.getText());
 			utg.setSourcePortDocker(sourcePortDocker.getText());
 			utg.setDestPortDocker(destPortDocker.getText());
+			utg.setDockerCommandLine(dockerCommandLine.getText());
 
 			if (grid == null) {
 				createGrid();
@@ -483,6 +485,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		ipDocker.setText(utg.getIpDocker());
 		sourcePortDocker.setText(utg.getSourcePortDocker());
 		destPortDocker.setText(utg.getDestPortDocker());
+		dockerCommandLine.setText(utg.getDockerCommandLine());
 
 		JMeterProperty threadValues = utg.getData();
 		if (!(threadValues instanceof NullProperty)) {
@@ -618,6 +621,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		ipDocker = new JTextField("127.0.0.1", 5);
 		sourcePortDocker= new JTextField("8080", 5);
 		destPortDocker= new JTextField("8080", 5);
+		dockerCommandLine= new JTextField( 50);
 
 		param.add(new JLabel("Max Memory"));
 		param.add(maxMemory);
@@ -631,6 +635,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		param.add(sourcePortDocker);
 		param.add(new JLabel("Destination Port Docker"));
 		param.add(destPortDocker);
+		param.add(new JLabel("Docker Command Line"));
+		param.add(dockerCommandLine);
 		panel.add(param, BorderLayout.CENTER);
 
 		tab1.addTab("Docker", panel);

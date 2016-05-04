@@ -571,6 +571,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 	private static final String DOCKERIMAGE = "dockerimage";
 	
+	private static final String DOCKERCOMMANDLINE = "dockercommandline";
+	
 	private static final String IPDOCKER = "ipdocker";
 
 	private static final String RESPONSEMAX_FIT_WEIGHT = "responsemaxfitweigth";
@@ -636,7 +638,12 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			
 
 			DockerClient client=new DockerClient();
-			client.startDocker(this.getIpDocker(), this.getDockerImage(), workload.getMemory(), workload.getCpuShare(),this.getSourcePortDocker(),this.getDestPortDocker());
+			if (this.getDockerCommandLine().length()>0){
+				client.startDocker(this.getIpDocker(), this.getDockerImage(), workload.getMemory(), workload.getCpuShare(),this.getDockerCommandLine());
+			}else{
+				client.startDocker(this.getIpDocker(), this.getDockerImage(), workload.getMemory(), workload.getCpuShare(),this.getSourcePortDocker(),this.getDestPortDocker());	
+			}
+			
 			
 			try {
 				Thread.sleep(10000);
@@ -944,12 +951,20 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		return getPropertyAsString(DOCKERSOURCEPORT);
 	}
 	
+	public String getDockerCommandLine() {
+		return getPropertyAsString(DOCKERCOMMANDLINE);
+	}
+	
 	public String getDestPortDocker() {
 		return getPropertyAsString(DOCKERDESTPORT);
 	}
 	
 	public void setSourcePortDocker(String value) {
 		setProperty(DOCKERSOURCEPORT, value);
+	}
+	
+	public void setDockerCommandLine(String value) {
+		setProperty(DOCKERCOMMANDLINE, value);
 	}
 	
 	public void setDestPortDocker(String value) {

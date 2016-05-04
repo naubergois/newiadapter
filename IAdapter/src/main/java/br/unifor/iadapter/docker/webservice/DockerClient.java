@@ -8,15 +8,38 @@ import javax.xml.ws.Service;
 
 public class DockerClient {
 
-	public void startDocker(String ip, String dockerImage, int memory, int cpuShare,String sourcePort,String destPort) {
+	public void startDocker(String ip, String dockerImage, int memory, int cpuShare, String sourcePort,
+			String destPort) {
 		try {
-			startDocker(ip, dockerImage, String.valueOf(memory), String.valueOf(cpuShare),sourcePort,destPort);
+			startDocker(ip, dockerImage, String.valueOf(memory), String.valueOf(cpuShare), sourcePort, destPort);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void startDocker(String ip, String dockerImage, String memory, String cpuShare,String sourcePort,String destPort)
+	public void startDocker(String ip, String dockerImage, int memory, int cpuShare, String commandLine) {
+		try {
+			startDocker(ip, dockerImage, String.valueOf(memory), String.valueOf(cpuShare), commandLine);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void startDocker(String ip, String dockerImage, String memory, String cpuShare, String sourcePort,
+			String destPort) throws MalformedURLException {
+		URL url = new URL("http://" + ip + ":9999/ws/docker?wsdl");
+
+		QName qname = new QName("http://webservice.docker.iadapter.unifor.br/", "DockerWSImplService");
+
+		Service service = Service.create(url, qname);
+
+		DockerWSInterface hello = service.getPort(DockerWSInterface.class);
+
+		hello.start(dockerImage, memory, cpuShare, sourcePort, destPort);
+
+	}
+
+	public void startDocker(String ip, String dockerImage, String memory, String cpuShare, String commandLine)
 			throws MalformedURLException {
 		URL url = new URL("http://" + ip + ":9999/ws/docker?wsdl");
 
@@ -26,7 +49,7 @@ public class DockerClient {
 
 		DockerWSInterface hello = service.getPort(DockerWSInterface.class);
 
-		hello.start(dockerImage, memory, cpuShare,sourcePort,destPort);
+		hello.start(dockerImage, memory, cpuShare, commandLine);
 
 	}
 
@@ -59,10 +82,10 @@ public class DockerClient {
 
 		DockerWSInterface hello = service.getPort(DockerWSInterface.class);
 
-		hello.start("jloisel/jpetstore6", "10", "10","8080","8080");
-		
+		hello.start("jloisel/jpetstore6", "10", "10", "8080", "8080");
+
 		Thread.sleep(20000);
-		
+
 		hello.stop("jloisel/jpetstore6");
 
 	}
