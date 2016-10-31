@@ -125,10 +125,10 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	public static List<WorkLoad> getListWorkLoadFromPopulationTestPlan(
-			List<IChromosome> listC, WorkLoadThreadGroup tg, boolean gui) {
+			List<IChromosome> listC, WorkLoadThreadGroup tg, boolean gui,int generation) {
 
 		ListedHashTree tree = tg.getTree();
-		int generation = tg.getGeneration();
+		
 
 		int generationTrack = new Integer(tg.getGenerationTrack());
 		List<TestElement> listElement = null;
@@ -142,6 +142,7 @@ public abstract class JMeterPluginsUtils {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (IChromosome chromosome : listC) {
+			
 			list.add(WorkLoadUtil.getWorkLoadFromChromosome(chromosome,
 					listElement, generation, generationTrack));
 		}

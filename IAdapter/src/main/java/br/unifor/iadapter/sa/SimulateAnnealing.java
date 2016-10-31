@@ -94,7 +94,7 @@ public class SimulateAnnealing {
 		for (int i = 0; i < populationSize; i++) {
 
 			WorkLoad workLoad = WorkLoadUtil.getNeighBorHoodSA(
-					tg.getWorkloadCurrentSA(), nodes, newUsers, generation);
+					tg.getWorkloadCurrentSA(), nodes, newUsers, tg.getGeneration()+1);
 
 			list.add(workLoad);
 		}

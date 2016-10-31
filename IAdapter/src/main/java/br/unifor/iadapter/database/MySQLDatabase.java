@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Properties;
 
 import br.unifor.iadapter.agent.Agent;
+import br.unifor.iadapter.algorithm.AbstractAlgorithm;
 import br.unifor.iadapter.percentiles.PercentileCounter;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
@@ -46,7 +47,7 @@ public class MySQLDatabase {
 	private final static String COLUMNS = "NAME,TYPE," + "USERS,RESPONSETIME,ERROR,FIT,"
 			+ "FUNCTION1,FUNCTION2,FUNCTION3,FUNCTION4," + "FUNCTION5,FUNCTION6,FUNCTION7,FUNCTION8,"
 			+ "FUNCTION9,FUNCTION10,TESTPLAN,GENERATION," + "ACTIVE,PERCENT90,PERCENT80,PERCENT70,TOTALERROR,"
-			+ "SEARCHMETHOD,USER1,USER2,USER3,USER4,USER5,USER6" + ",USER7,USER8,USER9,USER10,MEMORY,CPUSHARE";
+			+ "SEARCHMETHOD,USER1,USER2,USER3,USER4,USER5,USER6" + ",USER7,USER8,USER9,USER10";
 
 	private final static String COLUMNSAMPLES = "LABEL,RESPONSETIME," + "MESSAGE,INDIVIDUAL,GENERATION,TESTPLAN";
 
@@ -55,7 +56,7 @@ public class MySQLDatabase {
 
 	private final static String COLUMNSAGENT = "name,running," + "ip,date";
 
-	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+	private final static String PARAMETERS = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
 
 	private final static String PARAMETERSSAMPLE = "?,?,?,?,?,?";
 
@@ -65,7 +66,7 @@ public class MySQLDatabase {
 			+ "FUNCTION2=?,FUNCTION3=?,FUNCTION4=?,FUNCTION5=?," + "FUNCTION6=?,FUNCTION7=?,FUNCTION8=?,FUNCTION9=?,"
 			+ "FUNCTION10=?,TESTPLAN=?,GENERATION=?,ACTIVE=?,PERCENT90=?,PERCENT80=?,"
 			+ "PERCENT70=?,TOTALERROR=?,SEARCHMETHOD=?,USER1=?,USER2=?,"
-			+ "USER3=?,USER4=?,USER5=?,USER6=?,USER7=?,USER8=?,USER9=?,USER10=?,MEMORY=?,CPUSHARE=?";
+			+ "USER3=?,USER4=?,USER5=?,USER6=?,USER7=?,USER8=?,USER9=?,USER10=?";
 
 	private final static String SETAGENT = "name=?,running=?," + "ip=?";
 
@@ -80,8 +81,13 @@ public class MySQLDatabase {
 	public static PreparedStatement setParametersWhere(PreparedStatement ps, List objetos, String where,
 			String testPlan) throws SQLException {
 		ps = setParameters(ps, objetos, testPlan);
-		ps.setString(37, where);
-		ps.setString(38, testPlan);
+		
+		System.out.println("Update "+where);
+		System.out.println("Update "+testPlan);
+		ps.setString(35, where);
+		ps.setString(36, testPlan);
+		
+		
 		return ps;
 	}
 
@@ -121,8 +127,7 @@ public class MySQLDatabase {
 		ps.setString(32, String.valueOf(objetos.get(30)));
 		ps.setString(33, String.valueOf(objetos.get(31)));
 		ps.setString(34, String.valueOf(objetos.get(32)));
-		ps.setString(35, String.valueOf(objetos.get(33)));
-		ps.setString(36, String.valueOf(objetos.get(33)));
+		//ps.setString(35, String.valueOf(objetos.get(33)));
 		return ps;
 	}
 
@@ -694,9 +699,13 @@ public class MySQLDatabase {
 			ps = con.prepareStatement(MySQLDatabase.INSERTSQL);
 			MySQLDatabase.setParameters(ps, objetos, testPlan);
 		} else {
+			
+			System.out.println("Atualizando workload");
 
 			ps = con.prepareStatement("" + "update workload set " + MySQLDatabase.SET + " WHERE NAME=? AND TESTPLAN=?");
 			MySQLDatabase.setParametersWhere(ps, objetos, String.valueOf(objetos.get(0)), testPlan);
+			
+			System.out.println("Objetos:"+ String.valueOf(objetos.get(0)));
 
 		}
 
@@ -1061,6 +1070,32 @@ public class MySQLDatabase {
 		return list;
 
 	}
+	
+	
+	
+	public static List<WorkLoad> listWorkLoadsForNewGenerationByMethod(String testPlan, String generation,AbstractAlgorithm algorithm)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? "
+				+ "AND SEARCHMETHOD='"+algorithm.getMethodName()+"' and GENERATION=? ORDER BY FIT*1 DESC LIMIT "+algorithm.getLimit());
+		ps.setString(1, testPlan);
+		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+	
 
 	public static List<WorkLoad> listWorkLoadsTABUForNewGeneration(String testPlan, String generation)
 			throws ClassNotFoundException, SQLException {

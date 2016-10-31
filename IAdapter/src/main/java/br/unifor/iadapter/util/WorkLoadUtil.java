@@ -120,7 +120,7 @@ public class WorkLoadUtil {
 	 * @return
 	 */
 	public static List<WorkLoad> getNeighborHood(WorkLoad workload, List<TestElement> nodes, WorkLoadThreadGroup tg) {
-		int generation = tg.getGeneration();
+		int generation = tg.getGeneration()+1;
 		int maxUsers = Integer.valueOf(tg.getThreadNumberMax());
 
 		int usersWorst = 0;
@@ -322,6 +322,8 @@ public class WorkLoadUtil {
 
 	public static WorkLoad getNeighBorHoodSA(WorkLoad workload, List<TestElement> nodes, int maxUsers,
 			Integer generationTrack) {
+		
+		System.out.println("SA"+generationTrack);
 
 		List<Integer> parameters = new ArrayList<Integer>();
 		parameters.add(getIndexType(workload.getType()));
@@ -589,8 +591,8 @@ public class WorkLoadUtil {
 		int users8 = randInt(0, maxUser);
 		int users9 = randInt(0, maxUser);
 		int users10 = randInt(0, maxUser);
-		int memory= randInt(0, maxMemory);
-		int cpuShare= randInt(0, maxCpuShare);
+		int memory = randInt(0, maxMemory);
+		int cpuShare = randInt(0, maxCpuShare);
 
 		workload.setUsers1(users1);
 		workload.setUsers2(users2);
@@ -967,12 +969,12 @@ public class WorkLoadUtil {
 		if (rs.getString(34) != null) {
 			workload.setUsers10(Integer.valueOf(rs.getString(34)));
 		}
-		if (rs.getString(35) != null) {
-			workload.setMemory(Integer.valueOf(rs.getString(35)));
-		}
-		if (rs.getString(36) != null) {
-			workload.setCpuShare(Integer.valueOf(rs.getString(36)));
-		}
+		//if (rs.getString(35) != null) {
+			//workload.setMemory(Integer.valueOf(rs.getString(35)));
+		//}
+		//if (rs.getString(36) != null) {
+			//workload.setCpuShare(Integer.valueOf(rs.getString(36)));
+		//}
 		return workload;
 	}
 
@@ -1060,8 +1062,9 @@ public class WorkLoadUtil {
 		rowObject[30] = String.valueOf(workLoad.getUsers8());
 		rowObject[31] = String.valueOf(workLoad.getUsers9());
 		rowObject[32] = String.valueOf(workLoad.getUsers10());
-		rowObject[33] = String.valueOf(workLoad.getMemory());
-		rowObject[34] = String.valueOf(workLoad.getCpuShare());
+		rowObject[33] = String.valueOf(workLoad.getUsers10());
+		rowObject[34] = String.valueOf(workLoad.getUsers10());
+
 		return rowObject;
 	}
 
@@ -1147,7 +1150,7 @@ public class WorkLoadUtil {
 		workload.setUsers10(((IntegerGene) gene[21]).intValue());
 
 		workload.setMemory(((IntegerGene) gene[22]).intValue());
-		
+
 		workload.setCpuShare(((IntegerGene) gene[23]).intValue());
 
 		workload.setGeneration(generation);
@@ -1372,9 +1375,9 @@ public class WorkLoadUtil {
 		if (generationTrack > 0) {
 			preprefix = "G" + generationTrack + ":";
 		}
-		
+
 		workload.setMemory(source.getMemory());
-		
+
 		workload.setCpuShare(source.getCpuShare());
 
 		workload.setName(preprefix + ":" + prefix + ":" + "G" + parametros.get(12) + ":" + workload.getType() + "-"

@@ -16,6 +16,7 @@ package br.unifor.iadapter.threadGroup.workload;
 
 import java.io.File;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -49,10 +50,12 @@ import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
 
 import br.unifor.iadapter.agent.Agent;
+import br.unifor.iadapter.algorithm.AbstractAlgorithm;
 import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.docker.webservice.DockerClient;
 import br.unifor.iadapter.genetic.GeneticAlgorithm;
 import br.unifor.iadapter.sa.SimulateAnnealing;
+import br.unifor.iadapter.searchclass.SearchClass;
 import br.unifor.iadapter.tabu.TabuSearch;
 import br.unifor.iadapter.threadGroup.AbstractSimpleThreadGroup;
 import br.unifor.iadapter.threadGroup.SingletonEngine;
@@ -77,7 +80,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	private static final long serialVersionUID = 1L;
 
 	private int generation = 0;
-	private int temperature = 0;
+	public int temperature = 0;
 	private int generationTrack = 0;
 
 	public int getGeneration() {
@@ -247,6 +250,20 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		return null;
 	}
 
+	public static List<WorkLoad> returnListWorkLoadsForNewGenerationByMethod(WorkLoadThreadGroup tg,
+			AbstractAlgorithm algorithm) {
+		try {
+			return MySQLDatabase.listWorkLoadsForNewGenerationByMethod(tg.getName(), String.valueOf(tg.getGeneration()),
+					algorithm);
+		} catch (ClassNotFoundException e1) {
+
+			log.error(e1.getMessage());
+		} catch (SQLException e1) {
+			log.error(e1.getMessage());
+		}
+		return null;
+	}
+
 	public static List<WorkLoad> returnListALLWorkLoadsForNewGeneration(WorkLoadThreadGroup tg) {
 		try {
 			return MySQLDatabase.listWorkLoadsALlForNewGeneration(tg.getName(), String.valueOf(tg.getGeneration()));
@@ -270,178 +287,113 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 	public static void createNextGenerationElementsWithGui(WorkLoadThreadGroup tg) {
 
+		System.out.println("GUI");
+
 		List<JMeterTreeNode> nodes = FindService.searchWorkLoadControllerWithGui();
 
 		List<TestElement> listElement = testNodeToTestElement(nodes);
 
 		tg.setGeneration(Integer.valueOf(tg.getInitialGeneration()));
 
-		List<WorkLoad> list = null;
-
-		if ((tg.getCollaborative()) || (tg.getGeneration() == 1)) {
-			list = returnListAlgorithmGeneticWorkLoadsForAllNewGeneration(tg);
-		} else {
-			list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
-		}
-		List<WorkLoad> listSA = null;
-		if (tg.getCollaborative() || (tg.getGeneration() == 1)) {
-			listSA = returnListALLWorkLoadsForNewGeneration(tg);
-
-		} else {
-
-			listSA = returnListSAWorkLoadsForNewGeneration(tg);
-		}
-
-		List<WorkLoad> listTABU = null;
-
-		if (tg.getCollaborative() || (tg.getGeneration() == 1)) {
-			listTABU = returnListALLWorkLoadsForNewGeneration(tg);
-		} else {
-			listTABU = returnListTABUWorkLoadsForNewGeneration(tg);
-		}
-
-		tg.setGeneration(tg.getGeneration() + 1);
-
-		List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(tg, list, listElement, true);
-
-		List<WorkLoad> listNewSA = new ArrayList<WorkLoad>();
-
-		List<WorkLoad> listTABUnewGeneration = null;
-
-		listTABU = TabuSearch.verify(listTABU, listElement);
-
-		if (listTABU.size() > 0) {
-
-			TabuSearch.addTabuTable(listTABU.get(0), listElement);
-
-			List<WorkLoad> neighboors = WorkLoadUtil.getNeighborHood(listTABU.get(0), listElement, tg);
-			listTABUnewGeneration = TabuSearch.verify(neighboors, listElement);
-
-		}
-
-		if (listSA.size() > 0) {
-			tg.temperature = SimulateAnnealing.sa(tg.temperature, listSA, Integer.valueOf(tg.getThreadNumberMax()),
-					listNewSA, tg.getGeneration(), tg, listElement);
-		}
-
+		List<String> classes = SearchClass.getClasses();
 		try {
+			List<AbstractAlgorithm> algorithms = SearchClass.getInstances(classes);
+			for (AbstractAlgorithm iAlgorithm : algorithms) {
+				if (tg.getCollaborative() || (tg.getGeneration() == 1)) {
+					iAlgorithm.setListWorkLoads(returnListALLWorkLoadsForNewGeneration(tg));
 
-			for (WorkLoad workLoad : listBest) {
-				MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
-						String.valueOf(tg.getGeneration()));
-			}
+					System.out.println("Colab Name " + iAlgorithm.getMethodName());
+					System.out.println("Colab Size " + iAlgorithm.getListWorkLoads().size());
 
-			if ((listTABUnewGeneration != null) && (listTABUnewGeneration.size() > 0)) {
-				for (WorkLoad workLoad : listTABUnewGeneration) {
-					MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
-							String.valueOf(tg.getGeneration()));
+				} else {
+
+					iAlgorithm.setListWorkLoads(returnListWorkLoadsForNewGenerationByMethod(tg, iAlgorithm));
+					System.out.println("No Colab Name " + iAlgorithm.getMethodName());
+					System.out.println("No Colab Size " + iAlgorithm.getListWorkLoads().size());
+
 				}
-			}
+				List<WorkLoad> listNewWorkLoads = iAlgorithm.strategy(iAlgorithm.getListWorkLoads(),
+						Integer.parseInt(tg.getPopulationSize()), listElement, tg);
 
-			if (listSA.size() > 0) {
+				System.out.println("New Workload " + listNewWorkLoads.size());
 
-				for (WorkLoad workLoad : listNewSA) {
-					MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
-							String.valueOf(tg.getGeneration()));
+				if (listNewWorkLoads.size() > 0) {
+
+					for (WorkLoad workLoad : listNewWorkLoads) {
+
+						try {
+							MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
+									String.valueOf(tg.getGeneration()));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+					}
+
 				}
 
 			}
 
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-
-		JMeterPluginsUtils.listWorkLoadToCollectionProperty(listBest, WorkLoadThreadGroup.DATA_PROPERTY);
-
 	}
 
 	public static void createNextGenerationElementsWithNoGui(WorkLoadThreadGroup tg) {
 
+		System.out.println("Non gui");
+
 		List<TestElement> listElement = FindService.searchWorkLoadControllerWithNoGui(tg.getTree());
 
-		List<WorkLoad> list = null;
-
-		if (tg.getCollaborative() || (tg.getGeneration() == 1)) {
-			list = returnListAlgorithmGeneticWorkLoadsForAllNewGeneration(tg);
-		} else {
-			list = returnListAlgorithmGeneticWorkLoadsForNewGeneration(tg);
-		}
-
-		List<WorkLoad> listSA = null;
-		if (tg.getCollaborative() || (tg.getGeneration() == 1)) {
-			listSA = returnListALLWorkLoadsForNewGeneration(tg);
-
-		} else {
-
-			listSA = returnListSAWorkLoadsForNewGeneration(tg);
-		}
-
-		List<WorkLoad> listTABU = null;
-
-		if (tg.getCollaborative() || (tg.getGeneration() == 1)) {
-			listTABU = returnListALLWorkLoadsForNewGeneration(tg);
-		} else {
-			listTABU = returnListTABUWorkLoadsForNewGeneration(tg);
-		}
-
-		tg.setGeneration(tg.getGeneration() + 1);
-
-		List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(tg, list, listElement, false);
-
-		List<WorkLoad> listNewSA = new ArrayList<WorkLoad>();
-
-		List<WorkLoad> listTABUnewGeneration = null;
-
-		listTABU = TabuSearch.verify(listTABU, listElement);
-
-		if (listTABU.size() > 0) {
-
-			TabuSearch.addTabuTable(listTABU.get(0), listElement);
-
-			List<WorkLoad> neighboors = WorkLoadUtil.getNeighborHood(listTABU.get(0), listElement, tg);
-			listTABUnewGeneration = TabuSearch.verify(neighboors, listElement);
-
-		}
-
-		if (listSA.size() > 0) {
-			tg.temperature = SimulateAnnealing.sa(tg.temperature, listSA, Integer.valueOf(tg.getThreadNumberMax()),
-					listNewSA, tg.getGeneration(), tg, listElement);
-		}
-
+		List<String> classes = SearchClass.getClasses();
 		try {
-			int generations = Integer.valueOf(tg.getGenNumber());
-			if (tg.getGeneration() <= generations) {
+			List<AbstractAlgorithm> algorithms = SearchClass.getInstances(classes);
+			for (AbstractAlgorithm iAlgorithm : algorithms) {
+				if (tg.getCollaborative() || (tg.getGeneration() == 1)) {
+					iAlgorithm.setListWorkLoads(returnListALLWorkLoadsForNewGeneration(tg));
 
-				for (WorkLoad workLoad : listBest) {
-					MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
-							String.valueOf(tg.getGeneration()));
+					System.out.println("Colab Name " + iAlgorithm.getMethodName());
+					System.out.println("Colab Size " + iAlgorithm.getListWorkLoads().size());
+
+				} else {
+
+					iAlgorithm.setListWorkLoads(returnListWorkLoadsForNewGenerationByMethod(tg, iAlgorithm));
+					System.out.println("No Colab Name " + iAlgorithm.getMethodName());
+					System.out.println("No Colab Size " + iAlgorithm.getListWorkLoads().size());
+
 				}
+				List<WorkLoad> listNewWorkLoads = iAlgorithm.strategy(iAlgorithm.getListWorkLoads(),
+						Integer.parseInt(tg.getPopulationSize()), listElement, tg);
 
-				if ((listTABUnewGeneration != null) && (listTABUnewGeneration.size() > 0)) {
-					for (WorkLoad workLoad : listTABUnewGeneration) {
-						MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
-								String.valueOf(tg.getGeneration()));
+				System.out.println("New Workload " + listNewWorkLoads.size());
+
+				if (listNewWorkLoads.size() > 0) {
+
+					for (WorkLoad workLoad : listNewWorkLoads) {
+
+						try {
+							MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
+									String.valueOf(tg.getGeneration()));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
 					}
-				}
-			}
-			int minTempInt = Integer.valueOf(tg.getMinTemp());
-
-			if (minTempInt <= tg.getTemperature()) {
-				if (listSA.size() > 0) {
-
-					for (WorkLoad workLoad : listNewSA) {
-						MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
-								String.valueOf(tg.getGeneration()));
-					}
 
 				}
+				
+				
+				
+				
+
 			}
 
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-
-		JMeterPluginsUtils.listWorkLoadToCollectionProperty(listBest, WorkLoadThreadGroup.DATA_PROPERTY);
+		
 
 	}
 
@@ -476,11 +428,12 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			int size = workLoads.size();
 
 			this.setCurrentTest(this.getCurrentTest() + 1);
+			
+			System.out.println(" generation" +generation);
+			System.out.println(" workload size" +size);
+			System.out.println(" Current test" +this.getCurrentTest());
+			
 			if (this.getCurrentTest() < size) {
-				
-				DockerClient client=new DockerClient();
-				client.stopDocker(this.getIpDocker(), this.getDockerImage());
-
 
 				WorkLoadThreadGroup.finishTest(agent, this, String.valueOf(generation));
 
@@ -495,6 +448,10 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 				agent.runningFinal();
 
 				createNextGenerationElementsWithNoGui(this);
+				
+				System.out.println("Add generation "+generation);
+				
+				setGeneration(getGeneration()+1);
 
 				int generations = Integer.valueOf(getGenNumber());
 				int minTempInt = Integer.valueOf(getMinTemp());
@@ -556,9 +513,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	private static final String PERCENTILE80_FIT_WEIGHT = "percentile80fitweight";
 
 	private static final String COLABORATIVE = "colaborative";
-	
+
 	private static final String DOCKERSOURCEPORT = "sourceportdocker";
-	
+
 	private static final String DOCKERDESTPORT = "destportdocker";
 
 	private static final String PERCENTILE70_FIT_WEIGHT = "percentile70fitweight";
@@ -570,9 +527,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	private static final String MAXCPUSHARE = "maxcpushare";
 
 	private static final String DOCKERIMAGE = "dockerimage";
-	
+
 	private static final String DOCKERCOMMANDLINE = "dockercommandline";
-	
+
 	private static final String IPDOCKER = "ipdocker";
 
 	private static final String RESPONSEMAX_FIT_WEIGHT = "responsemaxfitweigth";
@@ -630,21 +587,20 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			Agent agent = new Agent(this);
 
 			agent.running();
-			
-			
-			
-			WorkLoad workload = list.get(this.getCurrentTest());
-			
-			
 
-			DockerClient client=new DockerClient();
-			if (this.getDockerCommandLine().length()>0){
-				client.startDocker(this.getIpDocker(), this.getDockerImage(), workload.getMemory(), workload.getCpuShare(),this.getDockerCommandLine());
-			}else{
-				client.startDocker(this.getIpDocker(), this.getDockerImage(), workload.getMemory(), workload.getCpuShare(),this.getSourcePortDocker(),this.getDestPortDocker());	
-			}
-			
-			
+			WorkLoad workload = list.get(this.getCurrentTest());
+
+			// DockerClient client=new DockerClient();
+			// if (this.getDockerCommandLine().length()>0){
+			// client.startDocker(this.getIpDocker(), this.getDockerImage(),
+			// workload.getMemory(),
+			// workload.getCpuShare(),this.getDockerCommandLine());
+			// }else{
+			// client.startDocker(this.getIpDocker(), this.getDockerImage(),
+			// workload.getMemory(),
+			// workload.getCpuShare(),this.getSourcePortDocker(),this.getDestPortDocker());
+			// }
+
 			try {
 				Thread.sleep(10000);
 			} catch (InterruptedException e) {
@@ -942,38 +898,35 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	public String getUserFitWeight() {
 		return getPropertyAsString(USER_FIT_WEIGHT);
 	}
-	
+
 	public String getIpDocker() {
 		return getPropertyAsString(IPDOCKER);
 	}
-	
+
 	public String getSourcePortDocker() {
 		return getPropertyAsString(DOCKERSOURCEPORT);
 	}
-	
+
 	public String getDockerCommandLine() {
 		return getPropertyAsString(DOCKERCOMMANDLINE);
 	}
-	
+
 	public String getDestPortDocker() {
 		return getPropertyAsString(DOCKERDESTPORT);
 	}
-	
+
 	public void setSourcePortDocker(String value) {
 		setProperty(DOCKERSOURCEPORT, value);
 	}
-	
+
 	public void setDockerCommandLine(String value) {
 		setProperty(DOCKERCOMMANDLINE, value);
 	}
-	
+
 	public void setDestPortDocker(String value) {
 		setProperty(DOCKERDESTPORT, value);
 	}
-	
-	
-	
-	
+
 	public void setIpDocker(String value) {
 		setProperty(IPDOCKER, value);
 	}

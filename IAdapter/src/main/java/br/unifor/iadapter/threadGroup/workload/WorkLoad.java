@@ -286,7 +286,7 @@ public class WorkLoad {
 	public String toString() {
 		// TODO Auto-generated method stub
 		return "[" + this.getName() + "," + this.getType() + ","
-				+ this.getNumThreads() + "," + this.getFunction1() + "]";
+				+ this.getNumThreads() + "," + this.getFunction1() + this.getFunction2()+this.getFunction3()+this.getFunction4()+this.getFunction5()+this.getFunction6()+this.getFunction7()+this.getFunction8()+this.getFunction9()+this.getFunction10()+"]";
 	}
 
 	public static void setTypes(String[] types) {

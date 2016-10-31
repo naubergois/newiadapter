@@ -67,7 +67,7 @@ public class GeneticAlgorithm {
 			newList = GeneWorkLoad.crossOverPopulation(bestP, bestI);
 
 			List<WorkLoad> listWorkloads = JMeterPluginsUtils
-					.getListWorkLoadFromPopulationTestPlan(newList, tg, gui);
+					.getListWorkLoadFromPopulationTestPlan(newList, tg, gui,tg.getGeneration()+1);
 
 			return GeneWorkLoad.mutationPopulation(tg, listWorkloads, nodes,Integer.valueOf(tg.getMaxMemory()),Integer.valueOf(tg.getMaxCpuShare()));
 

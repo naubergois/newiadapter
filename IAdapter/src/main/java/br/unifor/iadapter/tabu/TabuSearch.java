@@ -26,30 +26,21 @@ public class TabuSearch {
 
 	private static int tabuExpires;
 
-	private static List<TabuElement> tabuTable = new ArrayList<TabuElement>();
+	private static List<WorkLoad> tabuTable = new ArrayList<WorkLoad>();
 
-	public static List<WorkLoad> verify(List<WorkLoad> list,
-			List<TestElement> nodes) {
-		List<WorkLoad> workLoadForRemove = new ArrayList<WorkLoad>();
-		for (WorkLoad workLoad : list) {
-			for (TabuElement tabuElement : tabuTable) {
-				TabuElement tabu = WorkLoadUtil.convertTabu(workLoad, nodes);
-				if (tabu.getTotal() == tabuElement.getTotal()) {
-					workLoadForRemove.add(workLoad);
-				}
-			}
-		}
+	public static List<WorkLoad> verify(List<WorkLoad> list) {
+
 		TabuSearch.setTabuExpires(TabuSearch.getTabuExpires() + 1);
 		if (TabuSearch.getTabuExpires() > 5) {
-			TabuSearch.setTabuTable(new ArrayList<TabuElement>());
+			TabuSearch.setTabuTable(new ArrayList<WorkLoad>());
 			TabuSearch.setTabuExpires(0);
 		}
-		list.removeAll(workLoadForRemove);
+		list.removeAll(TabuSearch.getTabuTable());
 		return list;
 	}
 
-	public static void addTabuTable(WorkLoad workLoad, List<TestElement> nodes) {
-		tabuTable.add(WorkLoadUtil.convertTabu(workLoad, nodes));
+	public static void addTabuTable(WorkLoad workLoad) {
+		tabuTable.add(workLoad);
 
 	}
 
@@ -61,11 +52,11 @@ public class TabuSearch {
 		TabuSearch.tabuExpires = tabuExpires;
 	}
 
-	public static List<TabuElement> getTabuTable() {
+	public static List<WorkLoad> getTabuTable() {
 		return tabuTable;
 	}
 
-	public static void setTabuTable(List<TabuElement> tabuTable) {
+	public static void setTabuTable(List<WorkLoad> tabuTable) {
 		TabuSearch.tabuTable = tabuTable;
 	}
 

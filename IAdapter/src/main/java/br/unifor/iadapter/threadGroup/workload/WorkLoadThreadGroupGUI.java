@@ -619,9 +619,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		maxCpuShare = new JTextField("10", 5);
 		dockerImage = new JTextField("image", 5);
 		ipDocker = new JTextField("127.0.0.1", 5);
-		sourcePortDocker= new JTextField("8080", 5);
-		destPortDocker= new JTextField("8080", 5);
-		dockerCommandLine= new JTextField( 50);
+		sourcePortDocker = new JTextField("8080", 5);
+		destPortDocker = new JTextField("8080", 5);
+		dockerCommandLine = new JTextField("", 5);
 
 		param.add(new JLabel("Max Memory"));
 		param.add(maxMemory);
