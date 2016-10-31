@@ -355,6 +355,37 @@ public class WorkLoadUtil {
 
 		return newWorkload;
 	}
+	
+	public static WorkLoad getNeighBorHoodHC(WorkLoad workload, List<TestElement> nodes, int maxUsers,
+			Integer generationTrack) {
+		
+		System.out.println("HC"+generationTrack);
+
+		List<Integer> parameters = new ArrayList<Integer>();
+		parameters.add(getIndexType(workload.getType()));
+
+		parameters = mutateParameter(parameters, nodes, workload);
+
+		Random random = new Random();
+
+		int probabilty = random.nextInt(10);
+
+		int newUsers = 0;
+
+		if (probabilty < 5) {
+
+			newUsers = random.nextInt(maxUsers);
+		} else {
+			newUsers = (workload.getNumThreads());
+		}
+
+		parameters.add(newUsers);
+		parameters.add(workload.getGeneration() + 1);
+
+		WorkLoad newWorkload = createWorkLoad(nodes, parameters, "HC", generationTrack, workload);
+
+		return newWorkload;
+	}
 
 	public static WorkLoad createWorkLoadMutant(List<TestElement> nodes, List<Integer> parametros, String search,
 			int memory, int cpuShare) {
@@ -1303,6 +1334,13 @@ public class WorkLoadUtil {
 			workload.calcUsers();
 
 		}
+		if (search.equals("HC")) {
+			prefix = "HC";
+			int threads = Integer.valueOf(parametros.get(11));
+			workload.setNumThreads(threads);
+			workload.calcUsers();
+
+		}		
 		if (search.equals("TABU")) {
 			prefix = "TABU";
 		}

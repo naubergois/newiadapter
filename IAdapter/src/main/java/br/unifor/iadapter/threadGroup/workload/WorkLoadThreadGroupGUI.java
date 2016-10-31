@@ -258,10 +258,10 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 
 		List<String> classes = SearchClass.getClasses();
 
-		String classesString = "<html>";
-		classesString+="Algorithms found: "+"</br>";
+		String classesString = "";
+		classesString+="Algorithms found: "+"\n";
 		for (String string : classes) {
-			classesString += string + "</br>";
+			classesString += string + "\n";
 		}
 		classesString += "</html>";
 
