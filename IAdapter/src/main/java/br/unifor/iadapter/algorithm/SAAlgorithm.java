@@ -15,6 +15,7 @@ public class SAAlgorithm extends AbstractAlgorithm {
 	public List<WorkLoad> strategy(List<WorkLoad> list,int populationSize,List<TestElement> listElement,WorkLoadThreadGroup tg) {
 		List<WorkLoad> newList = new ArrayList<WorkLoad>();
 		if (this.getListWorkLoads().size() > 0) {
+			System.out.println("SA Temperature:"+tg.temperature);
 			tg.temperature = SimulateAnnealing.sa(tg.temperature, this.getListWorkLoads(),
 					Integer.valueOf(tg.getThreadNumberMax()), newList, tg.getGeneration(), tg, listElement);
 		}

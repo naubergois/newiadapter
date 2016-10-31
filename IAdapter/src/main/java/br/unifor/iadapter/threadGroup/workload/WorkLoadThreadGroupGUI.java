@@ -20,6 +20,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.ImageIcon;
@@ -30,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
@@ -65,6 +67,7 @@ import br.unifor.iadapter.jmeter.ClearRowWorkloadAction;
 import br.unifor.iadapter.jmeter.GraphPanelChart;
 import br.unifor.iadapter.jmeter.GraphRowSumValues;
 import br.unifor.iadapter.jmeter.GuiBuilderHelper;
+import br.unifor.iadapter.searchclass.SearchClass;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
 
 public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements TableModelListener, CellEditorListener {
@@ -169,7 +172,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		tabbedPane.addTab("Main", containerPanel);
 		tabbedPane.addTab("WorkLoad", createWorkloadPanel());
 		tabbedPane.addTab("Graph", createGraphPanel());
-		createTabDocker(tabbedPane);
+		// createTabDocker(tabbedPane);
 		createTabAgent(tabbedPane);
 		createTabParameters(tabbedPane);
 		createLogPanel(tabbedPane);
@@ -249,7 +252,28 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 
 		JLabel icon = new JLabel(iadapter);
 
+		
+		
+		JTextArea area=new JTextArea(10,10);
+
+		List<String> classes = SearchClass.getClasses();
+
+		String classesString = "<html>";
+		classesString+="Algorithms found: "+"</br>";
+		for (String string : classes) {
+			classesString += string + "</br>";
+		}
+		classesString += "</html>";
+
+		area.setText(classesString);
+		
+		JScrollPane scroller = new JScrollPane(area, 
+			      JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+			      JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+
 		panel.add(BorderLayout.CENTER, icon);
+		panel.add(BorderLayout.SOUTH, scroller);
 		return panel;
 	}
 
@@ -427,13 +451,13 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 			utg.setInitialGeneration(initialGeneration.getText());
 			utg.setResponseTimeMaxPenalty(responseTimeMaxPenalty.getText());
 			utg.setMutantProbabilty(mutantProbability.getText());
-			utg.setMaxMemory(maxMemory.getText());
-			utg.setMaxCpuShare(maxCpuShare.getText());
-			utg.setDockerImage(dockerImage.getText());
-			utg.setIpDocker(ipDocker.getText());
-			utg.setSourcePortDocker(sourcePortDocker.getText());
-			utg.setDestPortDocker(destPortDocker.getText());
-			utg.setDockerCommandLine(dockerCommandLine.getText());
+			// utg.setMaxMemory(maxMemory.getText());
+			// utg.setMaxCpuShare(maxCpuShare.getText());
+			// utg.setDockerImage(dockerImage.getText());
+			// utg.setIpDocker(ipDocker.getText());
+			// utg.setSourcePortDocker(sourcePortDocker.getText());
+			// utg.setDestPortDocker(destPortDocker.getText());
+			// utg.setDockerCommandLine(dockerCommandLine.getText());
 
 			if (grid == null) {
 				createGrid();
@@ -479,13 +503,13 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		initialGeneration.setText(utg.getInitialGeneration());
 		responseTimeMaxPenalty.setText(utg.getResponseTimeMaxPenalty());
 		mutantProbability.setText(utg.getMutantProbability());
-		maxCpuShare.setText(utg.getMaxCpuShare());
-		maxMemory.setText(utg.getMaxMemory());
-		dockerImage.setText(utg.getDockerImage());
-		ipDocker.setText(utg.getIpDocker());
-		sourcePortDocker.setText(utg.getSourcePortDocker());
-		destPortDocker.setText(utg.getDestPortDocker());
-		dockerCommandLine.setText(utg.getDockerCommandLine());
+		// maxCpuShare.setText(utg.getMaxCpuShare());
+		// maxMemory.setText(utg.getMaxMemory());
+		// dockerImage.setText(utg.getDockerImage());
+		// ipDocker.setText(utg.getIpDocker());
+		// sourcePortDocker.setText(utg.getSourcePortDocker());
+		// destPortDocker.setText(utg.getDestPortDocker());
+		// dockerCommandLine.setText(utg.getDockerCommandLine());
 
 		JMeterProperty threadValues = utg.getData();
 		if (!(threadValues instanceof NullProperty)) {

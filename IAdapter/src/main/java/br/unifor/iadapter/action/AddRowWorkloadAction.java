@@ -75,7 +75,7 @@ public class AddRowWorkloadAction implements ActionListener {
 				e2.printStackTrace();
 			}
 			
-			try {
+			/*try {
 				maxMemory = Integer.valueOf(sender.getMaxMemory().getText());
 			} catch (NumberFormatException e2) {
 				e2.printStackTrace();
@@ -85,7 +85,7 @@ public class AddRowWorkloadAction implements ActionListener {
 				maxCpuShare = Integer.valueOf(sender.getMaxCpuShare().getText());
 			} catch (NumberFormatException e2) {
 				e2.printStackTrace();
-			}
+			}*/
 			
 			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(
 					users, 1, population,maxMemory,maxCpuShare);

@@ -136,6 +136,7 @@ public class WorkLoadSaver extends AbstractTestElement implements Serializable,
 
 	public void sampleOccurred(SampleEvent e) {
 
+		
 		FileWriter file = new FileWriter();
 		file.setFilename("tempResults.csv");
 		file.setOverwrite(false);

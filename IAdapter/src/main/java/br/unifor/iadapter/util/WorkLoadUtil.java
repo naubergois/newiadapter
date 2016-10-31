@@ -147,6 +147,7 @@ public class WorkLoadUtil {
 		for (int i = 0; i < populationSize; i++) {
 			WorkLoad neighbor = getNeighBorHood(workload, nodes, maxUsers, tg.getGenerationTrack());
 			neighbor.setGeneration(generation);
+			System.out.println("neighbor: "+neighbor);
 			list.add(neighbor);
 		}
 
@@ -307,8 +308,12 @@ public class WorkLoadUtil {
 
 		List<Integer> parameters = new ArrayList<Integer>();
 		parameters.add(getIndexType(workload.getType()));
+		
+		System.out.println("Parameter old: "+parameters);
 
 		parameters = mutateParameter(parameters, nodes, workload);
+		
+		System.out.println("Parameter new: "+parameters);
 
 		int newUsers = (workload.getNumThreads());
 
@@ -1276,6 +1281,9 @@ public class WorkLoadUtil {
 			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[1]);
 
 		}
+		
+		int position=randInt(0, 10);
+		
 
 		workload.setFunction1(getName(nodes, parametros.get(1)));
 		workload.setFunction2(getName(nodes, parametros.get(2)));

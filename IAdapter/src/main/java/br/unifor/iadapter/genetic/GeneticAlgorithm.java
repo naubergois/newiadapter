@@ -58,13 +58,19 @@ public class GeneticAlgorithm {
 						.listBESTWorkloadGeneticPopulationSize(tg.getName(),
 								tg.getPopulationSize());
 			}
+			
+			System.out.println("Best:"+workLoads);
 
 			List<Chromosome> bestP = GeneWorkLoad.getChromossomes(workLoads,
 					tg.getTree(), gui);
+			
+			System.out.println("Best Chromossome:"+bestP);
 
 			List<IChromosome> newList = null;
 
 			newList = GeneWorkLoad.crossOverPopulation(bestP, bestI);
+			
+			System.out.println("After crossover:"+newList);
 
 			List<WorkLoad> listWorkloads = JMeterPluginsUtils
 					.getListWorkLoadFromPopulationTestPlan(newList, tg, gui,tg.getGeneration()+1);

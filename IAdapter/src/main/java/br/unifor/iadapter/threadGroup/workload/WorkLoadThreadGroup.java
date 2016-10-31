@@ -74,6 +74,16 @@ import br.unifor.iadapter.util.WorkLoadUtil;
 public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		implements Serializable, TestStateListener, SampleListener, LoopIterationListener {
 
+	private static List<String> scenariosSimulation = new ArrayList();
+
+	public static List<String> getScenariosSimulation() {
+		return scenariosSimulation;
+	}
+
+	public static void setScenariosSimulation(List<String> scenariosSimulation) {
+		WorkLoadThreadGroup.scenariosSimulation = scenariosSimulation;
+	}
+
 	/**
 	 * 
 	 */
@@ -382,10 +392,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 					}
 
 				}
-				
-				
-				
-				
 
 			}
 
@@ -393,7 +399,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
 
 	}
 
@@ -428,11 +433,13 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			int size = workLoads.size();
 
 			this.setCurrentTest(this.getCurrentTest() + 1);
-			
-			System.out.println(" generation" +generation);
-			System.out.println(" workload size" +size);
-			System.out.println(" Current test" +this.getCurrentTest());
-			
+
+			System.out.println(" generation" + generation);
+			System.out.println(" workload size" + size);
+			System.out.println(" Current test" + this.getCurrentTest());
+
+			setScenariosSimulation(new ArrayList());
+
 			if (this.getCurrentTest() < size) {
 
 				WorkLoadThreadGroup.finishTest(agent, this, String.valueOf(generation));
@@ -448,10 +455,10 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 				agent.runningFinal();
 
 				createNextGenerationElementsWithNoGui(this);
-				
-				System.out.println("Add generation "+generation);
-				
-				setGeneration(getGeneration()+1);
+
+				System.out.println("Add generation " + generation);
+
+				setGeneration(getGeneration() + 1);
 
 				int generations = Integer.valueOf(getGenNumber());
 				int minTempInt = Integer.valueOf(getMinTemp());
