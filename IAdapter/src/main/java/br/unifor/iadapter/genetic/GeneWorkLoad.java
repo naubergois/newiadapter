@@ -31,6 +31,7 @@ import org.jgap.Population;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.IntegerGene;
 
+import br.unifor.iadapter.algorithm.AbstractAlgorithm;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.util.FindService;
@@ -68,15 +69,15 @@ public class GeneWorkLoad {
 
 	}
 
-	public static List<WorkLoad> mutationPopulation(WorkLoadThreadGroup tg,
-			List<WorkLoad> list, List<TestElement> nodes,int maxMemory,int maxCpuShare) {
-		int maxUsers = Integer.valueOf(tg.getThreadNumberMax());
-		int generation = tg.getGeneration();
-		MutationOperator cs = new MutationOperator();
+	public static List<WorkLoad> mutationPopulation(AbstractAlgorithm algorithm,List<WorkLoad> list, List<String> nodes,int mutantProbability,int population,int generation,int maxUsers) {
+		
+		
+	
 		List<WorkLoad> mutant = new ArrayList<WorkLoad>();
-		for (WorkLoad workLoad2 : list) {
-			mutant.add(MutationOperator.mutantWorkload(workLoad2, 3, nodes, maxUsers,
-					generation, Integer.valueOf(tg.getMutantProbability()),maxMemory,maxCpuShare));
+		for (WorkLoad workLoad2 : list) {		
+			
+			mutant.add(MutationOperator.mutantWorkload(algorithm, workLoad2, population, nodes, maxUsers,
+					generation, Integer.valueOf(mutantProbability)));
 		}
 
 		return mutant;
@@ -233,14 +234,14 @@ public class GeneWorkLoad {
 		return workLoads;
 	}
 
-	public static List<WorkLoad> createWorkLoadsFromChromossomeWithGui(
+	public static List<WorkLoad> createWorkLoadsFromChromossomeWithGui(AbstractAlgorithm algorithm,
 			int userNumbers, int generation, int population,int memory,int cpuShare)
 			throws InvalidConfigurationException {
 		IChromosome[] list = createPopulation(userNumbers, population,memory,cpuShare);
 		List<WorkLoad> workLoads = new ArrayList<WorkLoad>();
 		for (IChromosome iChromosome : list) {
 			Gene[] gene = iChromosome.getGenes();
-			WorkLoad workload = WorkLoadUtil.createWorkLoadWithGui(gene,
+			WorkLoad workload = WorkLoadUtil.createWorkLoadWithGui(algorithm,gene,
 					generation);
 			workLoads.add(workload);
 		}

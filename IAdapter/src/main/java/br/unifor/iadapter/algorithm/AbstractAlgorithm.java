@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jmeter.testelement.TestElement;
+import org.apache.jorphan.collections.ListedHashTree;
 
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
@@ -40,6 +41,6 @@ public abstract class AbstractAlgorithm implements IAlgorithm {
 		this.methodName = methodName;
 	}
 
-	public abstract List<WorkLoad> strategy(List<WorkLoad> listWorkload,	int populationSize,List<TestElement> nodes,WorkLoadThreadGroup tg);
+	public abstract List<WorkLoad> strategy(List<WorkLoad> list,int populationSize,List<String> testCases,int generation,int maxUsers,String testPlan,int mutantProbability,int bestIndividuals,boolean collaborative,ListedHashTree script);
 
 }

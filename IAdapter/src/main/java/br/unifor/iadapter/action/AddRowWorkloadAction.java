@@ -28,7 +28,12 @@ import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
 import org.jgap.InvalidConfigurationException;
 
+import com.sun.javafx.scene.traversal.Algorithm;
+
+import br.unifor.iadapter.algorithm.AbstractAlgorithm;
+import br.unifor.iadapter.algorithm.InitialPopulationAlgorithm;
 import br.unifor.iadapter.genetic.GeneWorkLoad;
+import br.unifor.iadapter.searchclass.SearchClass;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroupGUI;
 import br.unifor.iadapter.util.WorkLoadUtil;
@@ -42,9 +47,8 @@ public class AddRowWorkloadAction implements ActionListener {
 
 	private WorkLoadThreadGroupGUI sender;
 
-	public AddRowWorkloadAction(WorkLoadThreadGroupGUI aSender, JTable grid,
-			PowerTableModel tableModel, JButton deleteRowButton,
-			Object[] defaultValues) {
+	public AddRowWorkloadAction(WorkLoadThreadGroupGUI aSender, JTable grid, PowerTableModel tableModel,
+			JButton deleteRowButton, Object[] defaultValues) {
 
 		this.grid = grid;
 		this.tableModel = tableModel;
@@ -55,57 +59,41 @@ public class AddRowWorkloadAction implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		if (grid.isEditing()) {
-			TableCellEditor cellEditor = grid.getCellEditor(
-					grid.getEditingRow(), grid.getEditingColumn());
+			TableCellEditor cellEditor = grid.getCellEditor(grid.getEditingRow(), grid.getEditingColumn());
 			cellEditor.stopCellEditing();
 		}
 
 		int users = 10;
-		int maxMemory= 10;
-		int maxCpuShare= 10;
+		int maxMemory = 10;
+		int maxCpuShare = 10;
 		int population = Integer.valueOf(sender.getPopulationSize().getText());
 
 		List<WorkLoad> workloadList = null;
 
 		try {
+			users = Integer.valueOf(sender.getThreadMax().getText());
+		} catch (NumberFormatException e2) {
+			e2.printStackTrace();
+		}
 
-			try {
-				users = Integer.valueOf(sender.getThreadMax().getText());
-			} catch (NumberFormatException e2) {
-				e2.printStackTrace();
-			}
-			
-			/*try {
-				maxMemory = Integer.valueOf(sender.getMaxMemory().getText());
-			} catch (NumberFormatException e2) {
-				e2.printStackTrace();
-			}
-			
-			try {
-				maxCpuShare = Integer.valueOf(sender.getMaxCpuShare().getText());
-			} catch (NumberFormatException e2) {
-				e2.printStackTrace();
-			}*/
-			
-			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(
-					users, 1, population,maxMemory,maxCpuShare);
-			workloadList.addAll(WorkLoadUtil.createWorkLoadNodes(users, 1,maxMemory,maxCpuShare));
+		/*
+		 * try { maxMemory = Integer.valueOf(sender.getMaxMemory().getText()); }
+		 * catch (NumberFormatException e2) { e2.printStackTrace(); }
+		 * 
+		 * try { maxCpuShare =
+		 * Integer.valueOf(sender.getMaxCpuShare().getText()); } catch
+		 * (NumberFormatException e2) { e2.printStackTrace(); }
+		 */
+		try {
 
-			List<WorkLoad> listSA = new ArrayList<WorkLoad>();
-			List<WorkLoad> listTABU = new ArrayList<WorkLoad>();
-			/*
-			 * if (!(sender.getColaborative().isSelected())) { listSA =
-			 * WorkLoadUtil.createWorkLoadTemperatureWithGuiSame( workloadList,
-			 * 1, users); listTABU = WorkLoadUtil.createWorkLoadTABUWithGuiSame(
-			 * workloadList, 1, users);
-			 * 
-			 * }
-			 */
+			InitialPopulationAlgorithm initial = new InitialPopulationAlgorithm();
 
-			workloadList.addAll(listSA);
-			workloadList.addAll(listTABU);
-		} catch (InvalidConfigurationException e1) {
-			log.error(e1.getMessage());
+			workloadList = GeneWorkLoad.createWorkLoadsFromChromossomeWithGui(initial, users, 1, population, maxMemory,
+					maxCpuShare);
+			workloadList.addAll(WorkLoadUtil.createWorkLoadNodes(initial, users, 1, maxMemory, maxCpuShare));
+
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
 
 		for (WorkLoad workLoad : workloadList) {

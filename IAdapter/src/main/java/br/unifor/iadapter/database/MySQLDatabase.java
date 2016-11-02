@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -78,21 +77,20 @@ public class MySQLDatabase {
 	private final static String INSERTSQLAGENT = "insert into  agent(" + MySQLDatabase.COLUMNSAGENT + ") values ("
 			+ MySQLDatabase.PARAMETERSAGENT + ")";
 
-	public static PreparedStatement setParametersWhere(PreparedStatement ps, List objetos, String where,
-			String testPlan) throws SQLException {
-		ps = setParameters(ps, objetos, testPlan);
-		
-		System.out.println("Update "+where);
-		System.out.println("Update "+testPlan);
+	public static PreparedStatement setParametersWhere(AbstractAlgorithm algorithm, PreparedStatement ps, List objetos,
+			String where, String testPlan) throws SQLException {
+		ps = setParameters(algorithm, ps, objetos, testPlan);
+
+		System.out.println("Update " + where);
+		System.out.println("Update " + testPlan);
 		ps.setString(35, where);
 		ps.setString(36, testPlan);
-		
-		
+
 		return ps;
 	}
 
-	public static PreparedStatement setParameters(PreparedStatement ps, List objetos, String testPlan)
-			throws SQLException {
+	public static PreparedStatement setParameters(AbstractAlgorithm algorithm, PreparedStatement ps, List objetos,
+			String testPlan) throws SQLException {
 		ps.setString(1, String.valueOf(objetos.get(0)));
 		ps.setString(2, String.valueOf(objetos.get(1)));
 		ps.setString(3, String.valueOf(objetos.get(2)));
@@ -116,7 +114,9 @@ public class MySQLDatabase {
 		ps.setString(21, String.valueOf(objetos.get(19)));
 		ps.setString(22, String.valueOf(objetos.get(20)));
 		ps.setString(23, String.valueOf(objetos.get(21)));
-		ps.setString(24, String.valueOf(objetos.get(22)));
+
+		ps.setString(24, String.valueOf(algorithm.getClass().getCanonicalName()));
+
 		ps.setString(25, String.valueOf(objetos.get(23)));
 		ps.setString(26, String.valueOf(objetos.get(24)));
 		ps.setString(27, String.valueOf(objetos.get(25)));
@@ -127,7 +127,7 @@ public class MySQLDatabase {
 		ps.setString(32, String.valueOf(objetos.get(30)));
 		ps.setString(33, String.valueOf(objetos.get(31)));
 		ps.setString(34, String.valueOf(objetos.get(32)));
-		//ps.setString(35, String.valueOf(objetos.get(33)));
+		// ps.setString(35, String.valueOf(objetos.get(33)));
 		return ps;
 	}
 
@@ -178,7 +178,7 @@ public class MySQLDatabase {
 			Class.forName("com.mysql.jdbc.Driver");
 
 			MySQLDatabase.conn = DriverManager.getConnection(
-					"jdbc:mysql://" + databaseIp + ":3306/workload?" + "user=" + user + "&password=" + password);
+					"jdbc:mysql://" + databaseIp + ":3306/workspace?" + "user=" + user + "&password=" + password);
 
 		}
 		return conn;
@@ -675,12 +675,12 @@ public class MySQLDatabase {
 
 	}
 
-	public static void insertWorkLoads(Object[] objetos, String testPlan, String generation)
-			throws ClassNotFoundException, SQLException {
-		insertWorkLoads(Arrays.asList(objetos), testPlan, generation);
+	public static void insertWorkLoads(AbstractAlgorithm algorithm, Object[] objetos, String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
+		insertWorkLoads(algorithm, Arrays.asList(objetos), testPlan, generation);
 	}
 
-	public static void insertWorkLoads(List objetos, String testPlan, String generation)
+	public static void insertWorkLoads(AbstractAlgorithm algorithm, List objetos, String testPlan, String generation)
 			throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
@@ -697,15 +697,15 @@ public class MySQLDatabase {
 		}
 		if (count <= 0) {
 			ps = con.prepareStatement(MySQLDatabase.INSERTSQL);
-			MySQLDatabase.setParameters(ps, objetos, testPlan);
+			MySQLDatabase.setParameters(algorithm, ps, objetos, testPlan);
 		} else {
-			
+
 			System.out.println("Atualizando workload");
 
 			ps = con.prepareStatement("" + "update workload set " + MySQLDatabase.SET + " WHERE NAME=? AND TESTPLAN=?");
-			MySQLDatabase.setParametersWhere(ps, objetos, String.valueOf(objetos.get(0)), testPlan);
-			
-			System.out.println("Objetos:"+ String.valueOf(objetos.get(0)));
+			MySQLDatabase.setParametersWhere(algorithm, ps, objetos, String.valueOf(objetos.get(0)), testPlan);
+
+			System.out.println("Objetos:" + String.valueOf(objetos.get(0)));
 
 		}
 
@@ -778,8 +778,8 @@ public class MySQLDatabase {
 
 	}
 
-	public static void createWorkLoadIfNotExist(List objetos, String testPlan, String generation)
-			throws ClassNotFoundException, SQLException {
+	public static void createWorkLoadIfNotExist(AbstractAlgorithm algorithm, List objetos, String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
@@ -795,7 +795,7 @@ public class MySQLDatabase {
 		}
 		if (count <= 0) {
 			ps = con.prepareStatement(MySQLDatabase.INSERTSQL);
-			MySQLDatabase.setParameters(ps, objetos, testPlan);
+			MySQLDatabase.setParameters(algorithm, ps, objetos, testPlan);
 			ps.executeUpdate();
 		}
 
@@ -977,6 +977,29 @@ public class MySQLDatabase {
 		return list;
 
 	}
+	
+	public static List<WorkLoad> listWorkLoadsASC(String testPlan, int generation)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
+				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? AND ACTIVE='true' ORDER BY FIT*1 ASC");
+		ps.setString(1, testPlan);
+		ps.setString(2, String.valueOf(generation));
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
 
 	public static List<WorkLoad> listWorkLoadsOrderName(String testPlan, String generation)
 			throws ClassNotFoundException, SQLException {
@@ -1001,14 +1024,14 @@ public class MySQLDatabase {
 
 	}
 
-	public static List<WorkLoad> listWorkLoadsForNewGeneration(String testPlan, String generation)
-			throws ClassNotFoundException, SQLException {
+	public static List<WorkLoad> listWorkLoadsForNewGeneration(AbstractAlgorithm algorithm, String testPlan,
+			String generation) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con
 				.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? "
-						+ "AND SEARCHMETHOD='GENETICALGORITHM' ORDER BY FIT*1 DESC");
+						+ "AND SEARCHMETHOD='" + algorithm + "' ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
@@ -1048,62 +1071,14 @@ public class MySQLDatabase {
 
 	}
 
-	public static List<WorkLoad> listWorkLoadsSAForNewGeneration(String testPlan, String generation)
-			throws ClassNotFoundException, SQLException {
-
-		Connection con = singleton();
-
-		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
-				+ "  FROM  workload WHERE TESTPLAN=? AND GENERATION=? " + "AND SEARCHMETHOD='SA' ORDER BY FIT*1 DESC");
-		ps.setString(1, testPlan);
-		ps.setString(2, generation);
-
-		ResultSet rs = ps.executeQuery();
-
-		List<WorkLoad> list = new ArrayList<WorkLoad>();
-
-		while (rs.next()) {
-			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
-			list.add(workload);
-		}
-
-		return list;
-
-	}
-	
-	
-	
-	public static List<WorkLoad> listWorkLoadsForNewGenerationByMethod(String testPlan, String generation,AbstractAlgorithm algorithm)
-			throws ClassNotFoundException, SQLException {
+	public static List<WorkLoad> listWorkLoadsForNewGenerationByMethod(String testPlan, String generation,
+			AbstractAlgorithm algorithm) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? "
-				+ "AND SEARCHMETHOD='"+algorithm.getMethodName()+"' and GENERATION=? ORDER BY FIT*1 DESC LIMIT "+algorithm.getLimit());
-		ps.setString(1, testPlan);
-		ps.setString(2, generation);
-
-		ResultSet rs = ps.executeQuery();
-
-		List<WorkLoad> list = new ArrayList<WorkLoad>();
-
-		while (rs.next()) {
-			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
-			list.add(workload);
-		}
-
-		return list;
-
-	}
-	
-
-	public static List<WorkLoad> listWorkLoadsTABUForNewGeneration(String testPlan, String generation)
-			throws ClassNotFoundException, SQLException {
-
-		Connection con = singleton();
-
-		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? "
-				+ "AND SEARCHMETHOD='TABU' and GENERATION=? ORDER BY FIT*1 DESC LIMIT 10");
+				+ "AND SEARCHMETHOD='" + algorithm.getClass().getCanonicalName() + "' and GENERATION=? ORDER BY FIT*1 DESC LIMIT "
+				+ algorithm.getLimit());
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
 
@@ -1164,8 +1139,7 @@ public class MySQLDatabase {
 
 	}
 
-	public static int listBestWorkloadGenetic(String testPlan, String type)
-			throws ClassNotFoundException, SQLException {
+	public static int listBestWorkloadUsers(String testPlan, String type) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
@@ -1186,7 +1160,7 @@ public class MySQLDatabase {
 
 	}
 
-	public static int listBestWorkloadGenetic(String testPlan) throws ClassNotFoundException, SQLException {
+	public static int listBestWorkloadUsers(String testPlan) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
@@ -1206,8 +1180,7 @@ public class MySQLDatabase {
 
 	}
 
-	public static int listWorstWorkloadGenetic(String testPlan, String type)
-			throws ClassNotFoundException, SQLException {
+	public static int listWorstWorkload(String testPlan, String type) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 
@@ -1228,7 +1201,7 @@ public class MySQLDatabase {
 
 	}
 
-	public static List<WorkLoad> listBESTWorkloadAllPopulationSize(String testPlan, String populationSize)
+	public static List<WorkLoad> listBESTWorkloadAllPopulationSize(String testPlan, int populationSize)
 			throws ClassNotFoundException, SQLException {
 
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
@@ -1248,15 +1221,15 @@ public class MySQLDatabase {
 		return list;
 	}
 
-	public static List<WorkLoad> listBESTWorkloadGeneticPopulationSize(String testPlan, String populationSize)
-			throws ClassNotFoundException, SQLException {
+	public static List<WorkLoad> listBESTWorkloadPopulationSize(AbstractAlgorithm algorithm, String testPlan,
+			int populationSize) throws ClassNotFoundException, SQLException {
 
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 		Connection con = singleton();
 
-		PreparedStatement ps = con.prepareStatement(
-				"" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? AND SEARCHMETHOD='GENETICALGORITHM' "
-						+ "  ORDER BY FIT*1 DESC LIMIT " + populationSize);
+		PreparedStatement ps = con
+				.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? AND SEARCHMETHOD='"
+						+ algorithm.getClass().getCanonicalName()+ "' " + "  ORDER BY FIT*1 DESC LIMIT " + populationSize);
 		ps.setString(1, testPlan);
 
 		ResultSet rs = ps.executeQuery();
@@ -1291,7 +1264,7 @@ public class MySQLDatabase {
 
 	}
 
-	public static int listWorstWorkloadGenetic(String testPlan) throws ClassNotFoundException, SQLException {
+	public static int listWorstWorkload(String testPlan) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 

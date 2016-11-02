@@ -263,7 +263,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		for (String string : classes) {
 			classesString += string + "\n";
 		}
-		classesString += "</html>";
+		classesString += "";
 
 		area.setText(classesString);
 		
@@ -272,8 +272,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 			      JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 
-		panel.add(BorderLayout.CENTER, icon);
-		panel.add(BorderLayout.SOUTH, scroller);
+		panel.add(BorderLayout.NORTH, icon);
+		panel.add(BorderLayout.CENTER, scroller);
 		return panel;
 	}
 

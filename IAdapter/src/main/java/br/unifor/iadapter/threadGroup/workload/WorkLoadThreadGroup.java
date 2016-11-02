@@ -16,7 +16,6 @@ package br.unifor.iadapter.threadGroup.workload;
 
 import java.io.File;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -52,17 +51,12 @@ import org.apache.log.Logger;
 import br.unifor.iadapter.agent.Agent;
 import br.unifor.iadapter.algorithm.AbstractAlgorithm;
 import br.unifor.iadapter.database.MySQLDatabase;
-import br.unifor.iadapter.docker.webservice.DockerClient;
-import br.unifor.iadapter.genetic.GeneticAlgorithm;
-import br.unifor.iadapter.sa.SimulateAnnealing;
 import br.unifor.iadapter.searchclass.SearchClass;
-import br.unifor.iadapter.tabu.TabuSearch;
 import br.unifor.iadapter.threadGroup.AbstractSimpleThreadGroup;
 import br.unifor.iadapter.threadGroup.SingletonEngine;
 import br.unifor.iadapter.util.CSVReadStats;
 import br.unifor.iadapter.util.FindService;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
-import br.unifor.iadapter.util.PropertieUtil;
 import br.unifor.iadapter.util.WorkLoadUtil;
 
 /***
@@ -212,19 +206,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		agent.delete();
 	}
 
-	public static List<WorkLoad> returnListAlgorithmGeneticWorkLoadsForNewGeneration(WorkLoadThreadGroup tg) {
-		try {
-			return MySQLDatabase.listWorkLoadsForNewGeneration(tg.getName(), String.valueOf(tg.getGeneration()));
-		} catch (ClassNotFoundException e1) {
+	
 
-			log.error(e1.getMessage());
-		} catch (SQLException e1) {
-			log.error(e1.getMessage());
-		}
-		return null;
-	}
-
-	public static List<WorkLoad> returnListAlgorithmGeneticWorkLoadsForAllNewGeneration(WorkLoadThreadGroup tg) {
+	public static List<WorkLoad> returnListWorkLoadsForAllNewGeneration(WorkLoadThreadGroup tg) {
 		try {
 			return MySQLDatabase.listWorkLoadsForAllNewGeneration(tg.getName(), String.valueOf(tg.getGeneration()));
 		} catch (ClassNotFoundException e1) {
@@ -236,9 +220,9 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		return null;
 	}
 
-	public static List<WorkLoad> returnListSAWorkLoadsForNewGeneration(WorkLoadThreadGroup tg) {
+	public static List<WorkLoad> returnListWorkLoadsForNewGeneration(WorkLoadThreadGroup tg,AbstractAlgorithm algorithm) {
 		try {
-			return MySQLDatabase.listWorkLoadsSAForNewGeneration(tg.getName(), String.valueOf(tg.getGeneration()));
+			return MySQLDatabase.listWorkLoadsForNewGeneration(algorithm, tg.getName(), String.valueOf(tg.getGeneration()));
 		} catch (ClassNotFoundException e1) {
 
 			log.error(e1.getMessage());
@@ -248,18 +232,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		return null;
 	}
 
-	public static List<WorkLoad> returnListTABUWorkLoadsForNewGeneration(WorkLoadThreadGroup tg) {
-		try {
-			return MySQLDatabase.listWorkLoadsTABUForNewGeneration(tg.getName(), String.valueOf(tg.getGeneration()));
-		} catch (ClassNotFoundException e1) {
-
-			log.error(e1.getMessage());
-		} catch (SQLException e1) {
-			log.error(e1.getMessage());
-		}
-		return null;
-	}
-
+	
 	public static List<WorkLoad> returnListWorkLoadsForNewGenerationByMethod(WorkLoadThreadGroup tg,
 			AbstractAlgorithm algorithm) {
 		try {
@@ -322,8 +295,12 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 					System.out.println("No Colab Size " + iAlgorithm.getListWorkLoads().size());
 
 				}
-				List<WorkLoad> listNewWorkLoads = iAlgorithm.strategy(iAlgorithm.getListWorkLoads(),
-						Integer.parseInt(tg.getPopulationSize()), listElement, tg);
+				List<WorkLoad> listTemp=new ArrayList<WorkLoad>();
+				listTemp.addAll(iAlgorithm.getListWorkLoads());
+				List<WorkLoad> listNewWorkLoads = iAlgorithm.strategy(listTemp,
+						Integer.valueOf(tg.getPopulationSize()), WorkLoadUtil.getTestCasesFromElement(listElement), tg.getGeneration() + 1,
+						Integer.valueOf(tg.getThreadNumberMax()), tg.getName(),Integer.valueOf(tg.getMutantProbability()),Integer.valueOf(tg.getBestIndividuals()),tg.getCollaborative(),tg.getTree());
+
 
 				System.out.println("New Workload " + listNewWorkLoads.size());
 
@@ -332,7 +309,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 					for (WorkLoad workLoad : listNewWorkLoads) {
 
 						try {
-							MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
+							MySQLDatabase.insertWorkLoads(iAlgorithm,WorkLoadUtil.getObjectList(workLoad), tg.getName(),
 									String.valueOf(tg.getGeneration()));
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -373,8 +350,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 					System.out.println("No Colab Size " + iAlgorithm.getListWorkLoads().size());
 
 				}
+				
+				//public List<WorkLoad> strategy(List<WorkLoad> list, int populationSize, List<String> testCases, int generation,
+					//	int maxUsers, String testPlan, int mutantProbability, int bestIndividuals, boolean collaborative,
+						//ListedHashTree script) {
+
 				List<WorkLoad> listNewWorkLoads = iAlgorithm.strategy(iAlgorithm.getListWorkLoads(),
-						Integer.parseInt(tg.getPopulationSize()), listElement, tg);
+						Integer.valueOf(tg.getPopulationSize()), WorkLoadUtil.getTestCasesFromElement(listElement), tg.getGeneration() + 1,
+						Integer.valueOf(tg.getThreadNumberMax()), tg.getName(),Integer.valueOf(tg.getMutantProbability()),Integer.valueOf(tg.getBestIndividuals()),tg.getCollaborative(),tg.getTree());
 
 				System.out.println("New Workload " + listNewWorkLoads.size());
 
@@ -383,7 +366,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 					for (WorkLoad workLoad : listNewWorkLoads) {
 
 						try {
-							MySQLDatabase.insertWorkLoads(WorkLoadUtil.getObjectList(workLoad), tg.getName(),
+							MySQLDatabase.insertWorkLoads(iAlgorithm,WorkLoadUtil.getObjectList(workLoad), tg.getName(),
 									String.valueOf(tg.getGeneration()));
 						} catch (Exception e) {
 							e.printStackTrace();

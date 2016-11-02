@@ -17,52 +17,53 @@ package br.unifor.iadapter.genetic;
 import java.util.List;
 
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
-import org.apache.jmeter.testelement.TestElement;
+import org.apache.jorphan.collections.ListedHashTree;
 import org.jgap.Chromosome;
 import org.jgap.IChromosome;
 import org.jgap.Population;
 
+import br.unifor.iadapter.algorithm.AbstractAlgorithm;
 import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
-import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.util.FindService;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
+import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class GeneticAlgorithm {
 
-	public static List<WorkLoad> newGeneration(WorkLoadThreadGroup tg,
-			List<WorkLoad> listOldPopulation, List<TestElement> nodes,
-			boolean gui) {
+	public static List<WorkLoad> newGeneration(AbstractAlgorithm algorithm,int generation,
+			List<WorkLoad> listOldPopulation, List<String> testCases,
+			boolean gui,int maxUsers,int mutantProbability,int populationNumber,int bestIndividualsNumber,boolean collaborative,String testPlan,ListedHashTree threadGroupTree) {
 
 		try {
 
 			if (gui) {
 				List<JMeterTreeNode> treeNode = FindService
 						.searchWorkLoadControllerWithGui();
-				nodes = WorkLoadThreadGroup.testNodeToTestElement(treeNode);
+				testCases =WorkLoadUtil.getScenarios(treeNode);
 			}
 
 			Population population = GeneWorkLoad.population(listOldPopulation,
-					tg.getTree(), gui);
+					threadGroupTree, gui);
 
 			List<Chromosome> bestI = GeneWorkLoad.selectBestIndividualsList(
-					population, Integer.valueOf(tg.getBestIndividuals()));
+					population, bestIndividualsNumber);
 
 			List<WorkLoad> workLoads = null;
-			if ((tg.getCollaborative()) || (tg.getGeneration() == 1)) {
+			if ((collaborative) || (generation == 1)) {
 				workLoads = MySQLDatabase.listBESTWorkloadAllPopulationSize(
-						tg.getName(), tg.getPopulationSize());
+						testPlan, populationNumber);
 
 			} else {
 				workLoads = MySQLDatabase
-						.listBESTWorkloadGeneticPopulationSize(tg.getName(),
-								tg.getPopulationSize());
+						.listBESTWorkloadPopulationSize(algorithm,testPlan,
+								populationNumber);
 			}
 			
 			System.out.println("Best:"+workLoads);
 
 			List<Chromosome> bestP = GeneWorkLoad.getChromossomes(workLoads,
-					tg.getTree(), gui);
+					threadGroupTree, gui);
 			
 			System.out.println("Best Chromossome:"+bestP);
 
@@ -71,11 +72,13 @@ public class GeneticAlgorithm {
 			newList = GeneWorkLoad.crossOverPopulation(bestP, bestI);
 			
 			System.out.println("After crossover:"+newList);
-
+			
+			
 			List<WorkLoad> listWorkloads = JMeterPluginsUtils
-					.getListWorkLoadFromPopulationTestPlan(newList, tg, gui,tg.getGeneration()+1);
+					.getListWorkLoadFromPopulationTestPlan(algorithm, threadGroupTree,newList, gui,generation);
+			 
 
-			return GeneWorkLoad.mutationPopulation(tg, listWorkloads, nodes,Integer.valueOf(tg.getMaxMemory()),Integer.valueOf(tg.getMaxCpuShare()));
+			return GeneWorkLoad.mutationPopulation(algorithm, listWorkloads,testCases,mutantProbability,populationNumber,generation, maxUsers);
 
 		} catch (Exception e) {
 			e.printStackTrace();

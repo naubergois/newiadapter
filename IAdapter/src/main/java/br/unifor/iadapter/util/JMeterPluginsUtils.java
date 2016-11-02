@@ -27,6 +27,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
@@ -45,6 +46,7 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
+import org.apache.commons.math3.analysis.function.Abs;
 import org.apache.jmeter.engine.util.CompoundVariable;
 import org.apache.jmeter.gui.AbstractJMeterGuiComponent;
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
@@ -64,8 +66,10 @@ import org.jgap.IChromosome;
 import org.jgap.Population;
 
 import br.unifor.iadapter.agent.Agent;
+import br.unifor.iadapter.algorithm.AbstractAlgorithm;
 import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.percentiles.PercentileCounter;
+import br.unifor.iadapter.searchclass.SearchClass;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 
@@ -81,31 +85,25 @@ public abstract class JMeterPluginsUtils {
 		return prefixPlugins ? PLUGINS_PREFIX + label : label;
 	}
 
-	public static List<WorkLoad> getListWorkLoadFromPopulation(
-			Population population, ListedHashTree tree, int generation,
-			int generationTrack) {
-		List<TestElement> listElement = FindService
-				.searchWorkLoadControllerWithNoGui(tree);
+	public static List<WorkLoad> getListWorkLoadFromPopulation(AbstractAlgorithm algorithm, Population population,
+			ListedHashTree tree, int generation, int generationTrack) {
+		List<TestElement> listElement = FindService.searchWorkLoadControllerWithNoGui(tree);
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 		List<Chromosome> listC = population.getChromosomes();
 		for (Chromosome chromosome : listC) {
-			list.add(WorkLoadUtil.getWorkLoadFromChromosome(chromosome,
-					listElement, generation, generationTrack));
+			list.add(WorkLoadUtil.getWorkLoadFromChromosome(algorithm, chromosome, listElement, generation));
 		}
 
 		return list;
 	}
 
-	public static List<WorkLoad> getListWorkLoadFromPopulation(
-			List<Chromosome> listC, ListedHashTree tree, int generation,
-			int generationTrack) {
-		List<TestElement> listElement = FindService
-				.searchWorkLoadControllerWithNoGui(tree);
+	public static List<WorkLoad> getListWorkLoadFromPopulation(AbstractAlgorithm algorithm, List<Chromosome> listC,
+			ListedHashTree tree, int generation, int generationTrack) {
+		List<TestElement> listElement = FindService.searchWorkLoadControllerWithNoGui(tree);
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (Chromosome chromosome : listC) {
-			list.add(WorkLoadUtil.getWorkLoadFromChromosome(chromosome,
-					listElement, generation, generationTrack));
+			list.add(WorkLoadUtil.getWorkLoadFromChromosome(algorithm, chromosome, listElement, generation));
 		}
 
 		return list;
@@ -124,27 +122,21 @@ public abstract class JMeterPluginsUtils {
 		return randomNum;
 	}
 
-	public static List<WorkLoad> getListWorkLoadFromPopulationTestPlan(
-			List<IChromosome> listC, WorkLoadThreadGroup tg, boolean gui,int generation) {
+	public static List<WorkLoad> getListWorkLoadFromPopulationTestPlan(AbstractAlgorithm algorithm, ListedHashTree tree,
+			List<IChromosome> listC, boolean gui, int generation) {
 
-		ListedHashTree tree = tg.getTree();
-		
-
-		int generationTrack = new Integer(tg.getGenerationTrack());
 		List<TestElement> listElement = null;
 		if (!(gui)) {
 			listElement = FindService.searchWorkLoadControllerWithNoGui(tree);
 		} else {
-			List<JMeterTreeNode> nodes = FindService
-					.searchWorkLoadControllerWithGui();
+			List<JMeterTreeNode> nodes = FindService.searchWorkLoadControllerWithGui();
 			listElement = WorkLoadThreadGroup.testNodeToTestElement(nodes);
 		}
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (IChromosome chromosome : listC) {
-			
-			list.add(WorkLoadUtil.getWorkLoadFromChromosome(chromosome,
-					listElement, generation, generationTrack));
+
+			list.add(WorkLoadUtil.getWorkLoadFromChromosome(algorithm, chromosome, listElement, generation));
 		}
 
 		return list;
@@ -163,22 +155,25 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	static {
-		String prefixPluginsCfg = JMeterUtils
-				.getProperty("jmeterPlugin.prefixPlugins");
+		String prefixPluginsCfg = JMeterUtils.getProperty("jmeterPlugin.prefixPlugins");
 		if (prefixPluginsCfg != null) {
-			JMeterPluginsUtils.prefixPlugins = "true"
-					.equalsIgnoreCase(prefixPluginsCfg.trim());
+			JMeterPluginsUtils.prefixPlugins = "true".equalsIgnoreCase(prefixPluginsCfg.trim());
 		}
 	}
 
-	public static void tableModelRowsToDerby(PowerTableModel model,
-			WorkLoadThreadGroup gp, String generation)
-			throws ClassNotFoundException, SQLException {
+	public static void tableModelRowsToDerby( PowerTableModel model, WorkLoadThreadGroup gp,
+			String generation) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 
 		for (int row = 0; row < model.getRowCount(); row++) {
 			List<Object> item = getArrayListForArray(model.getRowData(row));
+			System.out.println("Algorithm: "+item.toString());
+			System.out.println("Algorithm: "+item.get(22).toString());
+			System.out.println("Algorithm: "+item.get(23).toString());
+			System.out.println("Algorithm: "+item.get(24).toString());
+			
+			AbstractAlgorithm algorithm=SearchClass.get(item.get(22).toString());
 			if (item != null) {
-				MySQLDatabase.insertWorkLoads(item, gp.getName(), generation);
+				MySQLDatabase.insertWorkLoads(algorithm, item, gp.getName(), generation);
 			} else {
 				log.info("Null object");
 			}
@@ -186,10 +181,8 @@ public abstract class JMeterPluginsUtils {
 
 	}
 
-	public static CollectionProperty tableModelRowsToCollectionProperty(
-			PowerTableModel model, String propname) {
-		CollectionProperty rows = new CollectionProperty(propname,
-				new ArrayList<Object>());
+	public static CollectionProperty tableModelRowsToCollectionProperty(PowerTableModel model, String propname) {
+		CollectionProperty rows = new CollectionProperty(propname, new ArrayList<Object>());
 		for (int row = 0; row < model.getRowCount(); row++) {
 			List<Object> item = getArrayListForArray(model.getRowData(row));
 			if (item != null) {
@@ -211,10 +204,8 @@ public abstract class JMeterPluginsUtils {
 		return rows;
 	}
 
-	public static CollectionProperty listWorkLoadToCollectionProperty(
-			List<WorkLoad> model, String propname) {
-		CollectionProperty rows = new CollectionProperty(propname,
-				new ArrayList<Object>());
+	public static CollectionProperty listWorkLoadToCollectionProperty(List<WorkLoad> model, String propname) {
+		CollectionProperty rows = new CollectionProperty(propname, new ArrayList<Object>());
 		if (model != null) {
 			for (int row = 0; row < model.size(); row++) {
 				Object[] item = WorkLoadUtil.getObjectList(model.get(row));
@@ -238,14 +229,12 @@ public abstract class JMeterPluginsUtils {
 		return rows;
 	}
 
-	public static void updateFit(List<WorkLoad> list, String testPlan,
-			String generation, String maxTime, WorkLoadThreadGroup tg) {
+	public static void updateFit(List<WorkLoad> list, String testPlan, String generation, String maxTime,
+			WorkLoadThreadGroup tg) {
 		for (WorkLoad workload : list) {
 			try {
-				workload.setFit(MySQLDatabase.updateFitValue(
-						workload.getName(), testPlan, generation,
-						Long.valueOf(maxTime), tg,
-						Long.valueOf(tg.getResponseTimeMaxPenalty())));
+				workload.setFit(MySQLDatabase.updateFitValue(workload.getName(), testPlan, generation,
+						Long.valueOf(maxTime), tg, Long.valueOf(tg.getResponseTimeMaxPenalty())));
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -259,10 +248,8 @@ public abstract class JMeterPluginsUtils {
 		}
 	}
 
-	public static CollectionProperty tableModelRowsToCollectionPropertyEval(
-			PowerTableModel model, String propname) {
-		CollectionProperty rows = new CollectionProperty(propname,
-				new ArrayList<Object>());
+	public static CollectionProperty tableModelRowsToCollectionPropertyEval(PowerTableModel model, String propname) {
+		CollectionProperty rows = new CollectionProperty(propname, new ArrayList<Object>());
 		for (int row = 0; row < model.getRowCount(); row++) {
 			List<Object> item = getArrayListForArrayEval(model.getRowData(row));
 			rows.addItem(item);
@@ -270,32 +257,30 @@ public abstract class JMeterPluginsUtils {
 		return rows;
 	}
 
-	public static void collectionPropertyToDerby(CollectionProperty prop,
-			WorkLoadThreadGroup gp, String generation)
-			throws ClassNotFoundException, SQLException {
+	public static void collectionPropertyToDerby(CollectionProperty prop, WorkLoadThreadGroup gp, String generation)
+			throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 
 		for (int rowN = 0; rowN < prop.size(); rowN++) {
-			ArrayList<String> rowObject = (ArrayList<String>) prop.get(rowN)
-					.getObjectValue();
-			MySQLDatabase.createWorkLoadIfNotExist(rowObject, gp.getName(),
-					generation);
+			ArrayList<String> rowObject = (ArrayList<String>) prop.get(rowN).getObjectValue();
+
+			String className = rowObject.get(22);
+			AbstractAlgorithm algorithm = SearchClass.get(className);
+
+			MySQLDatabase.createWorkLoadIfNotExist(algorithm, rowObject, gp.getName(), generation);
 		}
 
 	}
 
-	public static void collectionPropertyToTableModelRows(
-			CollectionProperty prop, PowerTableModel model) {
+	public static void collectionPropertyToTableModelRows(CollectionProperty prop, PowerTableModel model) {
 		model.clearData();
 		for (int rowN = 0; rowN < prop.size(); rowN++) {
-			ArrayList<String> rowObject = (ArrayList<String>) prop.get(rowN)
-					.getObjectValue();
+			ArrayList<String> rowObject = (ArrayList<String>) prop.get(rowN).getObjectValue();
 			model.addRow(rowObject.toArray());
 		}
 		model.fireTableDataChanged();
 	}
 
-	public static void derbyAgentToTableModelRows(PowerTableModel model)
-			throws ClassNotFoundException, SQLException {
+	public static void derbyAgentToTableModelRows(PowerTableModel model) throws ClassNotFoundException, SQLException {
 		model.clearData();
 		List<Agent> list = MySQLDatabase.selectAgents();
 		for (int rowN = 0; rowN < list.size(); rowN++) {
@@ -311,24 +296,20 @@ public abstract class JMeterPluginsUtils {
 		model.fireTableDataChanged();
 	}
 
-	public static void updateResponseTime(
-			HashMap<String, String> responseTimes,
-			HashMap<String, PercentileCounter> counters,
-			HashMap<String, String> totalErrors, List<WorkLoad> list,
+	public static void updateResponseTime(HashMap<String, String> responseTimes,
+			HashMap<String, PercentileCounter> counters, HashMap<String, String> totalErrors, List<WorkLoad> list,
 			WorkLoadThreadGroup tg) throws ClassNotFoundException, SQLException {
 		for (WorkLoad workLoad : list) {
 			String responseTime = responseTimes.get(workLoad.getName());
 			String erros = totalErrors.get(workLoad.getName());
 			PercentileCounter counter = counters.get(workLoad.getName());
-			MySQLDatabase.updateResponseTime(responseTime, workLoad.getName(),
-					tg.getName(), String.valueOf(tg.getGeneration()), counter,
-					erros);
+			MySQLDatabase.updateResponseTime(responseTime, workLoad.getName(), tg.getName(),
+					String.valueOf(tg.getGeneration()), counter, erros);
 		}
 	}
 
-	public static void updateSamples(HashMap<String, String> responseMaxTimes,
-			WorkLoadThreadGroup tg, String generation)
-			throws ClassNotFoundException, SQLException {
+	public static void updateSamples(HashMap<String, String> responseMaxTimes, WorkLoadThreadGroup tg,
+			String generation) throws ClassNotFoundException, SQLException {
 
 		Set<String> keys = responseMaxTimes.keySet();
 		for (String key : keys) {
@@ -343,27 +324,23 @@ public abstract class JMeterPluginsUtils {
 			listInsert.add(responseTime);
 			listInsert.add("message");
 			listInsert.add(workloadName);
-			MySQLDatabase.insertSample(listInsert, tg.getName(),
-					String.valueOf(tg.getGeneration()));
+			MySQLDatabase.insertSample(listInsert, tg.getName(), String.valueOf(tg.getGeneration()));
 		}
 
 	}
 
-	public static void updateErrorValue(HashMap<String, String> errors,
-			List<WorkLoad> list, WorkLoadThreadGroup tg)
+	public static void updateErrorValue(HashMap<String, String> errors, List<WorkLoad> list, WorkLoadThreadGroup tg)
 			throws ClassNotFoundException, SQLException {
 		for (WorkLoad workLoad : list) {
 			log.info(errors.toString());
 			String error = errors.get(workLoad.getName());
 			log.info(workLoad.getName() + "-" + error);
-			MySQLDatabase.updateError(error, workLoad.getName(), tg.getName(),
-					String.valueOf(tg.getGeneration()));
+			MySQLDatabase.updateError(error, workLoad.getName(), tg.getName(), String.valueOf(tg.getGeneration()));
 		}
 
 	}
 
-	public static List<WorkLoad> collectionPropertyToWorkLoad(
-			WorkLoadThreadGroup utg) {
+	public static List<WorkLoad> collectionPropertyToWorkLoad(WorkLoadThreadGroup utg) {
 
 		List<WorkLoad> workLoadList = new ArrayList<WorkLoad>();
 		JMeterProperty threadValues = utg.getData();
@@ -371,8 +348,7 @@ public abstract class JMeterPluginsUtils {
 			CollectionProperty prop = (CollectionProperty) threadValues;
 
 			for (int rowN = 0; rowN < prop.size(); rowN++) {
-				ArrayList<String> rowObject = (ArrayList<String>) prop
-						.get(rowN).getObjectValue();
+				ArrayList<String> rowObject = (ArrayList<String>) prop.get(rowN).getObjectValue();
 				WorkLoad workload = WorkLoadUtil.getWorkLoad(rowObject);
 				workLoadList.add(workload);
 
@@ -383,20 +359,16 @@ public abstract class JMeterPluginsUtils {
 
 	}
 
-	public static void collectionPropertyToTableModelRows(
-			CollectionProperty prop, PowerTableModel model,
+	public static void collectionPropertyToTableModelRows(CollectionProperty prop, PowerTableModel model,
 			@SuppressWarnings("rawtypes") Class[] columnClasses) {
 		model.clearData();
 		for (int rowN = 0; rowN < prop.size(); rowN++) {
 			@SuppressWarnings("unchecked")
-			ArrayList<StringProperty> rowStrings = (ArrayList<StringProperty>) prop
-					.get(rowN).getObjectValue();
-			ArrayList<Object> rowObject = new ArrayList<Object>(
-					rowStrings.size());
+			ArrayList<StringProperty> rowStrings = (ArrayList<StringProperty>) prop.get(rowN).getObjectValue();
+			ArrayList<Object> rowObject = new ArrayList<Object>(rowStrings.size());
 
 			for (int i = 0; i < columnClasses.length && i < rowStrings.size(); i++) {
-				rowObject.add(convertToClass(rowStrings.get(i),
-						columnClasses[i]));
+				rowObject.add(convertToClass(rowStrings.get(i), columnClasses[i]));
 			}
 
 			if (rowObject.size() < columnClasses.length) {
@@ -492,27 +464,22 @@ public abstract class JMeterPluginsUtils {
 		}
 
 		JLabel icon = new JLabel();
-		icon.setIcon(new javax.swing.ImageIcon(JMeterPluginsUtils.class
-				.getResource("information.png")));
+		icon.setIcon(new javax.swing.ImageIcon(JMeterPluginsUtils.class.getResource("information.png")));
 
 		JLabel link = new JLabel("Help on this plugin");
 		link.setForeground(Color.blue);
 		link.setFont(link.getFont().deriveFont(Font.PLAIN));
 		link.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		link.addMouseListener(new URIOpener(WIKI_BASE + helpPage
-				+ "/?utm_source=jmeter&utm_medium=helplink&utm_campaign="
-				+ helpPage));
-		Border border = BorderFactory.createMatteBorder(0, 0, 1, 0,
-				java.awt.Color.blue);
+		link.addMouseListener(new URIOpener(
+				WIKI_BASE + helpPage + "/?utm_source=jmeter&utm_medium=helplink&utm_campaign=" + helpPage));
+		Border border = BorderFactory.createMatteBorder(0, 0, 1, 0, java.awt.Color.blue);
 		link.setBorder(border);
 
 		JLabel version = new JLabel("v" + getVersion());
-		version.setFont(version.getFont().deriveFont(Font.PLAIN)
-				.deriveFont(11F));
+		version.setFont(version.getFont().deriveFont(Font.PLAIN).deriveFont(11F));
 		version.setForeground(Color.GRAY);
 
-		Container innerPanel = findComponentWithBorder((JComponent) panel,
-				EtchedBorder.class);
+		Container innerPanel = findComponentWithBorder((JComponent) panel, EtchedBorder.class);
 
 		JPanel panelLink = new JPanel(new GridBagLayout());
 
@@ -546,13 +513,11 @@ public abstract class JMeterPluginsUtils {
 		return panel;
 	}
 
-	private static Container findComponentWithBorder(JComponent panel,
-			Class<?> aClass) {
+	private static Container findComponentWithBorder(JComponent panel, Class<?> aClass) {
 		for (int n = 0; n < panel.getComponentCount(); n++) {
 			if (panel.getComponent(n) instanceof JComponent) {
 				JComponent comp = (JComponent) panel.getComponent(n);
-				if (comp.getBorder() != null
-						&& aClass.isAssignableFrom(comp.getBorder().getClass())) {
+				if (comp.getBorder() != null && aClass.isAssignableFrom(comp.getBorder().getClass())) {
 					return comp;
 				}
 
@@ -610,8 +575,7 @@ public abstract class JMeterPluginsUtils {
 		}
 	}
 
-	public static float getFloatFromString(String stringValue,
-			float defaultValue) {
+	public static float getFloatFromString(String stringValue, float defaultValue) {
 		float ret;
 		if (stringValue != null) {
 			try {
@@ -656,8 +620,7 @@ public abstract class JMeterPluginsUtils {
 					mul = 60 * 60 * 24;
 					break;
 				default:
-					throw new NumberFormatException(
-							"Shorthand string does not allow using '" + c + "'");
+					throw new NumberFormatException("Shorthand string does not allow using '" + c + "'");
 				}
 				res += Integer.parseInt(curNum) * mul;
 				curNum = "";
@@ -742,8 +705,7 @@ public abstract class JMeterPluginsUtils {
 		}
 
 		if (dir == null || !dir.exists()) {
-			throw new IllegalArgumentException(
-					"CMDRunner.jar must be placed in <jmeter>/lib/ext directory");
+			throw new IllegalArgumentException("CMDRunner.jar must be placed in <jmeter>/lib/ext directory");
 		}
 
 		homeDir = dir.getParent();
@@ -764,10 +726,8 @@ public abstract class JMeterPluginsUtils {
 	 * @see org.apache.jmeter.JMeter
 	 */
 	private static void initializeProperties() {
-		JMeterUtils
-				.loadJMeterProperties(JMeterUtils.getJMeterHome()
-						+ File.separator + "bin" + File.separator
-						+ "jmeter.properties");
+		JMeterUtils.loadJMeterProperties(
+				JMeterUtils.getJMeterHome() + File.separator + "bin" + File.separator + "jmeter.properties");
 
 		// JMeterUtils.initLogging();
 		JMeterUtils.initLocale();
@@ -781,8 +741,7 @@ public abstract class JMeterPluginsUtils {
 			try {
 				File file = JMeterUtils.findFile(userProp);
 				if (file.canRead()) {
-					log.info("Loading user properties from: "
-							+ file.getCanonicalPath());
+					log.info("Loading user properties from: " + file.getCanonicalPath());
 					fis = new FileInputStream(file);
 					Properties tmp = new Properties();
 					tmp.load(fis);
@@ -812,8 +771,7 @@ public abstract class JMeterPluginsUtils {
 			try {
 				File file = JMeterUtils.findFile(sysProp);
 				if (file.canRead()) {
-					log.info("Loading system properties from: "
-							+ file.getCanonicalPath());
+					log.info("Loading system properties from: " + file.getCanonicalPath());
 					fis = new FileInputStream(file);
 					System.getProperties().load(fis);
 				}
@@ -832,8 +790,7 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	private static boolean isJMeterHome(String homeDir) {
-		File f = new File(homeDir + File.separator + "lib" + File.separator
-				+ "ext");
+		File f = new File(homeDir + File.separator + "lib" + File.separator + "ext");
 		return f.exists() && f.isDirectory();
 	}
 
@@ -856,8 +813,7 @@ public abstract class JMeterPluginsUtils {
 			log.debug("Testing " + string);
 			if (string.endsWith("ApacheJMeter_core.jar")) {
 				File f = new File(string);
-				return f.getParentFile().getParentFile().getParentFile()
-						.getAbsolutePath();
+				return f.getParentFile().getParentFile().getParentFile().getAbsolutePath();
 			}
 		}
 		throw new Error("Failed to find JMeter home dir from classpath");

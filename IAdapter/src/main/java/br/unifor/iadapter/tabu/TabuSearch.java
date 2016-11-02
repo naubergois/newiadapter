@@ -17,10 +17,7 @@ package br.unifor.iadapter.tabu;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.jmeter.testelement.TestElement;
-
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
-import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class TabuSearch {
 

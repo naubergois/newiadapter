@@ -27,8 +27,7 @@ package br.unifor.iadapter.genetic;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.jmeter.testelement.TestElement;
-
+import br.unifor.iadapter.algorithm.AbstractAlgorithm;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.util.WorkLoadUtil;
 
@@ -36,28 +35,27 @@ public class MutationOperator {
 	/** String containing the CVS revision. Read out via reflection! */
 	private final static String CVS_REVISION = "$Revision: 1.45 $";
 
-	public static WorkLoad mutantWorkload(WorkLoad workload, int n,
-			List<TestElement> nodes, int maxUsers, int generation,
-			int mutantionProbability,int maxMemory,int maxCpuShare) {
+	public static WorkLoad mutantWorkload(AbstractAlgorithm algorithm, WorkLoad workload, int population, List<String> nodes,
+			int maxUsers, int generation, int mutantionProbability) {
+
 		Random random = new Random();
 
 		int evolute = random.nextInt(10);
 		WorkLoad workloadClone = workload.clone();
 		if (evolute < mutantionProbability) {
 
-			for (int i = 0; i <= n; i++) {
-				workloadClone = WorkLoadUtil.getNeighBorHoodMutant(
-						workloadClone, nodes, maxUsers,maxMemory,maxCpuShare);
+			for (int i = 0; i <= population; i++) {
+
+				workloadClone = WorkLoadUtil.getNeighBorHoodMutant(algorithm, workloadClone, nodes, maxUsers,
+						generation);
 
 			}
-			workloadClone.setName("Mutant:G" + generation + ":"
-					+ workloadClone.getName());
+			workloadClone.setName(algorithm.getMethodName()+":Mutant:" + generation + ":" + workloadClone.getName());
+
 			
-			int newGenerationAux = WorkLoadUtil.getGenerationFromName(workload
-					.getName());
-			
-			workloadClone.setGeneration(newGenerationAux);
-		
+
+			workloadClone.setGeneration(generation);
+
 		}
 		return workloadClone;
 

@@ -16,45 +16,41 @@ package br.unifor.iadapter.sa;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.jmeter.testelement.TestElement;
-
+import br.unifor.iadapter.algorithm.AbstractAlgorithm;
+import br.unifor.iadapter.algorithm.SAAlgorithm;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
-import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
-import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class SimulateAnnealing {
 
-	private static int tries;
+	
 
-	//Simulate Annealing method
+	// Simulate Annealing method
 	// temp is users
-	public static int sa(int users, List<WorkLoad> newPlaces, int maxUsers,
-			List<WorkLoad> list, int generation, WorkLoadThreadGroup tg,
-			List<TestElement> nodes) {
-		int newUsers = users;
+	public static void sa(AbstractAlgorithm algorithm, List<WorkLoad> newPlaces, int temperature) {
+
 		for (WorkLoad newPlace : newPlaces) {
 
-			WorkLoad place = tg.getWorkloadCurrentSA();
-			if (users > 0) {
+			WorkLoad place = SAAlgorithm.currentWorkLoad;
+			if (temperature > 0) {
 				if ((place != null) && (newPlace != null)) {
 					double deltaC = place.getFit() - newPlace.getFit();
 					if (deltaC < 0) {
-						tg.setWorkloadCurrentSA(newPlace);
+						SAAlgorithm.currentWorkLoad = newPlace;
 
 					} else {
 						Random random = new Random();
 						double randomDouble = random.nextDouble();
-						SimulateAnnealing.tries += 1;
-						double exponential = Math.exp(-1 * (deltaC / users));
+						
+						double exponential = Math.exp(-1 * (deltaC / temperature));
 						if (randomDouble > exponential) {
-							tg.setWorkloadCurrentSA(newPlace);
+							SAAlgorithm.currentWorkLoad = newPlace;
 
 						}
 
 					}
 				} else {
 					if (newPlace != null) {
-						tg.setWorkloadCurrentSA(newPlace);
+						SAAlgorithm.currentWorkLoad = newPlace;
 					}
 
 				}
@@ -62,44 +58,6 @@ public class SimulateAnnealing {
 			}
 		}
 
-		if (SimulateAnnealing.tries > 3) {
-			Random signal = new Random();
-			int signalInt = signal.nextInt(2);
-			if (signalInt == 0) {
-				Random incrementRandom = new Random();
-				int newTempIncrement = incrementRandom.nextInt(Integer
-						.valueOf(tg.getThreadNumberMax()));
-
-				newUsers = tg.getWorkloadCurrentSA().getNumThreads()
-						- newTempIncrement;
-
-				if (newUsers <= 0) {
-					newUsers = 1;
-				}
-			} else {
-				Random incrementRandom = new Random();
-				int newTempIncrement = incrementRandom.nextInt(Integer
-						.valueOf(tg.getThreadNumberMax()));
-				newUsers = tg.getWorkloadCurrentSA().getNumThreads()
-						+ newTempIncrement;
-				if (newUsers > (Integer.valueOf(tg.getThreadNumberMax()))) {
-					newUsers = Integer.valueOf(tg.getThreadNumberMax());
-				}
-
-			}
-			SimulateAnnealing.tries = 0;
-		}
-
-		int populationSize = Integer.valueOf(tg.getPopulationSize());
-		for (int i = 0; i < populationSize; i++) {
-
-			WorkLoad workLoad = WorkLoadUtil.getNeighBorHoodSA(
-					tg.getWorkloadCurrentSA(), nodes, newUsers, tg.getGeneration()+1);
-
-			list.add(workLoad);
-		}
-
-		return newUsers;
 	}
 
 }

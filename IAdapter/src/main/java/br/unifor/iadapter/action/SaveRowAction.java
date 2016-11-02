@@ -16,6 +16,7 @@ package br.unifor.iadapter.action;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -57,9 +58,27 @@ public class SaveRowAction implements ActionListener {
 			JMeterPluginsUtils.tableModelRowsToDerby(tableModel, wg,
 					String.valueOf(wg.getGeneration()));
 		} catch (ClassNotFoundException e1) {
-			log.error(e1.getMessage());
+			e1.printStackTrace();
 		} catch (SQLException e1) {
-			log.error(e1.getMessage());
+			e1.printStackTrace();
+		} catch (InstantiationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalArgumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InvocationTargetException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (NoSuchMethodException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (SecurityException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		sender.updateUI();
 	}

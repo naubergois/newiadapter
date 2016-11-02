@@ -22,6 +22,12 @@ public class SearchClass {
 		return list;
 
 	}
+	
+	public static AbstractAlgorithm get(String className) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException{
+		
+		return (AbstractAlgorithm) Class.forName(className).getConstructor().newInstance();
+		
+	}
 
 	public static List<String> getClasses() {
 
