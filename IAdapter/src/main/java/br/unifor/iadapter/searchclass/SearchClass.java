@@ -23,6 +23,19 @@ public class SearchClass {
 
 	}
 	
+	public static List<AbstractAlgorithm> getInstances(String[] classNames)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
+		List<AbstractAlgorithm> list = new ArrayList<>();
+		for (String string : classNames) {
+			list.add((AbstractAlgorithm) Class.forName(string).getConstructor().newInstance());
+
+		}
+		return list;
+
+	}
+
+	
 	public static AbstractAlgorithm get(String className) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException{
 		
 		return (AbstractAlgorithm) Class.forName(className).getConstructor().newInstance();

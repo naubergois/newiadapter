@@ -15,7 +15,7 @@ public class TabuAlgorithm extends AbstractAlgorithm {
 	@Override
 	public List<WorkLoad> strategy(List<WorkLoad> list, int populationSize, List<String> testCases, int generation,
 			int maxUsers, String testPlan, int mutantProbability, int bestIndividuals, boolean collaborative,
-			ListedHashTree script) {
+			ListedHashTree script,int maxResponseTime) {
 		
 		
 		List<WorkLoad> listVerified=TabuSearch.verify(list);

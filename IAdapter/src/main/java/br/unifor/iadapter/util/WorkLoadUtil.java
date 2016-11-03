@@ -678,6 +678,11 @@ public class WorkLoadUtil {
 		}
 		return scenarios;
 	}
+	
+	public static String[] getSplitProperty(String property){
+		String[] algorithms=property.split(",");
+		return algorithms;
+	}
 
 	public static WorkLoad createWorkLoadWithGui(AbstractAlgorithm algorithm, Gene[] genes, int generation) {
 		WorkLoad workload = null;

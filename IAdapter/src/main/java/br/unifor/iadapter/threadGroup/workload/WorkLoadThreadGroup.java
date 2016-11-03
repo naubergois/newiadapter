@@ -278,7 +278,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 		tg.setGeneration(Integer.valueOf(tg.getInitialGeneration()));
 
-		List<String> classes = SearchClass.getClasses();
+		String classes[] = WorkLoadUtil.getSplitProperty(tg.getAlgorithmList());
 		try {
 			List<AbstractAlgorithm> algorithms = SearchClass.getInstances(classes);
 			for (AbstractAlgorithm iAlgorithm : algorithms) {
@@ -297,9 +297,10 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 				}
 				List<WorkLoad> listTemp=new ArrayList<WorkLoad>();
 				listTemp.addAll(iAlgorithm.getListWorkLoads());
-				List<WorkLoad> listNewWorkLoads = iAlgorithm.strategy(listTemp,
+				List<WorkLoad> listNewWorkLoads = iAlgorithm.strategy(iAlgorithm.getListWorkLoads(),
 						Integer.valueOf(tg.getPopulationSize()), WorkLoadUtil.getTestCasesFromElement(listElement), tg.getGeneration() + 1,
-						Integer.valueOf(tg.getThreadNumberMax()), tg.getName(),Integer.valueOf(tg.getMutantProbability()),Integer.valueOf(tg.getBestIndividuals()),tg.getCollaborative(),tg.getTree());
+						Integer.valueOf(tg.getThreadNumberMax()), tg.getName(),Integer.valueOf(tg.getMutantProbability()),Integer.valueOf(tg.getBestIndividuals()),tg.getCollaborative(),tg.getTree(),Integer.valueOf(tg.getMaxTime()));
+
 
 
 				System.out.println("New Workload " + listNewWorkLoads.size());
@@ -333,7 +334,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 		List<TestElement> listElement = FindService.searchWorkLoadControllerWithNoGui(tg.getTree());
 
-		List<String> classes = SearchClass.getClasses();
+		String classes[] = WorkLoadUtil.getSplitProperty(tg.getAlgorithmList());
 		try {
 			List<AbstractAlgorithm> algorithms = SearchClass.getInstances(classes);
 			for (AbstractAlgorithm iAlgorithm : algorithms) {
@@ -351,13 +352,11 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 				}
 				
-				//public List<WorkLoad> strategy(List<WorkLoad> list, int populationSize, List<String> testCases, int generation,
-					//	int maxUsers, String testPlan, int mutantProbability, int bestIndividuals, boolean collaborative,
-						//ListedHashTree script) {
+				
 
 				List<WorkLoad> listNewWorkLoads = iAlgorithm.strategy(iAlgorithm.getListWorkLoads(),
 						Integer.valueOf(tg.getPopulationSize()), WorkLoadUtil.getTestCasesFromElement(listElement), tg.getGeneration() + 1,
-						Integer.valueOf(tg.getThreadNumberMax()), tg.getName(),Integer.valueOf(tg.getMutantProbability()),Integer.valueOf(tg.getBestIndividuals()),tg.getCollaborative(),tg.getTree());
+						Integer.valueOf(tg.getThreadNumberMax()), tg.getName(),Integer.valueOf(tg.getMutantProbability()),Integer.valueOf(tg.getBestIndividuals()),tg.getCollaborative(),tg.getTree(),Integer.valueOf(tg.getMaxTime()));
 
 				System.out.println("New Workload " + listNewWorkLoads.size());
 
@@ -533,6 +532,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	private static final String THREAD_GEN_NUMBER = "threadgennumber";
 
 	private static final String MIN_TEMP = "workloadthreadgroup.mintemp";
+	
+	private static final String ALGORITHM_LIST="algorithm_list";
 
 	private static final String INITIAL_GENERATION = "workloadthreadgroup.initialgeneration";;
 
@@ -880,6 +881,15 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	public void setTotalErrorFitWeight(String delay) {
 		setProperty(TOTALERROR_FIT_WEIGHT, delay);
 	}
+	
+	public void setAlgorithmList(String list){
+		setProperty(ALGORITHM_LIST,list);
+	}
+	
+	public String getAlgorithmList(){
+		return getPropertyAsString(ALGORITHM_LIST);
+	}
+	
 
 	public void setUserFitWeight(String delay) {
 		setProperty(USER_FIT_WEIGHT, delay);

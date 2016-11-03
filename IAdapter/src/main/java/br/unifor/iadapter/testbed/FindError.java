@@ -1,8 +1,5 @@
 package br.unifor.iadapter.testbed;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;

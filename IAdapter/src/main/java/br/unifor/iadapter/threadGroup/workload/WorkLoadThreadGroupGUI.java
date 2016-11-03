@@ -102,6 +102,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 	private JTextField sourcePortDocker;
 	private JTextField destPortDocker;
 	private JTextField dockerCommandLine;
+	private JTextArea algorithmList;
 	/**
 	 *
 	 */
@@ -171,6 +172,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		containerPanel.add(createParamsPanel(), BorderLayout.NORTH);
 		tabbedPane.addTab("Main", containerPanel);
 		tabbedPane.addTab("WorkLoad", createWorkloadPanel());
+		tabbedPane.addTab("Algorithms", createAlgorithmsPanel());
 		tabbedPane.addTab("Graph", createGraphPanel());
 		// createTabDocker(tabbedPane);
 		createTabAgent(tabbedPane);
@@ -273,6 +275,39 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 
 
 		panel.add(BorderLayout.NORTH, icon);
+		panel.add(BorderLayout.CENTER, scroller);
+		return panel;
+	}
+	
+	private JPanel createAlgorithmsPanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+
+		panel.setPreferredSize(new Dimension(200, 200));
+
+				
+		
+		algorithmList=new JTextArea(10,10);
+		
+		
+
+		List<String> classes = SearchClass.getClasses();
+
+		String classesString = "";
+		
+		for (String string : classes) {
+			classesString += string + ",";
+		}
+		classesString += "";
+
+		algorithmList.setText(classesString);
+		JLabel label=new JLabel(classesString);
+		
+		JScrollPane scroller = new JScrollPane(algorithmList, 
+			      JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+			      JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+
+		panel.add(BorderLayout.SOUTH, label);
 		panel.add(BorderLayout.CENTER, scroller);
 		return panel;
 	}
@@ -451,6 +486,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 			utg.setInitialGeneration(initialGeneration.getText());
 			utg.setResponseTimeMaxPenalty(responseTimeMaxPenalty.getText());
 			utg.setMutantProbabilty(mutantProbability.getText());
+			utg.setAlgorithmList(algorithmList.getText());
 			// utg.setMaxMemory(maxMemory.getText());
 			// utg.setMaxCpuShare(maxCpuShare.getText());
 			// utg.setDockerImage(dockerImage.getText());
@@ -503,6 +539,20 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		initialGeneration.setText(utg.getInitialGeneration());
 		responseTimeMaxPenalty.setText(utg.getResponseTimeMaxPenalty());
 		mutantProbability.setText(utg.getMutantProbability());
+		if(utg.getAlgorithmList().length()==0){
+			List<String> classes = SearchClass.getClasses();
+
+			String classesString = "";
+			
+			for (String string : classes) {
+				classesString += string + ",";
+			}
+			classesString += "";
+			classesString=classesString.substring(0,classesString.length()-2);
+			utg.setAlgorithmList(classesString);
+			
+		}
+		algorithmList.setText(utg.getAlgorithmList());
 		// maxCpuShare.setText(utg.getMaxCpuShare());
 		// maxMemory.setText(utg.getMaxMemory());
 		// dockerImage.setText(utg.getDockerImage());
