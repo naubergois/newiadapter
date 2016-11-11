@@ -307,7 +307,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 			      JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 
-		panel.add(BorderLayout.SOUTH, label);
+		//panel.add(BorderLayout.SOUTH, label);
 		panel.add(BorderLayout.CENTER, scroller);
 		return panel;
 	}
@@ -539,6 +539,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		initialGeneration.setText(utg.getInitialGeneration());
 		responseTimeMaxPenalty.setText(utg.getResponseTimeMaxPenalty());
 		mutantProbability.setText(utg.getMutantProbability());
+		algorithmList.setColumns(100);
 		if(utg.getAlgorithmList().length()==0){
 			List<String> classes = SearchClass.getClasses();
 
@@ -549,7 +550,9 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 			}
 			classesString += "";
 			classesString=classesString.substring(0,classesString.length()-2);
+			System.out.println("Algorithms found: "+classesString);
 			utg.setAlgorithmList(classesString);
+			
 			
 		}
 		algorithmList.setText(utg.getAlgorithmList());
