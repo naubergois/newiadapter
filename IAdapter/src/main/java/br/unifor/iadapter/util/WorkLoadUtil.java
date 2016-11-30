@@ -222,7 +222,7 @@ public class WorkLoadUtil {
 	}
 
 	public static WorkLoad createWorkLoadMutant(AbstractAlgorithm algorithm, List<String> nodes,
-			List<Integer> parametros, int generation) {
+			List<Integer> parametros, int generation, int maxUsersParameter) {
 		WorkLoad workload = null;
 		if (parametros.get(0) == 0) {
 			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[0]);
@@ -244,7 +244,7 @@ public class WorkLoadUtil {
 		workload.setFunction9(getNameFromString(nodes, parametros.get(9)));
 		workload.setFunction10(getNameFromString(nodes, parametros.get(10)));
 
-		int maxUser = parametros.get(11) / 10;
+		int maxUser = maxUsersParameter/ 10;
 
 		int users1 = randInt(0, maxUser);
 		int users2 = randInt(0, maxUser);
@@ -298,12 +298,12 @@ public class WorkLoadUtil {
 
 		parameters = mutateParameter(parameters, nodes, workload);
 
-		int newUsers = (workload.getNumThreads() + randInt(workload.getNumThreads(), maxUsers)) / 2;
+		int newUsers = randInt(0, maxUsers);
 
 		parameters.add(newUsers);
 		parameters.add(workload.getGeneration() + 1);
 
-		WorkLoad newWorkload = createWorkLoadMutant(algorithm, nodes, parameters, generation);
+		WorkLoad newWorkload = createWorkLoadMutant(algorithm, nodes, parameters, generation,newUsers);
 
 		return newWorkload;
 	}

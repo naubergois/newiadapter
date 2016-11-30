@@ -29,6 +29,7 @@ public class TabuSearch {
 
 		TabuSearch.setTabuExpires(TabuSearch.getTabuExpires() + 1);
 		if (TabuSearch.getTabuExpires() > 5) {
+			list.addAll(TabuSearch.getTabuTable());
 			TabuSearch.setTabuTable(new ArrayList<WorkLoad>());
 			TabuSearch.setTabuExpires(0);
 		}

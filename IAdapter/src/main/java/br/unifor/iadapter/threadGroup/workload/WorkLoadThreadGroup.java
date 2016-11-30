@@ -68,6 +68,16 @@ import br.unifor.iadapter.util.WorkLoadUtil;
 public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		implements Serializable, TestStateListener, SampleListener, LoopIterationListener {
 
+	private static HashMap<String, String> globalVariables = new HashMap<String, String>();
+
+	public static HashMap<String, String> getGlobalVariables() {
+		return globalVariables;
+	}
+
+	public static void setGlobalVariables(HashMap<String, String> globalVariables) {
+		WorkLoadThreadGroup.globalVariables = globalVariables;
+	}
+
 	private static List<String> scenariosSimulation = new ArrayList();
 
 	public static List<String> getScenariosSimulation() {
@@ -206,8 +216,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		agent.delete();
 	}
 
-	
-
 	public static List<WorkLoad> returnListWorkLoadsForAllNewGeneration(WorkLoadThreadGroup tg) {
 		try {
 			return MySQLDatabase.listWorkLoadsForAllNewGeneration(tg.getName(), String.valueOf(tg.getGeneration()));
@@ -220,9 +228,11 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		return null;
 	}
 
-	public static List<WorkLoad> returnListWorkLoadsForNewGeneration(WorkLoadThreadGroup tg,AbstractAlgorithm algorithm) {
+	public static List<WorkLoad> returnListWorkLoadsForNewGeneration(WorkLoadThreadGroup tg,
+			AbstractAlgorithm algorithm) {
 		try {
-			return MySQLDatabase.listWorkLoadsForNewGeneration(algorithm, tg.getName(), String.valueOf(tg.getGeneration()));
+			return MySQLDatabase.listWorkLoadsForNewGeneration(algorithm, tg.getName(),
+					String.valueOf(tg.getGeneration()));
 		} catch (ClassNotFoundException e1) {
 
 			log.error(e1.getMessage());
@@ -232,17 +242,21 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		return null;
 	}
 
-	
 	public static List<WorkLoad> returnListWorkLoadsForNewGenerationByMethod(WorkLoadThreadGroup tg,
-			AbstractAlgorithm algorithm) {
+			AbstractAlgorithm algorithm, String limit) {
+		return returnListWorkLoadsForNewGenerationByMethod(tg, algorithm, Integer.valueOf(limit));
+	}
+
+	public static List<WorkLoad> returnListWorkLoadsForNewGenerationByMethod(WorkLoadThreadGroup tg,
+			AbstractAlgorithm algorithm, int limit) {
 		try {
-			return MySQLDatabase.listWorkLoadsForNewGenerationByMethod(tg.getName(), String.valueOf(tg.getGeneration()),
-					algorithm);
+			return MySQLDatabase.listWorkLoadsForNewGenerationByMethod(tg.getName(),
+					String.valueOf((tg.getGeneration())), algorithm,limit);
 		} catch (ClassNotFoundException e1) {
 
-			log.error(e1.getMessage());
+			e1.printStackTrace();
 		} catch (SQLException e1) {
-			log.error(e1.getMessage());
+			e1.printStackTrace();
 		}
 		return null;
 	}
@@ -290,18 +304,19 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 				} else {
 
-					iAlgorithm.setListWorkLoads(returnListWorkLoadsForNewGenerationByMethod(tg, iAlgorithm));
+					iAlgorithm.setListWorkLoads(
+							returnListWorkLoadsForNewGenerationByMethod(tg, iAlgorithm, tg.getPopulationSize()));
 					System.out.println("No Colab Name " + iAlgorithm.getMethodName());
 					System.out.println("No Colab Size " + iAlgorithm.getListWorkLoads().size());
 
 				}
-				List<WorkLoad> listTemp=new ArrayList<WorkLoad>();
+				List<WorkLoad> listTemp = new ArrayList<WorkLoad>();
 				listTemp.addAll(iAlgorithm.getListWorkLoads());
 				List<WorkLoad> listNewWorkLoads = iAlgorithm.strategy(iAlgorithm.getListWorkLoads(),
-						Integer.valueOf(tg.getPopulationSize()), WorkLoadUtil.getTestCasesFromElement(listElement), tg.getGeneration() + 1,
-						Integer.valueOf(tg.getThreadNumberMax()), tg.getName(),Integer.valueOf(tg.getMutantProbability()),Integer.valueOf(tg.getBestIndividuals()),tg.getCollaborative(),tg.getTree(),Integer.valueOf(tg.getMaxTime()));
-
-
+						Integer.valueOf(tg.getPopulationSize()), WorkLoadUtil.getTestCasesFromElement(listElement),
+						tg.getGeneration() + 1, Integer.valueOf(tg.getThreadNumberMax()), tg.getName(),
+						Integer.valueOf(tg.getMutantProbability()), Integer.valueOf(tg.getBestIndividuals()),
+						tg.getCollaborative(), tg.getTree(), Integer.valueOf(tg.getMaxTime()));
 
 				System.out.println("New Workload " + listNewWorkLoads.size());
 
@@ -310,8 +325,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 					for (WorkLoad workLoad : listNewWorkLoads) {
 
 						try {
-							MySQLDatabase.insertWorkLoads(iAlgorithm,WorkLoadUtil.getObjectList(workLoad), tg.getName(),
-									String.valueOf(tg.getGeneration()));
+							MySQLDatabase.insertWorkLoads(iAlgorithm, WorkLoadUtil.getObjectList(workLoad),
+									tg.getName(), String.valueOf(tg.getGeneration()));
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -346,17 +361,22 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 				} else {
 
-					iAlgorithm.setListWorkLoads(returnListWorkLoadsForNewGenerationByMethod(tg, iAlgorithm));
+					iAlgorithm.setListWorkLoads(returnListWorkLoadsForNewGenerationByMethod(tg, iAlgorithm,tg.getPopulationSize()));
+
 					System.out.println("No Colab Name " + iAlgorithm.getMethodName());
-					System.out.println("No Colab Size " + iAlgorithm.getListWorkLoads().size());
+					if (iAlgorithm.getListWorkLoads() != null) {
+
+						System.out.println("No Colab Size " + iAlgorithm.getListWorkLoads().size());
+
+					}
 
 				}
-				
-				
 
 				List<WorkLoad> listNewWorkLoads = iAlgorithm.strategy(iAlgorithm.getListWorkLoads(),
-						Integer.valueOf(tg.getPopulationSize()), WorkLoadUtil.getTestCasesFromElement(listElement), tg.getGeneration() + 1,
-						Integer.valueOf(tg.getThreadNumberMax()), tg.getName(),Integer.valueOf(tg.getMutantProbability()),Integer.valueOf(tg.getBestIndividuals()),tg.getCollaborative(),tg.getTree(),Integer.valueOf(tg.getMaxTime()));
+						Integer.valueOf(tg.getPopulationSize()), WorkLoadUtil.getTestCasesFromElement(listElement),
+						tg.getGeneration() + 1, Integer.valueOf(tg.getThreadNumberMax()), tg.getName(),
+						Integer.valueOf(tg.getMutantProbability()), Integer.valueOf(tg.getBestIndividuals()),
+						tg.getCollaborative(), tg.getTree(), Integer.valueOf(tg.getMaxTime()));
 
 				System.out.println("New Workload " + listNewWorkLoads.size());
 
@@ -365,8 +385,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 					for (WorkLoad workLoad : listNewWorkLoads) {
 
 						try {
-							MySQLDatabase.insertWorkLoads(iAlgorithm,WorkLoadUtil.getObjectList(workLoad), tg.getName(),
-									String.valueOf(tg.getGeneration()));
+							MySQLDatabase.insertWorkLoads(iAlgorithm, WorkLoadUtil.getObjectList(workLoad),
+									tg.getName(), String.valueOf(tg.getGeneration()));
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -421,6 +441,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			System.out.println(" Current test" + this.getCurrentTest());
 
 			setScenariosSimulation(new ArrayList());
+			setGlobalVariables(new HashMap<String, String>());
 
 			if (this.getCurrentTest() < size) {
 
@@ -451,14 +472,20 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 				if ((getGeneration() <= generations) || (minTempInt <= temperature)) {
 					this.currentTest = 0;
 
-					File file = new File("tempResults.csv");
-					file.delete();
-					CSVReadStats.setErrorsTotal(new HashMap());
-					CSVReadStats.setErrors(new HashMap());
-					CSVReadStats.setPercentiles(new HashMap());
-					CSVReadStats.setRequestsMaxTime(new HashMap());
-					CSVReadStats.setWorkloads(new HashMap());
+					try {
 
+						File file = new File("tempResults.csv");
+						file.delete();
+						CSVReadStats.setErrorsTotal(new HashMap());
+						CSVReadStats.setErrors(new HashMap());
+						CSVReadStats.setPercentiles(new HashMap());
+						CSVReadStats.setRequestsMaxTime(new HashMap());
+						CSVReadStats.setWorkloads(new HashMap());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					System.out.println("Iniciando nova geracao");
 					startEngine();
 
 				} else {
@@ -532,8 +559,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	private static final String THREAD_GEN_NUMBER = "threadgennumber";
 
 	private static final String MIN_TEMP = "workloadthreadgroup.mintemp";
-	
-	private static final String ALGORITHM_LIST="algorithm_list";
+
+	private static final String ALGORITHM_LIST = "algorithm_list";
 
 	private static final String INITIAL_GENERATION = "workloadthreadgroup.initialgeneration";;
 
@@ -881,15 +908,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	public void setTotalErrorFitWeight(String delay) {
 		setProperty(TOTALERROR_FIT_WEIGHT, delay);
 	}
-	
-	public void setAlgorithmList(String list){
-		setProperty(ALGORITHM_LIST,list);
+
+	public void setAlgorithmList(String list) {
+		setProperty(ALGORITHM_LIST, list);
 	}
-	
-	public String getAlgorithmList(){
+
+	public String getAlgorithmList() {
 		return getPropertyAsString(ALGORITHM_LIST);
 	}
-	
 
 	public void setUserFitWeight(String delay) {
 		setProperty(USER_FIT_WEIGHT, delay);

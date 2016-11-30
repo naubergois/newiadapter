@@ -83,19 +83,19 @@ public class NeighborhoodUtil {
 	public static List<WorkLoad> getNeighborHood(WorkLoad workload, AbstractAlgorithm algorithm, List<String> scenarios,
 			int generation, int maxUsers, String testPlan, int populationSize) {
 
-		int usersWorst = 0;
-		try {
-			usersWorst = MySQLDatabase.listWorstWorkload(testPlan);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		//int usersWorst = 0;
+		//try {
+		//	usersWorst = MySQLDatabase.listWorstWorkload(testPlan);
+		//} catch (ClassNotFoundException e) {
+		//	e.printStackTrace();
+		//} catch (SQLException e) {
+		//	e.printStackTrace();
+		//}
 
-		if (usersWorst > 0) {
+		//if (usersWorst > 0) {
 
-			maxUsers = usersWorst;
-		}
+		//	maxUsers = usersWorst;
+		//}
 
 		if (workload.getNumThreads() < 0) {
 			workload.setNumThreads(0);

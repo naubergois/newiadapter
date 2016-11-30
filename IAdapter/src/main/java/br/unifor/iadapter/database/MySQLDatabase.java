@@ -30,6 +30,7 @@ import java.util.Properties;
 
 import br.unifor.iadapter.agent.Agent;
 import br.unifor.iadapter.algorithm.AbstractAlgorithm;
+import br.unifor.iadapter.algorithm.InitialPopulationAlgorithm;
 import br.unifor.iadapter.percentiles.PercentileCounter;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
@@ -1047,6 +1048,30 @@ public class MySQLDatabase {
 		return list;
 
 	}
+	
+	
+	public static List<WorkLoad> listBestWorkLoadsForAll(String testPlan,int populationSize)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS
+				+ "  FROM  workload WHERE TESTPLAN=?  " + "  ORDER BY FIT*1 DESC LIMIT "+populationSize);
+		ps.setString(1, testPlan);
+		
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
 
 	public static List<WorkLoad> listWorkLoadsForAllNewGeneration(String testPlan, String generation)
 			throws ClassNotFoundException, SQLException {
@@ -1072,15 +1097,46 @@ public class MySQLDatabase {
 	}
 
 	public static List<WorkLoad> listWorkLoadsForNewGenerationByMethod(String testPlan, String generation,
-			AbstractAlgorithm algorithm) throws ClassNotFoundException, SQLException {
+			AbstractAlgorithm algorithm,int limit) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
+		
+		String sql="" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN="+testPlan
+				+ "AND SEARCHMETHOD='" + algorithm.getClass().getCanonicalName() + "' and GENERATION='"+generation+" ORDER BY FIT*1 DESC LIMIT "
+				+ limit;
+		
+		System.out.println("SQL "+sql);	
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? "
 				+ "AND SEARCHMETHOD='" + algorithm.getClass().getCanonicalName() + "' and GENERATION=? ORDER BY FIT*1 DESC LIMIT "
-				+ algorithm.getLimit());
+				+ limit);
 		ps.setString(1, testPlan);
 		ps.setString(2, generation);
+
+		ResultSet rs = ps.executeQuery();
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+
+	}
+	
+	public static List<WorkLoad> listWorkLoadsForNewGenerationByMethodAllGenerations(String testPlan, String generation,
+			AbstractAlgorithm algorithm) throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+		
+	
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? "
+				+ "AND SEARCHMETHOD='" + algorithm.getClass().getCanonicalName() + "' ORDER BY FIT*1 DESC");
+		ps.setString(1, testPlan);
+		
 
 		ResultSet rs = ps.executeQuery();
 
@@ -1228,8 +1284,30 @@ public class MySQLDatabase {
 		Connection con = singleton();
 
 		PreparedStatement ps = con
-				.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? AND SEARCHMETHOD='"
-						+ algorithm.getClass().getCanonicalName()+ "' " + "  ORDER BY FIT*1 DESC LIMIT " + populationSize);
+				.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? AND (SEARCHMETHOD='"
+						+ algorithm.getClass().getCanonicalName()+ "' " + " OR SEARCHMETHOD='"+InitialPopulationAlgorithm.class.getCanonicalName() +"')  ORDER BY FIT*1 DESC LIMIT " + populationSize);
+		ps.setString(1, testPlan);
+
+		ResultSet rs = ps.executeQuery();
+
+		while (rs.next()) {
+			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
+			list.add(workload);
+		}
+
+		return list;
+	}
+	
+	
+	public static List<WorkLoad> listPopulationGA(AbstractAlgorithm algorithm, String testPlan,
+			int generation) throws ClassNotFoundException, SQLException {
+
+		List<WorkLoad> list = new ArrayList<WorkLoad>();
+		Connection con = singleton();
+
+		PreparedStatement ps = con
+				.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? AND (SEARCHMETHOD='"
+						+ algorithm.getClass().getCanonicalName()+ "' " + " OR SEARCHMETHOD='"+InitialPopulationAlgorithm.class.getCanonicalName() +"') AND GENERATION='"+generation+"'  ORDER BY FIT*1 DESC ");
 		ps.setString(1, testPlan);
 
 		ResultSet rs = ps.executeQuery();

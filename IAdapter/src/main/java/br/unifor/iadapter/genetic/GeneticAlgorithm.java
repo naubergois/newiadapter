@@ -31,54 +31,63 @@ import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class GeneticAlgorithm {
 
-	public static List<WorkLoad> newGeneration(AbstractAlgorithm algorithm,int generation,
-			List<WorkLoad> listOldPopulation, List<String> testCases,
-			boolean gui,int maxUsers,int mutantProbability,int populationNumber,int bestIndividualsNumber,boolean collaborative,String testPlan,ListedHashTree threadGroupTree) {
+	public static List<WorkLoad> newGeneration(AbstractAlgorithm algorithm, int generation,
+			List<WorkLoad> listOldPopulation, List<String> testCases, boolean gui, int maxUsers, int mutantProbability,
+			int populationNumber, int bestIndividualsNumber, boolean collaborative, String testPlan,
+			ListedHashTree threadGroupTree) {
 
 		try {
 
 			if (gui) {
-				List<JMeterTreeNode> treeNode = FindService
-						.searchWorkLoadControllerWithGui();
-				testCases =WorkLoadUtil.getScenarios(treeNode);
+				List<JMeterTreeNode> treeNode = FindService.searchWorkLoadControllerWithGui();
+				testCases = WorkLoadUtil.getScenarios(treeNode);
 			}
 
-			Population population = GeneWorkLoad.population(listOldPopulation,
-					threadGroupTree, gui);
+			listOldPopulation = MySQLDatabase.listPopulationGA(algorithm, testPlan, generation - 1);
 
-			List<Chromosome> bestI = GeneWorkLoad.selectBestIndividualsList(
-					population, bestIndividualsNumber);
+			System.out.println("Population " + listOldPopulation);
+
+			if (populationNumber > listOldPopulation.size()) {
+				populationNumber = listOldPopulation.size();
+			}
+			if (bestIndividualsNumber > listOldPopulation.size()) {
+				bestIndividualsNumber = listOldPopulation.size();
+			}
+
+			Population population = GeneWorkLoad.population(listOldPopulation, threadGroupTree, gui);
+
+			List<Chromosome> bestI = GeneWorkLoad.selectBestIndividualsList(population, bestIndividualsNumber);
 
 			List<WorkLoad> workLoads = null;
 			if ((collaborative) || (generation == 1)) {
-				workLoads = MySQLDatabase.listBESTWorkloadAllPopulationSize(
-						testPlan, populationNumber);
+				workLoads = MySQLDatabase.listBESTWorkloadAllPopulationSize(testPlan, populationNumber);
 
 			} else {
-				workLoads = MySQLDatabase
-						.listBESTWorkloadPopulationSize(algorithm,testPlan,
-								populationNumber);
+				workLoads = MySQLDatabase.listBESTWorkloadPopulationSize(algorithm, testPlan, populationNumber);
+				if (workLoads.size() == 0) {
+					System.out.println("WorkLoad zero ");
+					workLoads = MySQLDatabase.listBESTWorkloadAllPopulationSize(testPlan, populationNumber);
+					System.out.println("WorkLoad size " + workLoads.size());
+				}
 			}
-			
-			System.out.println("Best:"+workLoads);
 
-			List<Chromosome> bestP = GeneWorkLoad.getChromossomes(workLoads,
-					threadGroupTree, gui);
-			
-			System.out.println("Best Chromossome:"+bestP);
+			System.out.println("Best:" + workLoads);
+
+			List<Chromosome> bestP = GeneWorkLoad.getChromossomes(workLoads, threadGroupTree, gui);
+
+			System.out.println("Best Chromossome:" + bestP);
 
 			List<IChromosome> newList = null;
 
 			newList = GeneWorkLoad.crossOverPopulation(bestP, bestI);
-			
-			System.out.println("After crossover:"+newList);
-			
-			
-			List<WorkLoad> listWorkloads = JMeterPluginsUtils
-					.getListWorkLoadFromPopulationTestPlan(algorithm, threadGroupTree,newList, gui,generation);
-			 
 
-			return GeneWorkLoad.mutationPopulation(algorithm, listWorkloads,testCases,mutantProbability,populationNumber,generation, maxUsers);
+			System.out.println("After crossover:" + newList);
+
+			List<WorkLoad> listWorkloads = JMeterPluginsUtils.getListWorkLoadFromPopulationTestPlan(algorithm,
+					threadGroupTree, newList, gui, generation);
+
+			return GeneWorkLoad.mutationPopulation(algorithm, listWorkloads, testCases, mutantProbability,
+					populationNumber, generation, maxUsers);
 
 		} catch (Exception e) {
 			e.printStackTrace();
