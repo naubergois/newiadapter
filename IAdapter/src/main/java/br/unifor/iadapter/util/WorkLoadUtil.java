@@ -14,6 +14,7 @@ limitations under the License.*/
 
 package br.unifor.iadapter.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.NumberFormat;
@@ -33,11 +34,9 @@ import org.jgap.impl.IntegerGene;
 
 import br.unifor.iadapter.algorithm.AbstractAlgorithm;
 import br.unifor.iadapter.database.MySQLDatabase;
-import br.unifor.iadapter.genetic.GeneticAlgorithm;
-import br.unifor.iadapter.tabu.TabuElement;
+import br.unifor.iadapter.searchclass.SearchClassWorkLoad;
 import br.unifor.iadapter.threadGroup.FactoryWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
-import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 
 public class WorkLoadUtil {
 
@@ -71,16 +70,12 @@ public class WorkLoadUtil {
 	 * @param type
 	 * @return
 	 */
-	public static int getIndexType(String type) {
-		int index = 0;
-		int counter = 0;
-		for (String typeString : WorkLoad.getTypes()) {
-			if (typeString.equals(type)) {
-				index = counter;
-			}
-			counter++;
-		}
-		return index;
+	public static int getIndexByType(String type) {
+
+		SearchClassWorkLoad searchClassWorkLoad = new SearchClassWorkLoad();
+		List<String> types = searchClassWorkLoad.getClasses();
+
+		return types.indexOf(type);
 	}
 
 	public static List<Integer> mutateParameter(List<Integer> parameter, List<String> nodes, WorkLoad workload) {
@@ -221,101 +216,13 @@ public class WorkLoadUtil {
 		return parameter;
 	}
 
-	public static WorkLoad createWorkLoadMutant(AbstractAlgorithm algorithm, List<String> nodes,
-			List<Integer> parametros, int generation, int maxUsersParameter) {
-		WorkLoad workload = null;
-		if (parametros.get(0) == 0) {
-			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[0]);
-
-		}
-		if (parametros.get(0) == 1) {
-			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[1]);
-
-		}
-
-		workload.setFunction1(getNameFromString(nodes, parametros.get(1)));
-		workload.setFunction2(getNameFromString(nodes, parametros.get(2)));
-		workload.setFunction3(getNameFromString(nodes, parametros.get(3)));
-		workload.setFunction4(getNameFromString(nodes, parametros.get(4)));
-		workload.setFunction5(getNameFromString(nodes, parametros.get(5)));
-		workload.setFunction6(getNameFromString(nodes, parametros.get(6)));
-		workload.setFunction7(getNameFromString(nodes, parametros.get(7)));
-		workload.setFunction8(getNameFromString(nodes, parametros.get(8)));
-		workload.setFunction9(getNameFromString(nodes, parametros.get(9)));
-		workload.setFunction10(getNameFromString(nodes, parametros.get(10)));
-
-		int maxUser = maxUsersParameter/ 10;
-
-		int users1 = randInt(0, maxUser);
-		int users2 = randInt(0, maxUser);
-		int users3 = randInt(0, maxUser);
-		int users4 = randInt(0, maxUser);
-		int users5 = randInt(0, maxUser);
-		int users6 = randInt(0, maxUser);
-		int users7 = randInt(0, maxUser);
-		int users8 = randInt(0, maxUser);
-		int users9 = randInt(0, maxUser);
-		int users10 = randInt(0, maxUser);
-
-		workload.setUsers1(users1);
-		workload.setUsers2(users2);
-		workload.setUsers3(users3);
-		workload.setUsers4(users4);
-		workload.setUsers5(users5);
-		workload.setUsers6(users6);
-		workload.setUsers7(users7);
-		workload.setUsers8(users8);
-		workload.setUsers9(users9);
-		workload.setUsers10(users10);
-
-		workload.setSearchMethod(algorithm.getMethodName());
-		workload.setGeneration(parametros.get(12));
-		workload.setActive(true);
-
-		workload.setNumThreads(workload.getUsers1() + workload.getUsers2() + workload.getUsers3() + workload.getUsers4()
-				+ workload.getUsers5() + workload.getUsers6() + workload.getUsers7() + workload.getUsers8()
-				+ workload.getUsers9() + workload.getUsers10());
-
-		if (workload.getNumThreads() == 0) {
-			workload.setNumThreads(1);
-			workload.setUsers1(1);
-		}
-
-		workload.setName(algorithm.getMethodName() + "Mutant" + ":" + generation + ":" + workload.getType() + "-"
-				+ workload.getNumThreads() + "-" + workload.getFunction1() + "-" + workload.getFunction2() + "-"
-				+ workload.getFunction3() + "-" + workload.getFunction4() + "-" + workload.getFunction5() + "-"
-				+ workload.getFunction6() + "-" + workload.getFunction7() + "-" + workload.getFunction8() + "-"
-				+ workload.getFunction9() + "-" + workload.getFunction10());
-
-		return workload;
-	}
-
-	public static WorkLoad getNeighBorHoodMutant(AbstractAlgorithm algorithm, WorkLoad workload, List<String> nodes,
-			int maxUsers, int generation) {
-
-		List<Integer> parameters = new ArrayList<Integer>();
-		parameters.add(getIndexType(workload.getType()));
-
-		parameters = mutateParameter(parameters, nodes, workload);
-
-		int newUsers = randInt(0, maxUsers);
-
-		parameters.add(newUsers);
-		parameters.add(workload.getGeneration() + 1);
-
-		WorkLoad newWorkload = createWorkLoadMutant(algorithm, nodes, parameters, generation,newUsers);
-
-		return newWorkload;
-	}
-
-	public static WorkLoad createRandomWorkLoad(int maxMemory, int maxCpuShare) {
+	public static WorkLoad createRandomWorkLoad()
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		List<JMeterTreeNode> nodes = FindService.searchWorkLoadControllerWithGui();
 
 		WorkLoad workload = new WorkLoad();
 
-		Random random = new Random();
-
-		Integer random1 = random.nextInt(WorkLoad.getTypes().length);
 		Integer random2 = 0;
 
 		random2 = randInt(0, (int) nodes.size() - 1);
@@ -358,20 +265,13 @@ public class WorkLoadUtil {
 
 		Integer random12 = 0;
 
-		random12 = randInt(0, (int) maxMemory - 1);
+		random12 = 0;
 
 		Integer random13 = 0;
 
-		random13 = randInt(0, (int) maxCpuShare - 1);
+		random13 = 0;
 
-		if (random1 == 0) {
-			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[0]);
-
-		}
-		if (random1 == 1) {
-			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[1]);
-
-		}
+		workload = FactoryWorkLoad.createWorkLoad();
 
 		workload.setFunction1(getNameNode(nodes, random2));
 		workload.setFunction2(getNameNode(nodes, random3));
@@ -391,144 +291,13 @@ public class WorkLoadUtil {
 
 	}
 
-	public static WorkLoad createWorkLoadTabuWithGui(int generation, int maxUsers, int maxMemory, int maxCpuShare) {
+	
 
-		WorkLoad workload = createRandomWorkLoad(maxMemory, maxCpuShare);
-		int numberUsers = randInt(0, maxUsers + 1);
-		workload.setNumThreads(numberUsers);
+	
 
-		int maxUser = numberUsers / 10;
-		int users1 = randInt(0, maxUser);
-		int users2 = randInt(0, maxUser);
-		int users3 = randInt(0, maxUser);
-		int users4 = randInt(0, maxUser);
-		int users5 = randInt(0, maxUser);
-		int users6 = randInt(0, maxUser);
-		int users7 = randInt(0, maxUser);
-		int users8 = randInt(0, maxUser);
-		int users9 = randInt(0, maxUser);
-		int users10 = randInt(0, maxUser);
-
-		workload.setUsers1(users1);
-		workload.setUsers2(users2);
-		workload.setUsers3(users3);
-		workload.setUsers4(users4);
-		workload.setUsers5(users5);
-		workload.setUsers6(users6);
-		workload.setUsers7(users7);
-		workload.setUsers8(users8);
-		workload.setUsers9(users9);
-		workload.setUsers10(users10);
-
-		workload.setSearchMethod("TABU");
-		workload.setGeneration(generation);
-		workload.setActive(true);
-
-		workload.setNumThreads(workload.getUsers1() + workload.getUsers2() + workload.getUsers3() + workload.getUsers4()
-				+ workload.getUsers5() + workload.getUsers6() + workload.getUsers7() + workload.getUsers8()
-				+ workload.getUsers9() + workload.getUsers10());
-		if (workload.getNumThreads() == 0) {
-			workload.setNumThreads(1);
-			workload.setUsers1(1);
-		}
-		workload.setName("TABU:" + workload.getType() + "-" + workload.getNumThreads() + "-" + workload.getFunction1()
-				+ "-" + workload.getFunction2() + "-" + workload.getFunction3() + "-" + workload.getFunction4() + "-"
-				+ workload.getFunction5() + "-" + workload.getFunction6() + "-" + workload.getFunction7() + "-"
-				+ workload.getFunction8() + "-" + workload.getFunction9() + "-" + workload.getFunction10());
-		return workload;
-	}
-
-	public static WorkLoad createWorkLoadTemperatureWithGui(int generation, int maxUsers, int maxMemory,
-			int maxCpuShare) {
-
-		WorkLoad workload = createRandomWorkLoad(maxMemory, maxCpuShare);
-		workload.setNumThreads(maxUsers);
-
-		int maxUser = maxUsers / 10;
-
-		int users1 = randInt(0, maxUser);
-		int users2 = randInt(0, maxUser);
-		int users3 = randInt(0, maxUser);
-		int users4 = randInt(0, maxUser);
-		int users5 = randInt(0, maxUser);
-		int users6 = randInt(0, maxUser);
-		int users7 = randInt(0, maxUser);
-		int users8 = randInt(0, maxUser);
-		int users9 = randInt(0, maxUser);
-		int users10 = randInt(0, maxUser);
-		int memory = randInt(0, maxMemory);
-		int cpuShare = randInt(0, maxCpuShare);
-
-		workload.setUsers1(users1);
-		workload.setUsers2(users2);
-		workload.setUsers3(users3);
-		workload.setUsers4(users4);
-		workload.setUsers5(users5);
-		workload.setUsers6(users6);
-		workload.setUsers7(users7);
-		workload.setUsers8(users8);
-		workload.setUsers9(users9);
-		workload.setUsers10(users10);
-		workload.setMemory(memory);
-		workload.setCpuShare(cpuShare);
-		workload.setSearchMethod("SA");
-		workload.setGeneration(generation);
-		workload.setActive(true);
-		workload.setNumThreads(workload.getUsers1() + workload.getUsers2() + workload.getUsers3() + workload.getUsers4()
-				+ workload.getUsers5() + workload.getUsers6() + workload.getUsers7() + workload.getUsers8()
-				+ workload.getUsers9() + workload.getUsers10());
-
-		workload.setName("SA:" + workload.getType() + "-" + workload.getNumThreads() + "-" + workload.getFunction1()
-				+ "-" + workload.getFunction2() + "-" + workload.getFunction3() + "-" + workload.getFunction4() + "-"
-				+ workload.getFunction5() + "-" + workload.getFunction6() + "-" + workload.getFunction7() + "-"
-				+ workload.getFunction8() + "-" + workload.getFunction9() + "-" + workload.getFunction10());
-
-		return workload;
-	}
-
-	public static List<WorkLoad> createWorkLoadTemperatureWithGuiSame(List<WorkLoad> workloadSource, int generation,
-			int maxUsers) {
-
-		List<WorkLoad> list = new ArrayList<WorkLoad>();
-		for (WorkLoad workLoad : workloadSource) {
-
-			WorkLoad workload = workLoad.clone();
-			workload.setSearchMethod("SA");
-
-			workload.setName("G1:SA:" + workload.getType() + "-" + workload.getNumThreads() + "-"
-					+ workload.getFunction1() + "-" + workload.getFunction2() + "-" + workload.getFunction3() + "-"
-					+ workload.getFunction4() + "-" + workload.getFunction5() + "-" + workload.getFunction6() + "-"
-					+ workload.getFunction7() + "-" + workload.getFunction8() + "-" + workload.getFunction9() + "-"
-					+ workload.getFunction10());
-			list.add(workload);
-
-		}
-		return list;
-
-	}
-
-	public static List<WorkLoad> createWorkLoadTABUWithGuiSame(List<WorkLoad> workloadSource, int generation,
-			int maxUsers) {
-
-		List<WorkLoad> list = new ArrayList<WorkLoad>();
-		for (WorkLoad workLoad : workloadSource) {
-
-			WorkLoad workload = workLoad.clone();
-			workload.setSearchMethod("TABU");
-
-			workload.setName("G1:TABU:" + workload.getType() + "-" + workload.getNumThreads() + "-"
-					+ workload.getFunction1() + "-" + workload.getFunction2() + "-" + workload.getFunction3() + "-"
-					+ workload.getFunction4() + "-" + workload.getFunction5() + "-" + workload.getFunction6() + "-"
-					+ workload.getFunction7() + "-" + workload.getFunction8() + "-" + workload.getFunction9() + "-"
-					+ workload.getFunction10());
-			list.add(workload);
-
-		}
-		return list;
-
-	}
-
-	public static WorkLoad getWorkLoad(ArrayList<?> object) {
+	public static WorkLoad getWorkLoad(ArrayList<?> object)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 
 		if (object != null) {
 
@@ -610,11 +379,13 @@ public class WorkLoadUtil {
 	}
 
 	public static List<WorkLoad> createWorkLoadNodes(AbstractAlgorithm algorithm, int maxThreads, int generation,
-			int maxMemory, int maxCpuShare) {
+			int maxMemory, int maxCpuShare)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 
 		List<WorkLoad> returnList = new ArrayList<WorkLoad>();
 		List<JMeterTreeNode> nodes = FindService.searchWorkLoadControllerWithGui();
-		String[] types = WorkLoad.getTypes();
+		Object[] types = WorkLoad.getTypes();
 		if ((nodes.size() > 0) && (types.length > 0) && (maxThreads > 0)) {
 
 			int third = maxThreads / 3;
@@ -624,14 +395,9 @@ public class WorkLoadUtil {
 					for (int z = 0; (z < maxThreads); z = z + third) {
 
 						WorkLoad workload = null;
-						if (j == 0) {
-							workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[0]);
 
-						}
-						if (j == 1) {
-							workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[1]);
+						workload = FactoryWorkLoad.createWorkLoad();
 
-						}
 						workload.setFunction1(getNameNode(nodes, i));
 						workload.setFunction2(getNameNode(nodes, i));
 						workload.setFunction3(getNameNode(nodes, i));
@@ -647,7 +413,7 @@ public class WorkLoadUtil {
 							workload.setNumThreads(z);
 						else
 							workload.setNumThreads(1);
-						workload.setName("G1:" + workload.getType() + "-" + workload.getNumThreads() + "-"
+						workload.setName(algorithm.getMethodName()+":" + workload.getType() + "-" + workload.getNumThreads() + "-"
 								+ workload.getFunction1() + "-" + workload.getFunction2() + "-"
 								+ workload.getFunction3() + "-" + workload.getFunction4() + "-"
 								+ workload.getFunction5() + "-" + workload.getFunction6() + "-"
@@ -678,13 +444,15 @@ public class WorkLoadUtil {
 		}
 		return scenarios;
 	}
-	
-	public static String[] getSplitProperty(String property){
-		String[] algorithms=property.split(",");
+
+	public static String[] getSplitProperty(String property) {
+		String[] algorithms = property.split(",");
 		return algorithms;
 	}
 
-	public static WorkLoad createWorkLoadWithGui(AbstractAlgorithm algorithm, Gene[] genes, int generation) {
+	public static WorkLoad createWorkLoadWithGui(AbstractAlgorithm algorithm, Gene[] genes, int generation)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		WorkLoad workload = null;
 
 		List<JMeterTreeNode> nodesIni = FindService.searchWorkLoadControllerWithGui();
@@ -714,14 +482,10 @@ public class WorkLoadUtil {
 		IntegerGene gene21 = (IntegerGene) genes[21];
 		IntegerGene gene22 = (IntegerGene) genes[22];
 		IntegerGene gene23 = (IntegerGene) genes[23];
-		if (gene.intValue() == 0) {
-			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[0]);
 
-		}
-		if (gene.intValue() == 1) {
-			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[1]);
-
-		}
+		workload = FactoryWorkLoad.createWorkLoad();
+		
+		
 
 		workload.setFunction1(getNameFromString(nodes, gene2));
 		workload.setUsers1(gene3.intValue());
@@ -747,7 +511,7 @@ public class WorkLoadUtil {
 				+ workload.getUsers5() + workload.getUsers6() + workload.getUsers7() + workload.getUsers8()
 				+ workload.getUsers9() + workload.getUsers10();
 		workload.setNumThreads(users);
-		workload.setName("G1:" + workload.getType() + "-" + workload.getNumThreads() + "-" + workload.getFunction1()
+		workload.setName(algorithm.getMethodName()+":" + workload.getType() + "-" + workload.getNumThreads() + "-" + workload.getFunction1()
 				+ "-" + workload.getFunction2() + "-" + workload.getFunction3() + "-" + workload.getFunction4() + "-"
 				+ workload.getFunction5() + "-" + workload.getFunction6() + "-" + workload.getFunction7() + "-"
 				+ workload.getFunction8() + "-" + workload.getFunction9() + "-" + workload.getFunction10());
@@ -767,7 +531,32 @@ public class WorkLoadUtil {
 
 	public static WorkLoad resultSetToWorkLoad(ResultSet rs) throws SQLException {
 		String type = rs.getString(2);
-		WorkLoad workload = FactoryWorkLoad.createWorkLoad(type);
+		
+		WorkLoad workload=null;
+		try {
+			workload = FactoryWorkLoad.createWorkLoad(type);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		workload.setName(rs.getString(1));
 		workload.setType(type);
 		workload.setNumThreads(Integer.valueOf(rs.getString(3)));
@@ -943,9 +732,11 @@ public class WorkLoadUtil {
 	}
 
 	public static WorkLoad getWorkLoadFromChromosome(AbstractAlgorithm algorithm, IChromosome chromosome,
-			List<TestElement> list, int generation) {
+			List<TestElement> list, int generation)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		Gene[] gene = chromosome.getGenes();
-		String type = WorkLoad.getTypes()[((IntegerGene) gene[0]).intValue()];
+		String type = (String) WorkLoad.getTypes()[((IntegerGene) gene[0]).intValue()];
 
 		WorkLoad workload = FactoryWorkLoad.createWorkLoad(type);
 
@@ -1139,16 +930,12 @@ public class WorkLoadUtil {
 	}
 
 	public static WorkLoad createWorkLoad(AbstractAlgorithm algorithm, List<String> nodes, List<Integer> parametros,
-			int generation, WorkLoad source) {
+			int generation, WorkLoad source)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		WorkLoad workload = null;
-		if (parametros.get(0) == 0) {
-			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[0]);
 
-		}
-		if (parametros.get(0) == 1) {
-			workload = FactoryWorkLoad.createWorkLoad(WorkLoad.getTypes()[1]);
-
-		}
+		workload = FactoryWorkLoad.createWorkLoad();
 
 		workload.setFunction1(getNameFromString(nodes, parametros.get(1)));
 		workload.setFunction2(getNameFromString(nodes, parametros.get(2)));

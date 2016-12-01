@@ -14,6 +14,8 @@ limitations under the License.*/
 
 package br.unifor.iadapter.genetic;
 
+import java.lang.reflect.InvocationTargetException;
+
 /*
  * This file is part of JGAP.
  *
@@ -28,15 +30,15 @@ import java.util.List;
 import java.util.Random;
 
 import br.unifor.iadapter.algorithm.AbstractAlgorithm;
+import br.unifor.iadapter.neighborhood.NeighborhoodUtil;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
-import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class MutationOperator {
 	/** String containing the CVS revision. Read out via reflection! */
 	private final static String CVS_REVISION = "$Revision: 1.45 $";
 
 	public static WorkLoad mutantWorkload(AbstractAlgorithm algorithm, WorkLoad workload, int population, List<String> nodes,
-			int maxUsers, int generation, int mutantionProbability) {
+			int maxUsers, int generation, int mutantionProbability) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 
 		Random random = new Random();
 
@@ -46,7 +48,7 @@ public class MutationOperator {
 
 			for (int i = 0; i <= population; i++) {
 
-				workloadClone = WorkLoadUtil.getNeighBorHoodMutant(algorithm, workloadClone, nodes, maxUsers,
+				workloadClone = NeighborhoodUtil.getNeighBorHoodMutant(algorithm, workloadClone, nodes, maxUsers,
 						generation);
 
 			}

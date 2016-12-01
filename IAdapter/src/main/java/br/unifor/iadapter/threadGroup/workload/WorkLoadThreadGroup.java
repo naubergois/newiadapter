@@ -469,7 +469,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 				agent.delete();
 
 				Agent.sinchronizeFinal();
-				if ((getGeneration() <= generations) || (minTempInt <= temperature)) {
+				if ((getGeneration() <= generations) ) {
 					this.currentTest = 0;
 
 					try {

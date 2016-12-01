@@ -12,33 +12,48 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-
 package br.unifor.iadapter.threadGroup;
 
-import br.unifor.iadapter.threadGroup.workload.StressWorkload;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+
+import br.unifor.iadapter.searchclass.SearchClassWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
+import br.unifor.iadapter.util.WorkLoadUtil;
 
 public class FactoryWorkLoad {
 
-	public static WorkLoad createWorkLoad(String type) {
-		WorkLoad workload = null;
-		if (type.equals(WorkLoad.getTypes()[0])) {
-			workload = new WorkLoad();
+	public static WorkLoad createWorkLoad() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 
-			workload.setType(WorkLoad.getTypes()[0]);
+		SearchClassWorkLoad search = new SearchClassWorkLoad();
 
-		}
-		if (type.equals(WorkLoad.getTypes()[1])) {
-			workload = new StressWorkload();
+		List<String> classes = search.getClasses();
+		
+		System.out.println(" Load workloads "+classes);
 
-			workload.setType(WorkLoad.getTypes()[1]);
+		int index = WorkLoadUtil.randInt(0, classes.size()-1);
 
-		}
+		String name = classes.get(index);
+
+		WorkLoad workload = SearchClassWorkLoad.getInstance(name);
+		
+		workload.setType(workload.getClass().getCanonicalName());
+		
+		System.out.println(" Instance of workload "+workload.getClass());
 
 		return workload;
 
 	}
+	
+	public static WorkLoad createWorkLoad(String type) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 
+		WorkLoad workload = SearchClassWorkLoad.getInstance(type);
+
+		return workload;
+
+	}
 	
 	
+	
+
 }

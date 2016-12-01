@@ -86,7 +86,7 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	public static List<WorkLoad> getListWorkLoadFromPopulation(AbstractAlgorithm algorithm, Population population,
-			ListedHashTree tree, int generation, int generationTrack) {
+			ListedHashTree tree, int generation, int generationTrack) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		List<TestElement> listElement = FindService.searchWorkLoadControllerWithNoGui(tree);
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 		List<Chromosome> listC = population.getChromosomes();
@@ -98,7 +98,7 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	public static List<WorkLoad> getListWorkLoadFromPopulation(AbstractAlgorithm algorithm, List<Chromosome> listC,
-			ListedHashTree tree, int generation, int generationTrack) {
+			ListedHashTree tree, int generation, int generationTrack) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		List<TestElement> listElement = FindService.searchWorkLoadControllerWithNoGui(tree);
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
@@ -123,7 +123,7 @@ public abstract class JMeterPluginsUtils {
 	}
 
 	public static List<WorkLoad> getListWorkLoadFromPopulationTestPlan(AbstractAlgorithm algorithm, ListedHashTree tree,
-			List<IChromosome> listC, boolean gui, int generation) {
+			List<IChromosome> listC, boolean gui, int generation) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 
 		List<TestElement> listElement = null;
 		if (!(gui)) {
@@ -340,7 +340,7 @@ public abstract class JMeterPluginsUtils {
 
 	}
 
-	public static List<WorkLoad> collectionPropertyToWorkLoad(WorkLoadThreadGroup utg) {
+	public static List<WorkLoad> collectionPropertyToWorkLoad(WorkLoadThreadGroup utg) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 
 		List<WorkLoad> workLoadList = new ArrayList<WorkLoad>();
 		JMeterProperty threadValues = utg.getData();

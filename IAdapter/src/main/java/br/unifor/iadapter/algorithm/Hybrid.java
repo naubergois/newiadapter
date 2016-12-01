@@ -16,9 +16,9 @@ public class Hybrid extends AbstractAlgorithm {
 	public List<WorkLoad> strategy(List<WorkLoad> list, int populationSize, List<String> testCases, int generation,
 			int maxUsers, String testPlan, int mutantProbability, int bestIndividuals, boolean collaborative,
 			ListedHashTree script, int maxResponseTime) {
-		
+
 		try {
-			list=MySQLDatabase.listBestWorkLoadsForAll(testPlan, populationSize);
+			list = MySQLDatabase.listBestWorkLoadsForAll(testPlan, populationSize);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -54,9 +54,17 @@ public class Hybrid extends AbstractAlgorithm {
 		listBest.add(geneticList.get(0));
 		listBest.add(workload2.get(0));
 
+		for (WorkLoad workLoad : listBest) {
+
+			if (!(workLoad.getName().contains("Hybrid"))) {
+
+				workLoad.setName("Hybrid" + workLoad.getName());
+			}
+			workLoad.setSearchMethod(this.getMethodName());
+		}
+
 		// TODO Auto-generated method stub
-		return NeighborhoodUtil.getNeighBorHoodsFirstItemOfList(this, listBest, populationSize, testCases, generation,
-				maxUsers, testPlan);
+		return listBest;
 	}
 
 	public Hybrid() {

@@ -18,6 +18,7 @@ import org.apache.jmeter.threads.JMeterThread;
 import org.apache.log.Logger;
 
 import br.unifor.iadapter.jmeter.GraphRowSumValues;
+import br.unifor.iadapter.searchclass.SearchClassWorkLoad;
 
 public class WorkLoad {
 
@@ -278,8 +279,9 @@ public class WorkLoad {
 
 	private String function1;
 
-	public static String[] getTypes() {
-		return types;
+	public static Object[] getTypes() {
+		SearchClassWorkLoad search=new SearchClassWorkLoad();
+		return search.getClasses().toArray();
 	}
 
 	@Override

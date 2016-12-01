@@ -19,5 +19,10 @@ public class InitialPopulationAlgorithm extends AbstractAlgorithm {
 			return new ArrayList<WorkLoad>();
 		}
 	}
+	
+	public InitialPopulationAlgorithm(){
+		super();
+		setMethodName("Initial");
+	}
 
 }

@@ -18,6 +18,7 @@ package br.unifor.iadapter.threadGroup.workload;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -56,8 +57,32 @@ public class WorkLoadTableClicked implements MouseListener {
 		Object[] workloadData = model.getRowData(row);
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		WorkLoad workLoad = WorkLoadUtil.getWorkLoad(new ArrayList(Arrays
-				.asList(workloadData)));
+		WorkLoad workLoad=null;
+		try {
+			workLoad = WorkLoadUtil.getWorkLoad(new ArrayList(Arrays
+					.asList(workloadData)));
+		} catch (InstantiationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalArgumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InvocationTargetException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (NoSuchMethodException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (SecurityException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		if (workLoad != null) {
 

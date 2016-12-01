@@ -26,7 +26,7 @@ public class SimulateAnnealing {
 
 	// Simulate Annealing method
 	// temp is users
-	public static void sa(AbstractAlgorithm algorithm, List<WorkLoad> newPlaces, int temperature) {
+	public static void sa(AbstractAlgorithm algorithm, List<WorkLoad> newPlaces, double temperature,double reductionFactor) {
 
 		for (WorkLoad newPlace : newPlaces) {
 
@@ -57,6 +57,8 @@ public class SimulateAnnealing {
 
 			}
 		}
+		temperature=temperature*reductionFactor;
+		
 
 	}
 

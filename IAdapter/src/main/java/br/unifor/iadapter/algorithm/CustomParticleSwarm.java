@@ -1,5 +1,6 @@
 package br.unifor.iadapter.algorithm;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +37,30 @@ public class CustomParticleSwarm extends AbstractAlgorithm{
 			System.out.println("Leader Archive Particle Swarm:"+leaderArchive);
 			List<WorkLoad> leaders=new ArrayList<WorkLoad>(leaderArchive.values());
 					
-			neighborhood=NeighborhoodUtil.getNeighBorHoodsAllList(this, leaders, populationSize, testCases, generation, maxUsers, testPlan);
+			try {
+				neighborhood=NeighborhoodUtil.getNeighBorHoodsAllList(this, leaders, populationSize, testCases, generation, maxUsers, testPlan);
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
  			
 		}
 		

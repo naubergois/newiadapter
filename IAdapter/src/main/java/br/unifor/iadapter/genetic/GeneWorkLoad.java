@@ -14,6 +14,7 @@ limitations under the License.*/
 
 package br.unifor.iadapter.genetic;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +70,7 @@ public class GeneWorkLoad {
 
 	}
 
-	public static List<WorkLoad> mutationPopulation(AbstractAlgorithm algorithm,List<WorkLoad> list, List<String> nodes,int mutantProbability,int population,int generation,int maxUsers) {
+	public static List<WorkLoad> mutationPopulation(AbstractAlgorithm algorithm,List<WorkLoad> list, List<String> nodes,int mutantProbability,int population,int generation,int maxUsers) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		
 		
 	
@@ -220,23 +221,11 @@ public class GeneWorkLoad {
 		return conf;
 	}
 
-	public static List<WorkLoad> createWorkLoadsSAWithGui(int userNumbers,
-			int generation,int maxMemory,int maxCpuShare) throws InvalidConfigurationException {
 
-		List<WorkLoad> workLoads = new ArrayList<WorkLoad>();
-		for (int i = 0; i <= 10; i++) {
-
-			WorkLoad workload = WorkLoadUtil.createWorkLoadTemperatureWithGui(
-					generation, userNumbers,maxMemory,maxCpuShare);
-			workLoads.add(workload);
-		}
-
-		return workLoads;
-	}
 
 	public static List<WorkLoad> createWorkLoadsFromChromossomeWithGui(AbstractAlgorithm algorithm,
 			int userNumbers, int generation, int population,int memory,int cpuShare)
-			throws InvalidConfigurationException {
+			throws InvalidConfigurationException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		IChromosome[] list = createPopulation(userNumbers, population,memory,cpuShare);
 		List<WorkLoad> workLoads = new ArrayList<WorkLoad>();
 		for (IChromosome iChromosome : list) {

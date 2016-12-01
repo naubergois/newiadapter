@@ -27,11 +27,16 @@ public class TheRamp extends AbstractJavaSamplerClient {
 			
 			int increment =Integer.valueOf( arg0.getParameter("increment"));
 			
-			if (!WorkLoadThreadGroup.getGlobalVariables().containsKey("ramp_number")){
 			
-				number=0;
+				if (!WorkLoadThreadGroup.getGlobalVariables().containsKey("ramp_number")){
+					
+					number=0;
+				
+				}
+				
 			
-			}
+			
+			
 			
 			
 			
@@ -41,15 +46,19 @@ public class TheRamp extends AbstractJavaSamplerClient {
 			sampleResult.setSuccessful(true);
 			int numberOfThreads = JMeterContextService.getNumberOfThreads();
 			
+			number=number+increment;	
+			
+			
 			
 			try {
+				Thread.sleep(numberOfThreads*100);
 				Thread.sleep(number*100);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-			number=number+increment;
+			
 
 
 			sampleResult.sampleEnd();

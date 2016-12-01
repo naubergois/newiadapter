@@ -1137,6 +1137,8 @@ public class MySQLDatabase {
 				+ "AND SEARCHMETHOD='" + algorithm.getClass().getCanonicalName() + "' ORDER BY FIT*1 DESC");
 		ps.setString(1, testPlan);
 		
+		
+		
 
 		ResultSet rs = ps.executeQuery();
 
@@ -1146,6 +1148,8 @@ public class MySQLDatabase {
 			WorkLoad workload = WorkLoadUtil.resultSetToWorkLoad(rs);
 			list.add(workload);
 		}
+		
+		System.out.println("New Tabu Best "+list);
 
 		return list;
 

@@ -1,5 +1,6 @@
 package br.unifor.iadapter.algorithm;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +44,32 @@ public class CustomAlgorithm extends AbstractAlgorithm {
 			e.printStackTrace();
 		}
 
-		List<WorkLoad> newNeighboors = NeighborhoodUtil.getNeighBorHoodsAllList(this, newList, populationSize,
-				testCases, generation, maxUsers, testPlan);
+		List<WorkLoad> newNeighboors=null;
+		try {
+			newNeighboors = NeighborhoodUtil.getNeighBorHoodsAllList(this, newList, populationSize,
+					testCases, generation, maxUsers, testPlan);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		
 		return newNeighboors;
