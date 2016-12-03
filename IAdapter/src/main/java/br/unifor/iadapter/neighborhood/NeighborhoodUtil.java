@@ -31,7 +31,7 @@ public class NeighborhoodUtil {
 			String testPlan) throws InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		List<WorkLoad> neighborhoods = new ArrayList<WorkLoad>();
-		List<WorkLoad> neighborhoodsAux = NeighborhoodUtil.getNeighborHood(list.get(0), algorithm, testCases,
+		List<WorkLoad> neighborhoodsAux = NeighborhoodUtil.getNeighborHoodSamePath(list.get(0), algorithm, testCases,
 				generation, maxUsers, testPlan, populationSize);
 		neighborhoods.addAll(neighborhoodsAux);
 		return neighborhoods;
@@ -143,7 +143,7 @@ public class NeighborhoodUtil {
 		parameters.add(newUsers);
 		parameters.add(workload.getGeneration() + 1);
 
-		WorkLoad newWorkload = WorkLoadUtil.createWorkLoad(algorithm, scenarios, parameters, generationTrack, workload);
+		WorkLoad newWorkload = WorkLoadUtil.createWorkLoadSamePath(algorithm, scenarios, parameters, generationTrack, workload);
 
 		return newWorkload;
 	}

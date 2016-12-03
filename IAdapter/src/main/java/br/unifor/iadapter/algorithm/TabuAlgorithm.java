@@ -17,13 +17,13 @@ public class TabuAlgorithm extends AbstractAlgorithm {
 	public List<WorkLoad> strategy(List<WorkLoad> list, int populationSize, List<String> testCases, int generation,
 			int maxUsers, String testPlan, int mutantProbability, int bestIndividuals, boolean collaborative,
 			ListedHashTree script, int maxResponseTime) {
-		List<WorkLoad> oldList=list;
+		List<WorkLoad> oldList = list;
 
 		if (generation > 2) {
 
 			try {
 				list = MySQLDatabase.listWorkLoadsForNewGenerationByMethodAllGenerations(testPlan,
-						String.valueOf(generation), (AbstractAlgorithm) this);
+						(AbstractAlgorithm) this);
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -32,16 +32,16 @@ public class TabuAlgorithm extends AbstractAlgorithm {
 				e.printStackTrace();
 			}
 		}
-		
-		if(list.size()==0){
-			list=oldList;
+
+		if (list.size() == 0) {
+			list = oldList;
 		}
 		List<WorkLoad> listVerified = TabuSearch.verify(list);
 		TabuSearch.addTabuTable(list.get(0));
-		List<WorkLoad> neighborhoods=null;
+		List<WorkLoad> neighborhoods = null;
 		try {
-			neighborhoods = NeighborhoodUtil.getNeighBorHoodsFirstItemOfList(this, listVerified,
-					populationSize, testCases, generation, maxUsers, testPlan);
+			neighborhoods = NeighborhoodUtil.getNeighBorHoodsFirstItemOfList(this, listVerified, populationSize,
+					testCases, generation, maxUsers, testPlan);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

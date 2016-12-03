@@ -1126,7 +1126,7 @@ public class MySQLDatabase {
 
 	}
 	
-	public static List<WorkLoad> listWorkLoadsForNewGenerationByMethodAllGenerations(String testPlan, String generation,
+	public static List<WorkLoad> listWorkLoadsForNewGenerationByMethodAllGenerations(String testPlan,
 			AbstractAlgorithm algorithm) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();

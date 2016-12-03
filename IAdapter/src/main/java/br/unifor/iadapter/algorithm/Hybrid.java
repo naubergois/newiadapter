@@ -1,5 +1,6 @@
 package br.unifor.iadapter.algorithm;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,11 +50,41 @@ public class Hybrid extends AbstractAlgorithm {
 
 		List<WorkLoad> listBest = new ArrayList<WorkLoad>();
 
+		listBest.add(list.get(0));
 		listBest.add(workloads.get(0));
 		listBest.add(workload1.get(0));
 		listBest.add(geneticList.get(0));
 		listBest.add(workload2.get(0));
 
+		
+		List<WorkLoad> neighborhood=new ArrayList<WorkLoad>();
+		try {
+			neighborhood=NeighborhoodUtil.getNeighBorHoodsAllList(this, list, populationSize, testCases, generation, maxUsers, testPlan);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// TODO Auto-generated method stub
+		listBest.addAll(neighborhood);
 		for (WorkLoad workLoad : listBest) {
 
 			if (!(workLoad.getName().contains("Hybrid"))) {
@@ -62,8 +93,6 @@ public class Hybrid extends AbstractAlgorithm {
 			}
 			workLoad.setSearchMethod(this.getMethodName());
 		}
-
-		// TODO Auto-generated method stub
 		return listBest;
 	}
 
