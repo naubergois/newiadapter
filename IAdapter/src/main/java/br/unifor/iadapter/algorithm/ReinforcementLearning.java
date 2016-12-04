@@ -269,7 +269,7 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 				int random = WorkLoadUtil.randInt(0, 1000);
 				System.out.println("Epsilon "+epsilon);
 				System.out.println("Random "+random);
-				HashMap<String, Integer> map=rewards.get(range);
+				HashMap<String, Integer> map=rewards.get(String.valueOf(range));
 				
 				System.out.println("Reward "+rewards);
 				System.out.println("Map "+map);
