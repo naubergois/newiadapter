@@ -27,26 +27,50 @@ public class UnbalancedProcessing extends AbstractJavaSamplerClient {
 			
 
 			String scenario = arg0.getParameter("Scenario");
+			
+			WorkLoadThreadGroup.getScenariosSimulation().add(scenario);
 
+			System.out.println(scenario);
+			System.out.println(WorkLoadThreadGroup.getScenariosSimulation());
 			String a = "A";
 			String b = "B";
 			String c = "C";
+			int numberOfThreads = JMeterContextService.getNumberOfThreads();
 			
 			SampleResult sampleResult = new SampleResult();
 
 			sampleResult.sampleStart();
 			sampleResult.setSuccessful(true);
-
 			if (scenario.equals("A")) {
-				WorkLoadThreadGroup.getScenariosSimulation().add(a);
+				try {				
+					Thread.sleep(90*numberOfThreads);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}
-
 			if (scenario.equals("B")) {
-				WorkLoadThreadGroup.getScenariosSimulation().add(b);
+				try {				
+					Thread.sleep(50*numberOfThreads);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}
+			
 			if (scenario.equals("C")) {
-				while(WorkLoadThreadGroup.getScenariosSimulation().contains(a) && WorkLoadThreadGroup.getScenariosSimulation().contains(b) );
-				WorkLoadThreadGroup.getScenariosSimulation().add(c);
+				while(WorkLoadThreadGroup.getScenariosSimulation().contains(a) && WorkLoadThreadGroup.getScenariosSimulation().contains(b) ){
+					try {
+						System.out.println("Waiting for a and b");
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
 			}	
 			
 			sampleResult.setResponseCode("200");

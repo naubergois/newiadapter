@@ -112,6 +112,34 @@ public class NeighborhoodUtil {
 
 		return newWorkload;
 	}
+	
+	
+	
+	
+	
+	public static WorkLoad getNeighBorHood(WorkLoad workload, AbstractAlgorithm algorithm, List<String> scenarios,
+			int maxUsers, Integer generationTrack,int func,int newFunc,int users)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
+
+		List<Integer> parameters = new ArrayList<Integer>();
+		parameters.add(WorkLoadUtil.getIndexByType(workload.getType()));
+
+		System.out.println("Parameter old: " + parameters);
+
+		parameters = WorkLoadUtil.mutateParameter(parameters, scenarios, workload,func,newFunc);
+
+		System.out.println("Parameter new: " + parameters);
+
+		int newUsers = (workload.getNumThreads());
+
+		parameters.add(newUsers);
+		parameters.add(workload.getGeneration() + 1);
+
+		WorkLoad newWorkload = WorkLoadUtil.createWorkLoad(algorithm, scenarios, parameters, generationTrack, workload);
+
+		return newWorkload;
+	}
 
 	/**
 	 * Get neighBorHood

@@ -47,10 +47,16 @@ public class SAAlgorithm extends AbstractAlgorithm {
 			currentWorkLoad = list.get(0);
 		}
 
+		
+
+		if (list.size() > 0) {
+			System.out.println("SA Temperature:" + temperature);
+			SimulateAnnealing.sa(this, list, tempInicial(), 0.9);
+		}
+		
 		List<WorkLoad> neighborhoods=null;
 		try {
-			neighborhoods = NeighborhoodUtil.getNeighborHood(currentWorkLoad, this, testCases, generation,
-					maxUsers, testPlan, populationSize);
+			neighborhoods = NeighborhoodUtil.getNeighBorHoodsAllList(this, list, populationSize, testCases, generation, maxUsers, testPlan);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -73,14 +79,12 @@ public class SAAlgorithm extends AbstractAlgorithm {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		if (this.getListWorkLoads().size() > 0) {
-			System.out.println("SA Temperature:" + temperature);
-			SimulateAnnealing.sa(this, neighborhoods, tempInicial(), 0.9);
-		}
+		
+		
 		
 		List<WorkLoad> returnWorkload=new ArrayList<WorkLoad>();
 		returnWorkload.add(currentWorkLoad);
+		returnWorkload.addAll(neighborhoods);
 
 		return returnWorkload;
 	}

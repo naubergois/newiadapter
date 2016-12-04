@@ -215,6 +215,144 @@ public class WorkLoadUtil {
 		}
 		return parameter;
 	}
+	
+	
+	public static List<Integer> mutateParameter(List<Integer> parameter, List<String> nodes, WorkLoad workload,int func,int newFunc) {
+	
+		if (func == 0) {
+	
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
+		}
+		if (func == 1) {
+	
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
+		}
+		if (func == 2) {
+	
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
+		}
+		if (func == 3) {
+			
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
+		}
+		if (func == 4) {
+			
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
+		}
+		if (func == 5) {
+			
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
+		}
+		if (func == 6) {
+			
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
+		}
+		if (func == 7) {
+			
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(getIndex(nodes, workload.getFunction10()));
+		}
+		if (func == 8) {
+			
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(newFunc);
+			parameter.add(getIndex(nodes, workload.getFunction10()));
+		}
+		if (func == 9) {
+			
+			parameter.add(getIndex(nodes, workload.getFunction1()));
+			parameter.add(getIndex(nodes, workload.getFunction2()));
+			parameter.add(getIndex(nodes, workload.getFunction3()));
+			parameter.add(getIndex(nodes, workload.getFunction4()));
+			parameter.add(getIndex(nodes, workload.getFunction5()));
+			parameter.add(getIndex(nodes, workload.getFunction6()));
+			parameter.add(getIndex(nodes, workload.getFunction7()));
+			parameter.add(getIndex(nodes, workload.getFunction8()));
+			parameter.add(getIndex(nodes, workload.getFunction9()));
+			parameter.add(newFunc);
+
+		}
+		return parameter;
+	}
+
 
 	public static WorkLoad createRandomWorkLoad()
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
