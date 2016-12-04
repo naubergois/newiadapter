@@ -139,6 +139,11 @@
 			<artifactId>javassist</artifactId>
 			<version>3.12.1.GA</version>
 		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20140107</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.googlecode.gendevcode</groupId>
