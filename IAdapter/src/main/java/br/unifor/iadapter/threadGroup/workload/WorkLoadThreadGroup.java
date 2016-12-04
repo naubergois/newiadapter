@@ -96,6 +96,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	private int generation = 0;
 	public int temperature = 0;
 	private int generationTrack = 0;
+	
+	
 
 	public int getGeneration() {
 		return generation;

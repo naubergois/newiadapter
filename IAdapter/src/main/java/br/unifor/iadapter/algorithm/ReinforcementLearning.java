@@ -17,6 +17,8 @@ import br.unifor.iadapter.util.WorkLoadUtil;
 public class ReinforcementLearning extends AbstractAlgorithm {
 	
 	public ReinforcementLearning(){
+		super();
+		setMethodName("Reinf");
 		
 	}
 	
@@ -93,6 +95,8 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 			e.printStackTrace();
 		}
 		newWorkLoad.add(newW);
+		//newW.setGeneration(newW.getGeneration()+1);
+		System.out.println("Generation "+newW.getGeneration());
 		Operation op = new Operation();
 		op.func = func;
 		op.newFunc = newFunc;
@@ -108,7 +112,7 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 		WorkLoad newW = null;
 		try {
 			newW = NeighborhoodUtil.getNeighBorHoodUpDown(owkr, this, testCases, maxUsers, generation, func, newFunc,
-					maxUsers,true);
+					maxUsers,true);	
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -131,6 +135,9 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		newW.setGeneration(generation);
+		System.out.println("NEW WOrkload "+newW);
+		System.out.println("Generation "+newW.getGeneration());
 		newWorkLoad.add(newW);
 		Operation op = new Operation();
 		op.func = func;
@@ -170,6 +177,9 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		newW.setGeneration(generation);
+		System.out.println("NEW WOrkload "+newW);
+		System.out.println("Generation "+newW.getGeneration());
 		newWorkLoad.add(newW);
 		Operation op = new Operation();
 		op.func = func;
@@ -291,16 +301,24 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 					
 					String[] actions=key.split("#");
 					
+					System.out.println("Action "+actions[0]);
+					
+					System.out.println("newFunc "+actions[1]);
+					
 					int newFunc=Integer.valueOf(actions[1]);
 					
-					if (actions[0]=="up"){
+					
+					
+					if (actions[0].equals("up")){
 						neighborUp(owkrOld, testCases, maxUsers, generation,newFunc);
 						
 					}
-					if (actions[0]=="down"){
+					if (actions[0].equals("down")){
 						neighborDown(owkrOld, testCases, maxUsers, generation,newFunc);
 						
 					}
+					
+					System.out.println("New Workload  "+newWorkLoad);
 					
 					
 					

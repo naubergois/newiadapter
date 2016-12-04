@@ -1199,6 +1199,47 @@ public class WorkLoadUtil {
 		users8 = source.getUsers8() + delta;
 		users9 = source.getUsers9() + delta;
 		users10 = source.getUsers10() + delta;
+		
+		
+		System.out.println(" Delta "+delta);
+		workload.calcUsers();
+		if (users1<0){
+			workload.setUsers1(0);
+		}
+		if (users2<0){
+			workload.setUsers2(0);
+		}
+		if (users3<0){
+			workload.setUsers3(0);
+		}
+		if (users4<0){
+			workload.setUsers4(0);
+		}
+		if (users5<0){
+			workload.setUsers5(0);
+		}
+		if (users6<0){
+			workload.setUsers5(0);
+		}
+		if (users7<0){
+			workload.setUsers7(0);
+		}
+		if (users8<0){
+			workload.setUsers8(0);
+		}
+		if (users9<0){
+			workload.setUsers9(0);
+		}
+		if (users10<0){
+			workload.setUsers10(0);
+		}
+
+
+		workload.calcUsers();
+		System.out.println("Nu threads "+workload.getNumThreads());
+
+		
+		
 
 		workload.setUsers1(users1);
 		workload.setUsers2(users2);
