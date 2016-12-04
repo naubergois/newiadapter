@@ -112,13 +112,9 @@ public class NeighborhoodUtil {
 
 		return newWorkload;
 	}
-	
-	
-	
-	
-	
+
 	public static WorkLoad getNeighBorHood(WorkLoad workload, AbstractAlgorithm algorithm, List<String> scenarios,
-			int maxUsers, Integer generationTrack,int func,int newFunc,int users)
+			int maxUsers, Integer generationTrack, int func, int newFunc, int users)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 
@@ -127,7 +123,7 @@ public class NeighborhoodUtil {
 
 		System.out.println("Parameter old: " + parameters);
 
-		parameters = WorkLoadUtil.mutateParameter(parameters, scenarios, workload,func,newFunc);
+		parameters = WorkLoadUtil.mutateParameter(parameters, scenarios, workload, func, newFunc);
 
 		System.out.println("Parameter new: " + parameters);
 
@@ -137,6 +133,39 @@ public class NeighborhoodUtil {
 		parameters.add(workload.getGeneration() + 1);
 
 		WorkLoad newWorkload = WorkLoadUtil.createWorkLoad(algorithm, scenarios, parameters, generationTrack, workload);
+
+		return newWorkload;
+	}
+
+	public static WorkLoad getNeighBorHoodUpDown(WorkLoad workload, AbstractAlgorithm algorithm, List<String> scenarios,
+			int maxUsers, Integer generationTrack, int func, int newFunc, int users, boolean up)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
+
+		List<Integer> parameters = new ArrayList<Integer>();
+		parameters.add(WorkLoadUtil.getIndexByType(workload.getType()));
+
+		System.out.println("Parameter old: " + parameters);
+
+		parameters = WorkLoadUtil.mutateParameter(parameters, scenarios, workload, func, newFunc);
+
+		System.out.println("Parameter new: " + parameters);
+
+		int newUsers = (workload.getNumThreads());
+
+		int delta = 0;
+
+		if (up) {
+			delta = WorkLoadUtil.randInt(0, 20);
+		} else {
+			delta = WorkLoadUtil.randInt(-2, 0);
+		}
+
+		parameters.add(newUsers);
+		parameters.add(workload.getGeneration() + 1);
+
+		WorkLoad newWorkload = WorkLoadUtil.createWorkLoad(algorithm, scenarios, parameters, generationTrack, workload,
+				delta);
 
 		return newWorkload;
 	}
@@ -171,7 +200,8 @@ public class NeighborhoodUtil {
 		parameters.add(newUsers);
 		parameters.add(workload.getGeneration() + 1);
 
-		WorkLoad newWorkload = WorkLoadUtil.createWorkLoadSamePath(algorithm, scenarios, parameters, generationTrack, workload);
+		WorkLoad newWorkload = WorkLoadUtil.createWorkLoadSamePath(algorithm, scenarios, parameters, generationTrack,
+				workload);
 
 		return newWorkload;
 	}

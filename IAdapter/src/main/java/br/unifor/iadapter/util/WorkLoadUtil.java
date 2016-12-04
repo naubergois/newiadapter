@@ -1155,6 +1155,94 @@ public class WorkLoadUtil {
 	}
 	
 	
+	public static WorkLoad createWorkLoad(AbstractAlgorithm algorithm, List<String> nodes, List<Integer> parametros,
+			int generation, WorkLoad source,int delta)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
+		WorkLoad workload = null;
+
+		workload = FactoryWorkLoad.createWorkLoad();
+
+		workload.setFunction1(getNameFromString(nodes, parametros.get(1)));
+		workload.setFunction2(getNameFromString(nodes, parametros.get(2)));
+		workload.setFunction3(getNameFromString(nodes, parametros.get(3)));
+		workload.setFunction4(getNameFromString(nodes, parametros.get(4)));
+		workload.setFunction5(getNameFromString(nodes, parametros.get(5)));
+		workload.setFunction6(getNameFromString(nodes, parametros.get(6)));
+		workload.setFunction7(getNameFromString(nodes, parametros.get(7)));
+		workload.setFunction8(getNameFromString(nodes, parametros.get(8)));
+		workload.setFunction9(getNameFromString(nodes, parametros.get(9)));
+		workload.setFunction10(getNameFromString(nodes, parametros.get(10)));
+
+		int threads = Integer.valueOf(parametros.get(11));
+		workload.setNumThreads(threads);
+		workload.calcUsers();
+
+		int users1 = 0;
+		int users2 = 0;
+		int users3 = 0;
+		int users4 = 0;
+		int users5 = 0;
+		int users6 = 0;
+		int users7 = 0;
+		int users8 = 0;
+		int users9 = 0;
+		int users10 = 0;
+
+		users1 = source.getUsers1() + delta;
+		users2 = source.getUsers2() + delta;
+		users3 = source.getUsers3() + delta;
+		users4 = source.getUsers4() + delta;
+		users5 = source.getUsers5() + delta;
+		users6 = source.getUsers6() + delta;
+		users7 = source.getUsers7() + delta;
+		users8 = source.getUsers8() + delta;
+		users9 = source.getUsers9() + delta;
+		users10 = source.getUsers10() + delta;
+
+		workload.setUsers1(users1);
+		workload.setUsers2(users2);
+		workload.setUsers3(users3);
+		workload.setUsers4(users4);
+		workload.setUsers5(users5);
+		workload.setUsers6(users6);
+		workload.setUsers7(users7);
+		workload.setUsers8(users8);
+		workload.setUsers9(users9);
+		workload.setUsers10(users10);
+
+		workload.setSearchMethod(algorithm.getMethodName());
+		workload.setGeneration(parametros.get(12));
+		workload.setActive(true);
+
+		workload.setNumThreads(workload.getUsers1() + workload.getUsers2() + workload.getUsers3() + workload.getUsers4()
+				+ workload.getUsers5() + workload.getUsers6() + workload.getUsers7() + workload.getUsers8()
+				+ workload.getUsers9() + workload.getUsers10());
+
+		if (workload.getNumThreads() <= 0) {
+			workload.setNumThreads(1);
+			workload.setUsers1(1);
+			workload.setUsers2(0);
+			workload.setUsers3(0);
+			workload.setUsers4(0);
+			workload.setUsers5(0);
+			workload.setUsers6(0);
+			workload.setUsers7(0);
+			workload.setUsers8(0);
+			workload.setUsers9(0);
+			workload.setUsers10(0);
+		}
+
+		workload.setName(algorithm.getMethodName() + ":" + generation + ":" + parametros.get(12) + ":"
+				+ workload.getType() + "-" + workload.getNumThreads() + "-" + workload.getFunction1() + "-"
+				+ workload.getFunction2() + "-" + workload.getFunction3() + "-" + workload.getFunction4() + "-"
+				+ workload.getFunction5() + "-" + workload.getFunction6() + "-" + workload.getFunction7() + "-"
+				+ workload.getFunction8() + "-" + workload.getFunction9() + "-" + workload.getFunction10());
+
+		return workload;
+	}
+	
+	
 	public static WorkLoad createWorkLoadSamePath(AbstractAlgorithm algorithm, List<String> nodes, List<Integer> parametros,
 			int generation, WorkLoad source)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,

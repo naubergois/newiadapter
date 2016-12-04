@@ -61,10 +61,15 @@ public class UnbalancedProcessing extends AbstractJavaSamplerClient {
 			}
 			
 			if (scenario.equals("C")) {
+				int count=0;
 				while(WorkLoadThreadGroup.getScenariosSimulation().contains(a) && WorkLoadThreadGroup.getScenariosSimulation().contains(b) ){
 					try {
-						System.out.println("Waiting for a and b");
+						System.out.println("Waiting for a and b "+count);
 						Thread.sleep(1000);
+						count++;
+						if (count>100){
+							break;
+						}
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
