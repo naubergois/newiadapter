@@ -1,14 +1,10 @@
 package br.unifor.iadapter.neighborhood;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.jorphan.collections.ListedHashTree;
-
 import br.unifor.iadapter.algorithm.AbstractAlgorithm;
-import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.threadGroup.FactoryWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.util.WorkLoadUtil;
@@ -156,9 +152,9 @@ public class NeighborhoodUtil {
 		int delta = 0;
 
 		if (up) {
-			delta = WorkLoadUtil.randInt(0, 20);
+			delta = WorkLoadUtil.randInt(1, 3);
 		} else {
-			delta = WorkLoadUtil.randInt(-2, 0);
+			delta = WorkLoadUtil.randInt(-3, -1);
 		}
 
 		parameters.add(newUsers);

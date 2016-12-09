@@ -3,6 +3,8 @@ package br.unifor.iadapter.algorithm;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.jorphan.collections.ListedHashTree;
@@ -56,7 +58,7 @@ public class SAAlgorithm extends AbstractAlgorithm {
 		
 		List<WorkLoad> neighborhoods=null;
 		try {
-			neighborhoods = NeighborhoodUtil.getNeighBorHoodsAllList(this, list, populationSize, testCases, generation, maxUsers, testPlan);
+			neighborhoods = NeighborhoodUtil.getNeighborHood(this.currentWorkLoad, this, testCases, generation, maxUsers, testPlan, populationSize);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -83,6 +85,8 @@ public class SAAlgorithm extends AbstractAlgorithm {
 		
 		
 		List<WorkLoad> returnWorkload=new ArrayList<WorkLoad>();
+		
+				
 		returnWorkload.add(currentWorkLoad);
 		returnWorkload.addAll(neighborhoods);
 

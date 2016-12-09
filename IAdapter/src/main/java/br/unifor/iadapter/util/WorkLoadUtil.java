@@ -20,8 +20,12 @@ import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
 import org.apache.jmeter.gui.util.PowerTableModel;
@@ -1047,6 +1051,93 @@ public class WorkLoadUtil {
 	public static int getIndex(List<String> nodes, String name) {
 
 		return nodes.indexOf(name);
+	}
+	
+	static class MyComparator implements Comparator {
+
+		Map map;
+
+		public MyComparator(Map map) {
+			this.map = map;
+		}
+
+		public int compare(Object o1, Object o2) {
+
+			return ((Integer) map.get(o2)).compareTo((Integer) map.get(o1));
+
+		}
+	}
+	
+	public static String getWorkLoadScenarios(WorkLoad workload,List<String> scenarios){
+		
+		HashMap<String,Integer> scenarioNumber=new HashMap<>();
+		
+		
+		
+		for (int i=0;i<10;i++){
+			String scenario="";
+			int users=0;
+			if (i==0){
+				scenario=workload.getFunction1();
+				users=workload.getUsers1();
+			}
+			if (i==1){
+				scenario=workload.getFunction2();
+				users=workload.getUsers2();
+			}
+			if (i==2){
+				scenario=workload.getFunction3();
+				users=workload.getUsers3();
+			}
+			if (i==3){
+				scenario=workload.getFunction4();
+				users=workload.getUsers4();
+			}
+			if (i==4){
+				scenario=workload.getFunction5();
+				users=workload.getUsers5();
+			}
+			if (i==5){
+				scenario=workload.getFunction6();
+				users=workload.getUsers6();
+			}
+			if (i==6){
+				scenario=workload.getFunction7();
+				users=workload.getUsers7();
+			}
+			if (i==7){
+				scenario=workload.getFunction8();
+				users=workload.getUsers8();
+			}
+			if (i==8){
+				scenario=workload.getFunction9();
+				users=workload.getUsers9();
+			}
+			if (i==9){
+				scenario=workload.getFunction10();
+				users=workload.getUsers10();
+			}
+			if (scenarioNumber.containsKey(scenario)){
+				int currentUsers=scenarioNumber.get(scenario);
+				currentUsers+=users;
+				scenarioNumber.put(scenario, currentUsers);
+			}else{
+				scenarioNumber.put(scenario, users);
+			}
+			
+		}
+		
+		MyComparator comp = new MyComparator(scenarioNumber);
+		Map<String, Integer> newMap = new TreeMap(comp);
+		newMap.putAll(scenarioNumber);
+		StringBuffer buffer=new StringBuffer();
+		for (String string : newMap.keySet()) {
+			buffer.append(string);
+			
+			
+		}
+		return buffer.toString();
+		
 	}
 
 	public static int deltaUsers() {

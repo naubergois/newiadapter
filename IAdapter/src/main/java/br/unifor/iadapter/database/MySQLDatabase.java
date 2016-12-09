@@ -25,12 +25,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
 import br.unifor.iadapter.agent.Agent;
 import br.unifor.iadapter.algorithm.AbstractAlgorithm;
 import br.unifor.iadapter.algorithm.InitialPopulationAlgorithm;
+import br.unifor.iadapter.algorithm.Q;
 import br.unifor.iadapter.percentiles.PercentileCounter;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
@@ -713,6 +715,83 @@ public class MySQLDatabase {
 		ps.executeUpdate();
 		ps.close();
 	}
+	
+	
+	public static void insertQ(String range,String testplan,String state,double Q)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT count(*) FROM  Q WHERE responsetime=? AND TESTPLAN=? and state=?");
+		ps.setString(1, String.valueOf(range));
+		ps.setString(2, String.valueOf(testplan));
+		ps.setString(3, String.valueOf(state));
+
+		ResultSet rs = ps.executeQuery();
+		
+
+		int count = 0;
+		while (rs.next()) {
+			count = rs.getInt(1);
+		}
+		if (count <= 0) {
+			ps = con.prepareStatement("INSERT INTO Q(responsetime,testplan,state,Qvalue) VALUES (?,?,?,?)");
+			ps.setString(1, String.valueOf(range));
+			ps.setString(2, String.valueOf(testplan));
+			ps.setString(3, String.valueOf(state));
+			ps.setDouble(4, Q);
+			ps.executeUpdate();
+	
+			
+		} else {
+
+			System.out.println("Atualizando q");
+
+			PreparedStatement preparedStatement =con.prepareStatement("update Q set Qvalue=?  WHERE responsetime=? AND TESTPLAN=? and state=?");
+			preparedStatement.setDouble(1, Q);
+			preparedStatement.setString(2, String.valueOf(range));
+			preparedStatement.setString(3, String.valueOf(testplan));
+			preparedStatement.setString(4, String.valueOf(state));
+			preparedStatement.executeUpdate();
+			
+
+		}
+
+		
+		ps.close();
+	}
+	
+	
+	public static void insertQifNotExist(String range,String testplan,String state,double Q)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT count(*) FROM  Q WHERE responsetime=? AND TESTPLAN=? and state=?");
+		ps.setString(1, String.valueOf(range));
+		ps.setString(2, String.valueOf(testplan));
+		ps.setString(3, String.valueOf(state));
+
+		ResultSet rs = ps.executeQuery();
+		
+
+		int count = 0;
+		while (rs.next()) {
+			count = rs.getInt(1);
+		}
+		if (count <= 0) {
+			ps = con.prepareStatement("INSERT INTO Q(responsetime,testplan,state,Qvalue) VALUES (?,?,?,?)");
+			ps.setString(1, String.valueOf(range));
+			ps.setString(2, String.valueOf(testplan));
+			ps.setString(3, String.valueOf(state));
+			ps.setDouble(4, Q);
+			ps.executeUpdate();
+	
+			
+		} 
+		
+		ps.close();
+	}
 
 	public static void insertSample(List objetos, String testPlan, String generation)
 			throws ClassNotFoundException, SQLException {
@@ -877,6 +956,18 @@ public class MySQLDatabase {
 		ps.executeUpdate();
 
 	}
+	
+	
+	public static void deleteQ( String testPlan) throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "DELETE  FROM  Q WHERE testplan=?");
+		ps.setString(1, String.valueOf(testPlan));
+		
+		ps.executeUpdate();
+
+	}
 
 	public static void deleteWorkLoad(String name, String testPlan, String generation)
 			throws ClassNotFoundException, SQLException {
@@ -918,6 +1009,65 @@ public class MySQLDatabase {
 			agent.setRunning(running);
 			agent.setDate(date);
 			list.add(agent);
+		}
+		return list;
+
+	}
+	
+	public static HashMap<String,Q> selectQ(String testPlan,String responseTime) throws ClassNotFoundException, SQLException {
+
+		HashMap<String,Q> list = new HashMap<>();
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "select Qvalue,state  FROM  Q where testplan=? and responsetime=? ORDER BY Qvalue DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, responseTime);
+
+		ResultSet rs = ps.executeQuery();
+
+		while (rs.next()) {
+			Q q=new Q();
+			
+			double qvalue = rs.getDouble(1);
+			
+			String state = rs.getString(2);
+			
+			q.setQ(qvalue);
+			q.setState(state);
+			
+			
+			list.put(q.getState(), q);
+		}
+		return list;
+
+	}
+	
+	
+	public static List<Q> selectListQ(String testPlan,String responseTime) throws ClassNotFoundException, SQLException {
+
+		List<Q> list = new ArrayList<>();
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "select Qvalue,state  FROM  Q where testplan=? and responsetime=? ORDER BY Qvalue DESC");
+		ps.setString(1, testPlan);
+		ps.setString(2, responseTime);
+
+		ResultSet rs = ps.executeQuery();
+
+		while (rs.next()) {
+			Q q=new Q();
+			
+			double qvalue = rs.getDouble(1);
+			
+			String state = rs.getString(2);
+			
+			q.setQ(qvalue);
+			q.setState(state);
+			
+			
+			list.add(q);
 		}
 		return list;
 

@@ -30,8 +30,8 @@ public class UnbalancedProcessing extends AbstractJavaSamplerClient {
 			
 			WorkLoadThreadGroup.getScenariosSimulation().add(scenario);
 
-			System.out.println(scenario);
-			System.out.println(WorkLoadThreadGroup.getScenariosSimulation());
+			//System.out.println(scenario);
+			//System.out.println(WorkLoadThreadGroup.getScenariosSimulation());
 			String a = "A";
 			String b = "B";
 			String c = "C";
@@ -64,7 +64,7 @@ public class UnbalancedProcessing extends AbstractJavaSamplerClient {
 				int count=0;
 				while(WorkLoadThreadGroup.getScenariosSimulation().contains(a) && WorkLoadThreadGroup.getScenariosSimulation().contains(b) ){
 					try {
-						System.out.println("Waiting for a and b "+count);
+						//System.out.println("Waiting for a and b "+count);
 						Thread.sleep(1000);
 						count++;
 						if (count>100){
