@@ -192,6 +192,169 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 		operations.put(newW.getName(), op);
 		return newW;
 	}
+	
+	
+	public static WorkLoad getNeighborQ(AbstractAlgorithm algorithm,WorkLoad workLoad,String testPlan,long range,List<String> testCases,int generation,int maxUsers){
+		List<Q> map = new ArrayList<>();
+		try {
+			map = MySQLDatabase.selectListQ(testPlan, String.valueOf(range));
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		System.out.println("Map " + map);
+		ReinforcementLearning.epsilon--;
+
+		WorkLoad newW=null;
+		
+		if ( (map.size() == 0)) {
+			int booleanT = WorkLoadUtil.randInt(0, 1);
+			if (booleanT == 0) {
+				int func = WorkLoadUtil.randInt(0, 9);
+				int newFunc = WorkLoadUtil.randInt(0, testCases.size() - 1);
+				try {
+					newW = NeighborhoodUtil.getNeighBorHoodUpDown(workLoad, algorithm, testCases, maxUsers, generation, func, newFunc,
+							maxUsers, true);
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+			if (booleanT == 1) {
+				int func = WorkLoadUtil.randInt(0, 9);
+				int newFunc = WorkLoadUtil.randInt(0, testCases.size() - 1);
+				try {
+					newW = NeighborhoodUtil.getNeighBorHoodUpDown(workLoad, algorithm, testCases, maxUsers, generation, func, newFunc,
+							maxUsers, false);
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+
+			
+		} else {
+
+			Q q = map.get(0);
+
+			String key = q.state;
+
+			System.out.println("Key " + key);
+
+			String[] actions = key.split("#");
+
+			System.out.println("Action " + actions[0]);
+
+			System.out.println("newFunc " + actions[1]);
+
+			int newFunc = Integer.valueOf(actions[1]);
+
+			if (actions[0].equals("up")) {
+				int func = WorkLoadUtil.randInt(0, 9);
+				try {
+					newW = NeighborhoodUtil.getNeighBorHoodUpDown(workLoad, algorithm, testCases, maxUsers, generation, func, newFunc,
+							maxUsers, true);
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+			if (actions[0].equals("down")) {
+				int func = WorkLoadUtil.randInt(0, 9);
+				try {
+					newW = NeighborhoodUtil.getNeighBorHoodUpDown(workLoad, algorithm, testCases, maxUsers, generation, func, newFunc,
+							maxUsers, false);
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+
+			System.out.println("New Workload  " + newWorkLoad);
+			System.out.println("Reward " + Q);
+		}
+		return newW;
+	}
 
 	@Override
 	public List<WorkLoad> strategy(List<WorkLoad> list, int populationSize, List<String> testCases, int generation,
