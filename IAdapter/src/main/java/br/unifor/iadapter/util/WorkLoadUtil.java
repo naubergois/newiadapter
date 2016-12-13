@@ -1280,15 +1280,15 @@ public class WorkLoadUtil {
 		int users9 = 0;
 		int users10 = 0;
 
-		users1 = source.getUsers1() + delta;
-		users2 = source.getUsers2() + delta;
-		users3 = source.getUsers3() + delta;
-		users4 = source.getUsers4() + delta;
-		users5 = source.getUsers5() + delta;
-		users6 = source.getUsers6() + delta;
-		users7 = source.getUsers7() + delta;
-		users8 = source.getUsers8() + delta;
-		users9 = source.getUsers9() + delta;
+		users1 = source.getUsers1() + WorkLoadUtil.randInt(0, delta);
+		users2 = source.getUsers2() + WorkLoadUtil.randInt(0, delta);
+		users3 = source.getUsers3() + WorkLoadUtil.randInt(0, delta);
+		users4 = source.getUsers4() + WorkLoadUtil.randInt(0, delta);
+		users5 = source.getUsers5() + WorkLoadUtil.randInt(0, delta);
+		users6 = source.getUsers6() + WorkLoadUtil.randInt(0, delta);
+		users7 = source.getUsers7() + WorkLoadUtil.randInt(0, delta);
+		users8 = source.getUsers8() + WorkLoadUtil.randInt(0, delta);
+		users9 = source.getUsers9() + WorkLoadUtil.randInt(0, delta);
 		users10 = source.getUsers10() + delta;
 		
 		

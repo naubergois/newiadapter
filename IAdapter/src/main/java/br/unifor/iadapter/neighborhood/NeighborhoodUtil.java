@@ -24,14 +24,14 @@ public class NeighborhoodUtil {
 	}
 
 	public static List<WorkLoad> getNeighBorHoodsFirstItemOfListQ(AbstractAlgorithm algorithm, List<WorkLoad> list,
-			int populationSize, List<String> testCases, int generation, int maxUsers, String testPlan)
+			int populationSize, List<String> testCases, int generation, int maxUsers, String testPlan,int maxResponseTime)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		List<WorkLoad> neighborhoods = new ArrayList<WorkLoad>();
 		WorkLoad neighborhoodsAux = ReinforcementLearning.getNeighborQ(algorithm, list.get(0), testPlan,
-				list.get(0).getPercentile90(), testCases, generation, maxUsers);
+				 testCases, generation, maxUsers,maxResponseTime);
 
-		neighborhoods.add(neighborhoodsAux);
+		neighborhoods.add(neighborhoodsAux);      
 		return neighborhoods;
 	}
 
@@ -48,11 +48,11 @@ public class NeighborhoodUtil {
 	
 	public static List<WorkLoad> getNeighBorHoodsFirstItemOfListSamePathQ(AbstractAlgorithm algorithm,
 			List<WorkLoad> list, int populationSize, List<String> testCases, int generation, int maxUsers,
-			String testPlan) throws InstantiationException, IllegalAccessException, IllegalArgumentException,
+			String testPlan,int maxResponseTime) throws InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		List<WorkLoad> neighborhoods = new ArrayList<WorkLoad>();
 		List<WorkLoad> neighborhoodsAux = NeighborhoodUtil.getNeighborHoodSamePathQ(list.get(0), algorithm, testCases,
-				generation, maxUsers, testPlan, populationSize);
+				generation, maxUsers, testPlan, populationSize,maxResponseTime);
 		neighborhoods.addAll(neighborhoodsAux);
 		return neighborhoods;
 	}
@@ -74,13 +74,13 @@ public class NeighborhoodUtil {
 	
 	
 	public static List<WorkLoad> getNeighBorHoodsAllListQ(AbstractAlgorithm algorithm, List<WorkLoad> list,
-			int populationSize, List<String> testCases, int generation, int maxUsers, String testPlan)
+			int populationSize, List<String> testCases, int generation, int maxUsers, String testPlan,int maxResponseTime)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		List<WorkLoad> neighborhoods = new ArrayList<WorkLoad>();
 		for (WorkLoad workLoad : list) {
 			List<WorkLoad> neighborhoodsAux = NeighborhoodUtil.getNeighborHoodQ(workLoad, algorithm, testCases,
-					generation, maxUsers, testPlan, populationSize);
+					generation, maxUsers, testPlan, populationSize,maxResponseTime);
 			neighborhoods.addAll(neighborhoodsAux);
 
 		}
@@ -202,6 +202,35 @@ public class NeighborhoodUtil {
 
 		WorkLoad newWorkload = WorkLoadUtil.createWorkLoad(algorithm, scenarios, parameters, generationTrack, workload,
 				delta);
+
+		return newWorkload;
+	}
+	
+	
+	
+	public static WorkLoad getNeighBorHoodSame(WorkLoad workload, AbstractAlgorithm algorithm, List<String> scenarios,
+			int maxUsers, Integer generationTrack, int func, int newFunc, int users, boolean up)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
+
+		List<Integer> parameters = new ArrayList<Integer>();
+		parameters.add(WorkLoadUtil.getIndexByType(workload.getType()));
+
+		System.out.println("Parameter old: " + parameters);
+
+		parameters = WorkLoadUtil.mutateParameter(parameters, scenarios, workload, func, newFunc);
+
+		System.out.println("Parameter new: " + parameters);
+
+		int newUsers = (workload.getNumThreads());
+
+
+	
+		parameters.add(newUsers);
+		parameters.add(workload.getGeneration() + 1);
+
+		WorkLoad newWorkload = WorkLoadUtil.createWorkLoad(algorithm, scenarios, parameters, generationTrack, workload,
+				0);
 
 		return newWorkload;
 	}
@@ -358,7 +387,7 @@ public class NeighborhoodUtil {
 	
 	
 	public static List<WorkLoad> getNeighborHoodQ(WorkLoad workload, AbstractAlgorithm algorithm, List<String> scenarios,
-			int generation, int maxUsers, String testPlan, int populationSize)
+			int generation, int maxUsers, String testPlan, int populationSize,int maxResponseTime)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 
@@ -383,7 +412,7 @@ public class NeighborhoodUtil {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (int i = 0; i < populationSize; i++) {
-			WorkLoad neighbor = ReinforcementLearning.getNeighborQ(algorithm, workload, testPlan, workload.getPercentile90(), scenarios, generation, maxUsers);
+			WorkLoad neighbor = ReinforcementLearning.getNeighborQ(algorithm, workload, testPlan, scenarios, generation, maxUsers,maxResponseTime);
 			neighbor.setGeneration(generation);
 			System.out.println("neighbor: " + neighbor);
 			list.add(neighbor);
@@ -457,7 +486,7 @@ public class NeighborhoodUtil {
 	
 	
 	public static List<WorkLoad> getNeighborHoodSamePathQ(WorkLoad workload, AbstractAlgorithm algorithm,
-			List<String> scenarios, int generation, int maxUsers, String testPlan, int populationSize)
+			List<String> scenarios, int generation, int maxUsers, String testPlan, int populationSize,int maxResponseTime)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 
@@ -482,7 +511,7 @@ public class NeighborhoodUtil {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (int i = 0; i < populationSize; i++) {
-			WorkLoad neighbor = ReinforcementLearning.getNeighborQ(algorithm, workload, testPlan, workload.getPercentile90(), scenarios, generation, maxUsers);
+			WorkLoad neighbor = ReinforcementLearning.getNeighborQ(algorithm, workload, testPlan,  scenarios, generation , maxUsers,maxResponseTime);
 			neighbor.setGeneration(generation);
 			System.out.println("neighbor: " + neighbor);
 			list.add(neighbor);

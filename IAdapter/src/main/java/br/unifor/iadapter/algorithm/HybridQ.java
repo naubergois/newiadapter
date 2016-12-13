@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.jorphan.collections.ListedHashTree;
@@ -21,7 +22,7 @@ public class HybridQ extends AbstractAlgorithm {
 			ListedHashTree script, int maxResponseTime) {
 
 		try {
-			list = MySQLDatabase.listBestWorkLoadsForAll(testPlan, populationSize);
+			list = MySQLDatabase.listWorkLoadsForNewGenerationByMethodAllGenerations(testPlan, this, populationSize);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -56,12 +57,11 @@ public class HybridQ extends AbstractAlgorithm {
 		listBest.add(workloads.get(0));
 		listBest.add(workload1.get(0));
 		listBest.add(geneticList.get(0));
-		listBest.add(workload2.get(0));
 
 		List<WorkLoad> neighborhood = new ArrayList<WorkLoad>();
 		try {
 			neighborhood = NeighborhoodUtil.getNeighBorHoodsAllListQ(this, list, populationSize, testCases, generation,
-					maxUsers, testPlan);
+					maxUsers, testPlan, maxResponseTime);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -96,27 +96,21 @@ public class HybridQ extends AbstractAlgorithm {
 			workLoad.setSearchMethod(this.getMethodName());
 		}
 
-		/*Collections.sort(listBest, new Comparator<WorkLoad>() {
-			@Override
-			public int compare(WorkLoad workload1, WorkLoad workload2) {
-				if (workload1.getFit() < workload2.getFit()) {
-					return 1;
-				}
-				if (workload1.getFit() == workload2.getFit()) {
-					return 0;
-				}
-				if (workload1.getFit() > workload2.getFit()) {
-					return -1;
-				}
-				return 0;
+		/*
+		 * Collections.sort(listBest, new Comparator<WorkLoad>() {
+		 * 
+		 * @Override public int compare(WorkLoad workload1, WorkLoad workload2)
+		 * { if (workload1.getFit() < workload2.getFit()) { return 1; } if
+		 * (workload1.getFit() == workload2.getFit()) { return 0; } if
+		 * (workload1.getFit() > workload2.getFit()) { return -1; } return 0;
+		 * 
+		 * } });
+		 */
 
-			}
-		});*/
-		
-		//List<WorkLoad> returnWorkLoad=new ArrayList();
-		//for(int i=0;i<populationSize;i++){
-			//returnWorkLoad.add(listBest.get(i));
-		//}
+		// List<WorkLoad> returnWorkLoad=new ArrayList();
+		// for(int i=0;i<populationSize;i++){
+		// returnWorkLoad.add(listBest.get(i));
+		// }
 
 		return listBest;
 	}

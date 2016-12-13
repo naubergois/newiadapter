@@ -21,7 +21,7 @@ public class Hybrid extends AbstractAlgorithm {
 			ListedHashTree script, int maxResponseTime) {
 
 		try {
-			list = MySQLDatabase.listBestWorkLoadsForAll(testPlan, populationSize);
+			list = MySQLDatabase.listWorkLoadsForNewGenerationByMethodAllGenerations(testPlan, this, populationSize);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

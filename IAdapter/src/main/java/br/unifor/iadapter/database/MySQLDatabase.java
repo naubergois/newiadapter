@@ -1277,14 +1277,14 @@ public class MySQLDatabase {
 	}
 	
 	public static List<WorkLoad> listWorkLoadsForNewGenerationByMethodAllGenerations(String testPlan,
-			AbstractAlgorithm algorithm) throws ClassNotFoundException, SQLException {
+			AbstractAlgorithm algorithm,int populationSize) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
 		
 	
 
-		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE TESTPLAN=? "
-				+ "AND SEARCHMETHOD='" + algorithm.getClass().getCanonicalName() + "' ORDER BY FIT*1 DESC");
+		PreparedStatement ps = con.prepareStatement("" + "SELECT " + COLUMNS + "  FROM  workload WHERE ( TESTPLAN=? "
+				+ "AND SEARCHMETHOD='" + algorithm.getClass().getCanonicalName() + "' ) OR generation=1 ORDER BY FIT*1 DESC LIMIT "+populationSize);
 		ps.setString(1, testPlan);
 		
 		

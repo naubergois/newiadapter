@@ -23,7 +23,7 @@ public class TabuAlgorithmQ extends AbstractAlgorithm {
 
 			try {
 				list = MySQLDatabase.listWorkLoadsForNewGenerationByMethodAllGenerations(testPlan,
-						(AbstractAlgorithm) this);
+						(AbstractAlgorithm) this,populationSize);
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -41,7 +41,7 @@ public class TabuAlgorithmQ extends AbstractAlgorithm {
 		List<WorkLoad> neighborhoods = null;
 		try {
 			neighborhoods = NeighborhoodUtil.getNeighBorHoodsFirstItemOfListQ(this, listVerified, populationSize,
-					testCases, generation, maxUsers, testPlan);
+					testCases, generation, maxUsers, testPlan,maxResponseTime);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

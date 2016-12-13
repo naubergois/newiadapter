@@ -23,7 +23,7 @@ public class TabuAlgorithm extends AbstractAlgorithm {
 
 			try {
 				list = MySQLDatabase.listWorkLoadsForNewGenerationByMethodAllGenerations(testPlan,
-						(AbstractAlgorithm) this);
+						(AbstractAlgorithm) this,populationSize);
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -35,7 +35,7 @@ public class SAAlgorithmQ extends AbstractAlgorithm {
 		
 		if (list.size()==0){
 			try {
-				MySQLDatabase.listWorkLoadsForNewGenerationByMethodAllGenerations(testPlan,this);
+				MySQLDatabase.listWorkLoadsForNewGenerationByMethodAllGenerations(testPlan,this,populationSize);
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -58,7 +58,7 @@ public class SAAlgorithmQ extends AbstractAlgorithm {
 		
 		List<WorkLoad> neighborhoods=null;
 		try {
-			neighborhoods = NeighborhoodUtil.getNeighborHoodQ(this.currentWorkLoad, this, testCases, generation, maxUsers, testPlan, populationSize);
+			neighborhoods = NeighborhoodUtil.getNeighborHoodQ(this.currentWorkLoad, this, testCases, generation, maxUsers, testPlan, populationSize,maxResponseTime);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

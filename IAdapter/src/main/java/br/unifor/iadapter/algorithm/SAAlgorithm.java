@@ -35,7 +35,7 @@ public class SAAlgorithm extends AbstractAlgorithm {
 		
 		if (list.size()==0){
 			try {
-				MySQLDatabase.listWorkLoadsForNewGenerationByMethodAllGenerations(testPlan,this);
+				MySQLDatabase.listWorkLoadsForNewGenerationByMethodAllGenerations(testPlan,this,populationSize);
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
