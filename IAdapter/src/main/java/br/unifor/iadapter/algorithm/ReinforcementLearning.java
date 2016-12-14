@@ -7,11 +7,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.jorphan.collections.ListedHashTree;
-
-import com.sun.javafx.scene.traversal.Algorithm;
 
 import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.neighborhood.NeighborhoodUtil;
@@ -62,8 +59,6 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 
 	public static HashMap<String, Operation> operations = new HashMap<String, Operation>();
 
-	public static Integer epsilon = 100;
-
 	public static void reward() {
 
 	}
@@ -112,13 +107,13 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 	}
 
 	public static WorkLoad neighborUp(WorkLoad owkr, List<String> testCases, int maxUsers, int generation, int newFunc,
-			AbstractAlgorithm algorithm) {
+			AbstractAlgorithm algorithm, String testPlan) {
 		int func = WorkLoadUtil.randInt(0, 9);
 
 		WorkLoad newW = null;
 		try {
 			newW = NeighborhoodUtil.getNeighBorHoodUpDown(owkr, algorithm, testCases, maxUsers, generation, func,
-					newFunc, maxUsers, true);
+					newFunc, maxUsers, true, testPlan);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -155,13 +150,13 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 	}
 
 	public static WorkLoad neighborDown(WorkLoad owkr, List<String> testCases, int maxUsers, int generation,
-			int newFunc, AbstractAlgorithm algorithm) {
+			int newFunc, AbstractAlgorithm algorithm, String testPlan) {
 		int func = WorkLoadUtil.randInt(0, 9);
 
 		WorkLoad newW = null;
 		try {
 			newW = NeighborhoodUtil.getNeighBorHoodUpDown(owkr, algorithm, testCases, maxUsers, generation, func,
-					newFunc, maxUsers, false);
+					newFunc, maxUsers, false, testPlan);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -253,17 +248,42 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 			System.out.println("new " + owkr);
 			System.out.println("new fit" + owkr.getFit());
 			String upDown = "";
-			if (owkr.getNumThreads() > (1.2 * owkrOld.getNumThreads())) {
-				upDown = "up";
+			int epsilon = 0;
+			try {
+				epsilon = MySQLDatabase.selectEpsilonQ(testPlan);
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
+			if (epsilon > 0) {
+				if (owkr.getNumThreads() > (owkrOld.getNumThreads())) {
+					upDown = "up";
+				}
 
-			if ((owkr.getNumThreads() < (1.2 * owkrOld.getNumThreads()))
-					&& (owkr.getNumThreads() > (0.8 * owkrOld.getNumThreads()))) {
-				upDown = "same";
-			}
+				if ((owkr.getNumThreads() == (owkrOld.getNumThreads()))) {
+					upDown = "same";
+				}
 
-			if ((owkr.getNumThreads() < (0.8 * owkrOld.getNumThreads()))) {
-				upDown = "down";
+				if ((owkr.getNumThreads() < (owkrOld.getNumThreads()))) {
+					upDown = "down";
+				}
+
+			} else {
+				if (owkr.getNumThreads() > (1.2 * owkrOld.getNumThreads())) {
+					upDown = "up";
+				}
+
+				if ((owkr.getNumThreads() < (1.2 * owkrOld.getNumThreads()))
+						&& (owkr.getNumThreads() > (0.8 * owkrOld.getNumThreads()))) {
+					upDown = "same";
+				}
+
+				if ((owkr.getNumThreads() < (0.8 * owkrOld.getNumThreads()))) {
+					upDown = "down";
+				}
 			}
 			// String
 			// scenarioString=WorkLoadUtil.getWorkLoadScenarios(owkr,testCases);
@@ -340,9 +360,23 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 
 		learn(workLoad, testPlan, range);
 
-		List<Q> map = new ArrayList<>();
+		int epsilon = 0;
+
 		try {
-			map = MySQLDatabase.selectListQ(testPlan, String.valueOf(range));
+			epsilon = MySQLDatabase.selectEpsilonQ(testPlan);
+			
+			System.out.println("Epsilon "+epsilon);
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		List<Q> list = new ArrayList<>();
+		try {
+			list = MySQLDatabase.selectListQZero(testPlan,range);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -351,113 +385,68 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 			e.printStackTrace();
 		}
 
-		System.out.println("Map " + map);
-		ReinforcementLearning.epsilon--;
 
 		WorkLoad newW = null;
 
-		if ((map.size() == 0)) {
-			int booleanT;
+		if ((epsilon > 0) && (list.size()>0) ) {
 
-			if (workLoad.getPercentile90() <= maxResponseTime) {
-				booleanT = 0;
-			} else {
-				booleanT = 1;
-			}
+			
+			Q q = list.get(0);
 
-			if (booleanT == 0) {
-				int func = WorkLoadUtil.randInt(0, 9);
-				int newFunc = WorkLoadUtil.randInt(0, testCases.size() - 1);
-				try {
-					newW = NeighborhoodUtil.getNeighBorHoodUpDown(workLoad, algorithm, testCases, maxUsers, generation,
-							func, newFunc, maxUsers, true);
-				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-			if (booleanT == 1) {
-				int func = WorkLoadUtil.randInt(0, 9);
-				int newFunc = WorkLoadUtil.randInt(0, testCases.size() - 1);
-				try {
-					newW = NeighborhoodUtil.getNeighBorHoodUpDown(workLoad, algorithm, testCases, maxUsers, generation,
-							func, newFunc, maxUsers, false);
-				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
+			newW = getQ(q, workLoad, testCases, maxUsers, generation, algorithm, testPlan);
 
 		} else {
 
+			List<Q> map = new ArrayList<>();
+			System.out.println("Map " + map);
+			try {
+				map = MySQLDatabase.selectListQ(testPlan, String.valueOf(range));
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			Q q = map.get(0);
 
-			String key = q.state;
-
-			System.out.println("Key " + key);
-
-			String[] actions = key.split("#");
-
-			System.out.println("Action " + actions[0]);
-
-			System.out.println("newFunc " + actions[1]);
-
-			int newFunc = Integer.valueOf(actions[1]);
-
-			if (actions[0].equals("up")) {
-				newW = neighborUp(workLoad, testCases, maxUsers, generation, newFunc, algorithm);
-
-			}
-			if (actions[0].equals("down")) {
-				newW = neighborDown(workLoad, testCases, maxUsers, generation, newFunc, algorithm);
-
-			}
-			if (actions[0].equals("same")) {
-				newW = neighborSame(workLoad, testCases, maxUsers, generation, newFunc, algorithm);
-
-			}
-
-			System.out.println("New Workload  " + newWorkLoad);
-			System.out.println("Reward " + Q);
+			newW = getQ(q, workLoad, testCases, maxUsers, generation, algorithm, testPlan);
 		}
+		return newW;
+	}
+
+	public static WorkLoad getQ(Q q, WorkLoad workLoad, List<String> testCases, int maxUsers, int generation,
+			AbstractAlgorithm algorithm, String testPlan) {
+
+		WorkLoad newW = null;
+
+		String key = q.state;
+
+		System.out.println("Key " + key);
+
+		String[] actions = key.split("#");
+
+		System.out.println("Action " + actions[0]);
+
+		System.out.println("newFunc " + actions[1]);
+
+		int newFunc = Integer.valueOf(actions[1]);
+
+		if (actions[0].equals("up")) {
+			newW = neighborUp(workLoad, testCases, maxUsers, generation, newFunc, algorithm, testPlan);
+
+		}
+		if (actions[0].equals("down")) {
+			newW = neighborDown(workLoad, testCases, maxUsers, generation, newFunc, algorithm, testPlan);
+
+		}
+		if (actions[0].equals("same")) {
+			newW = neighborSame(workLoad, testCases, maxUsers, generation, newFunc, algorithm);
+
+		}
+
+		System.out.println("New Workload  " + newWorkLoad);
 		return newW;
 	}
 
@@ -524,6 +513,17 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 				}
 			}
 		}
+		int epsilon = 0;
+
+		try {
+			epsilon = MySQLDatabase.selectEpsilonQ(testPlan);
+		} catch (ClassNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (SQLException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
 		if ((oldWorkLoad.size() == 0) || (oldWorkLoad == null)) {
 			oldWorkLoad = list;
@@ -542,7 +542,6 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 			newWorkLoad = new ArrayList<>();
 
 			for (WorkLoad owkr : oldWorkLoad) {
-				// System.out.println("Operation " + operations);
 
 				int range = 1;
 
@@ -557,149 +556,11 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 					range = 1;
 				}
 
-				if (operations.containsKey(owkr.getName())) {
+				learn(owkr, testPlan, range);
 
-					Operation op = operations.get(owkr.getName());
-					WorkLoad owkrOld = op.old;
+				WorkLoad newW = getNeighborQ(this, owkr, testPlan, testCases, generation, maxUsers, maxResponseTime);
 
-					int newfunc = op.newFunc;
-					double point = 0;
-					System.out.println("Old " + owkrOld);
-					System.out.println("Old fit" + owkrOld.getFit());
-					System.out.println("new " + owkr);
-					System.out.println("new fit" + owkr.getFit());
-					String upDown = "";
-					if (owkr.getNumThreads() > (1.2 * owkrOld.getNumThreads())) {
-						upDown = "up";
-					}
-
-					if ((owkr.getNumThreads() < (1.2 * owkrOld.getNumThreads()))
-							&& (owkr.getNumThreads() > (0.8 * owkrOld.getNumThreads()))) {
-						upDown = "same";
-					}
-
-					if ((owkr.getNumThreads() < (0.8 * owkrOld.getNumThreads()))) {
-						upDown = "down";
-					}
-					// String
-					// scenarioString=WorkLoadUtil.getWorkLoadScenarios(owkr,testCases);
-					HashMap<String, Q> listQ = new HashMap();
-					try {
-						listQ = MySQLDatabase.selectQ(testPlan, String.valueOf(range));
-					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-					System.out.println("List Q" + listQ);
-
-					if (owkr.getFit() > owkrOld.getFit()) {
-						point = 0;
-						if (listQ.containsKey(upDown + "#" + newfunc)) {
-
-							Q q = listQ.get(upDown + "#" + newfunc);
-							point = q.q;
-						}
-						double q = ReinforcementLearning.alpha * 2 + (1 - ReinforcementLearning.alpha) * point;
-						try {
-							MySQLDatabase.insertQ(String.valueOf(range), testPlan, upDown + "#" + newfunc, q);
-						} catch (ClassNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-					} else {
-						point = 0;
-
-						if (listQ.containsKey(upDown + "#" + newfunc)) {
-
-							Q q = listQ.get(upDown + "#" + newfunc);
-							point = q.q;
-						}
-						double q = ReinforcementLearning.alpha * -2 + (1 - ReinforcementLearning.alpha) * point;
-						try {
-							MySQLDatabase.insertQ(String.valueOf(range), testPlan, upDown + "#" + newfunc, q);
-						} catch (ClassNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-					}
-				}
-
-				int random = WorkLoadUtil.randInt(0, 100);
-				System.out.println("Epsilon " + epsilon);
-				System.out.println("Random " + random);
-
-				List<Q> map = new ArrayList<>();
-				try {
-					map = MySQLDatabase.selectListQ(testPlan, String.valueOf(range));
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				System.out.println("Map " + map);
-				ReinforcementLearning.epsilon--;
-
-				if ((random <= epsilon) || (map.size() == 0)) {
-					int booleanT = WorkLoadUtil.randInt(0, 1);
-					if (booleanT == 0) {
-						int newFunc = WorkLoadUtil.randInt(0, testCases.size() - 1);
-						neighborUp(owkr, testCases, maxUsers, generation, newFunc, this);
-
-					}
-					if (booleanT == 1) {
-						int newFunc = WorkLoadUtil.randInt(0, testCases.size() - 1);
-						neighborDown(owkr, testCases, maxUsers, generation, newFunc, this);
-
-					}
-
-					neighbor(owkr, testCases, maxUsers, generation);
-				} else {
-
-					Q q = map.get(0);
-
-					String key = q.state;
-
-					System.out.println("Key " + key);
-
-					String[] actions = key.split("#");
-
-					System.out.println("Action " + actions[0]);
-
-					System.out.println("newFunc " + actions[1]);
-
-					int newFunc = Integer.valueOf(actions[1]);
-
-					if (actions[0].equals("up")) {
-						neighborUp(owkr, testCases, maxUsers, generation, newFunc, this);
-
-					}
-					if (actions[0].equals("down")) {
-						neighborDown(owkr, testCases, maxUsers, generation, newFunc, this);
-
-					}
-					if (actions[0].equals("same")) {
-						neighborSame(owkr, testCases, maxUsers, generation, newFunc, this);
-
-					}
-
-					System.out.println("New Workload  " + newWorkLoad);
-					System.out.println("Reward " + Q);
-				}
+				newWorkLoad.add(newW);
 
 			}
 

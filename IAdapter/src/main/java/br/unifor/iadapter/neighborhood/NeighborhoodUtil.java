@@ -1,11 +1,13 @@
 package br.unifor.iadapter.neighborhood;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import br.unifor.iadapter.algorithm.AbstractAlgorithm;
 import br.unifor.iadapter.algorithm.ReinforcementLearning;
+import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.threadGroup.FactoryWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.util.WorkLoadUtil;
@@ -24,14 +26,14 @@ public class NeighborhoodUtil {
 	}
 
 	public static List<WorkLoad> getNeighBorHoodsFirstItemOfListQ(AbstractAlgorithm algorithm, List<WorkLoad> list,
-			int populationSize, List<String> testCases, int generation, int maxUsers, String testPlan,int maxResponseTime)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException, ClassNotFoundException {
+			int populationSize, List<String> testCases, int generation, int maxUsers, String testPlan,
+			int maxResponseTime) throws InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		List<WorkLoad> neighborhoods = new ArrayList<WorkLoad>();
-		WorkLoad neighborhoodsAux = ReinforcementLearning.getNeighborQ(algorithm, list.get(0), testPlan,
-				 testCases, generation, maxUsers,maxResponseTime);
+		WorkLoad neighborhoodsAux = ReinforcementLearning.getNeighborQ(algorithm, list.get(0), testPlan, testCases,
+				generation, maxUsers, maxResponseTime);
 
-		neighborhoods.add(neighborhoodsAux);      
+		neighborhoods.add(neighborhoodsAux);
 		return neighborhoods;
 	}
 
@@ -45,14 +47,15 @@ public class NeighborhoodUtil {
 		neighborhoods.addAll(neighborhoodsAux);
 		return neighborhoods;
 	}
-	
+
 	public static List<WorkLoad> getNeighBorHoodsFirstItemOfListSamePathQ(AbstractAlgorithm algorithm,
 			List<WorkLoad> list, int populationSize, List<String> testCases, int generation, int maxUsers,
-			String testPlan,int maxResponseTime) throws InstantiationException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+			String testPlan, int maxResponseTime)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		List<WorkLoad> neighborhoods = new ArrayList<WorkLoad>();
 		List<WorkLoad> neighborhoodsAux = NeighborhoodUtil.getNeighborHoodSamePathQ(list.get(0), algorithm, testCases,
-				generation, maxUsers, testPlan, populationSize,maxResponseTime);
+				generation, maxUsers, testPlan, populationSize, maxResponseTime);
 		neighborhoods.addAll(neighborhoodsAux);
 		return neighborhoods;
 	}
@@ -71,16 +74,15 @@ public class NeighborhoodUtil {
 
 		return neighborhoods;
 	}
-	
-	
+
 	public static List<WorkLoad> getNeighBorHoodsAllListQ(AbstractAlgorithm algorithm, List<WorkLoad> list,
-			int populationSize, List<String> testCases, int generation, int maxUsers, String testPlan,int maxResponseTime)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException, ClassNotFoundException {
+			int populationSize, List<String> testCases, int generation, int maxUsers, String testPlan,
+			int maxResponseTime) throws InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		List<WorkLoad> neighborhoods = new ArrayList<WorkLoad>();
 		for (WorkLoad workLoad : list) {
 			List<WorkLoad> neighborhoodsAux = NeighborhoodUtil.getNeighborHoodQ(workLoad, algorithm, testCases,
-					generation, maxUsers, testPlan, populationSize,maxResponseTime);
+					generation, maxUsers, testPlan, populationSize, maxResponseTime);
 			neighborhoods.addAll(neighborhoodsAux);
 
 		}
@@ -174,7 +176,7 @@ public class NeighborhoodUtil {
 	}
 
 	public static WorkLoad getNeighBorHoodUpDown(WorkLoad workload, AbstractAlgorithm algorithm, List<String> scenarios,
-			int maxUsers, Integer generationTrack, int func, int newFunc, int users, boolean up)
+			int maxUsers, Integer generationTrack, int func, int newFunc, int users, boolean up,String testPlan)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 
@@ -190,11 +192,33 @@ public class NeighborhoodUtil {
 		int newUsers = (workload.getNumThreads());
 
 		int delta = 0;
+		
+		int epsilon=0;
+		
+		
+		
+		try {
+			epsilon = MySQLDatabase.selectEpsilonQ(testPlan);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 
-		if (up) {
-			delta = WorkLoadUtil.randInt(1, 3);
+		if (epsilon > 0) {
+			if (up) {
+				delta = WorkLoadUtil.randInt(1, 4);
+			} else {
+				delta = WorkLoadUtil.randInt(-4, -1);
+			}
+
 		} else {
-			delta = WorkLoadUtil.randInt(-3, -1);
+			if (up) {
+				delta = WorkLoadUtil.randInt(1, 3);
+			} else {
+				delta = WorkLoadUtil.randInt(-3, -1);
+			}
 		}
 
 		parameters.add(newUsers);
@@ -205,9 +229,7 @@ public class NeighborhoodUtil {
 
 		return newWorkload;
 	}
-	
-	
-	
+
 	public static WorkLoad getNeighBorHoodSame(WorkLoad workload, AbstractAlgorithm algorithm, List<String> scenarios,
 			int maxUsers, Integer generationTrack, int func, int newFunc, int users, boolean up)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
@@ -224,8 +246,6 @@ public class NeighborhoodUtil {
 
 		int newUsers = (workload.getNumThreads());
 
-
-	
 		parameters.add(newUsers);
 		parameters.add(workload.getGeneration() + 1);
 
@@ -384,12 +404,11 @@ public class NeighborhoodUtil {
 		return list;
 
 	}
-	
-	
-	public static List<WorkLoad> getNeighborHoodQ(WorkLoad workload, AbstractAlgorithm algorithm, List<String> scenarios,
-			int generation, int maxUsers, String testPlan, int populationSize,int maxResponseTime)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException, ClassNotFoundException {
+
+	public static List<WorkLoad> getNeighborHoodQ(WorkLoad workload, AbstractAlgorithm algorithm,
+			List<String> scenarios, int generation, int maxUsers, String testPlan, int populationSize,
+			int maxResponseTime) throws InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 
 		// int usersWorst = 0;
 		// try {
@@ -412,7 +431,8 @@ public class NeighborhoodUtil {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (int i = 0; i < populationSize; i++) {
-			WorkLoad neighbor = ReinforcementLearning.getNeighborQ(algorithm, workload, testPlan, scenarios, generation, maxUsers,maxResponseTime);
+			WorkLoad neighbor = ReinforcementLearning.getNeighborQ(algorithm, workload, testPlan, scenarios, generation,
+					maxUsers, maxResponseTime);
 			neighbor.setGeneration(generation);
 			System.out.println("neighbor: " + neighbor);
 			list.add(neighbor);
@@ -421,7 +441,6 @@ public class NeighborhoodUtil {
 		return list;
 
 	}
-
 
 	/*
 	 * Get neighborhoods from a specified workload
@@ -483,12 +502,11 @@ public class NeighborhoodUtil {
 		return list;
 
 	}
-	
-	
+
 	public static List<WorkLoad> getNeighborHoodSamePathQ(WorkLoad workload, AbstractAlgorithm algorithm,
-			List<String> scenarios, int generation, int maxUsers, String testPlan, int populationSize,int maxResponseTime)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException, ClassNotFoundException {
+			List<String> scenarios, int generation, int maxUsers, String testPlan, int populationSize,
+			int maxResponseTime) throws InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 
 		// int usersWorst = 0;
 		// try {
@@ -511,7 +529,8 @@ public class NeighborhoodUtil {
 		List<WorkLoad> list = new ArrayList<WorkLoad>();
 
 		for (int i = 0; i < populationSize; i++) {
-			WorkLoad neighbor = ReinforcementLearning.getNeighborQ(algorithm, workload, testPlan,  scenarios, generation , maxUsers,maxResponseTime);
+			WorkLoad neighbor = ReinforcementLearning.getNeighborQ(algorithm, workload, testPlan, scenarios, generation,
+					maxUsers, maxResponseTime);
 			neighbor.setGeneration(generation);
 			System.out.println("neighbor: " + neighbor);
 			list.add(neighbor);

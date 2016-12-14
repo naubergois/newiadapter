@@ -761,6 +761,27 @@ public class MySQLDatabase {
 		ps.close();
 	}
 	
+	public static int selectEpsilonQ(String testplan)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "SELECT count(*) FROM  Q WHERE Qvalue=0 and testPlan=?");
+		ps.setString(1, testplan);
+		ResultSet rs = ps.executeQuery();
+		
+
+		int count = 0;
+		while (rs.next()) {
+			count = rs.getInt(1);
+		}
+		
+		
+		ps.close();
+		
+		return count;
+	}
+	
 	
 	public static void insertQifNotExist(String range,String testplan,String state,double Q)
 			throws ClassNotFoundException, SQLException {
@@ -1053,6 +1074,37 @@ public class MySQLDatabase {
 		PreparedStatement ps = con.prepareStatement("" + "select Qvalue,state  FROM  Q where testplan=? and responsetime=? ORDER BY Qvalue DESC");
 		ps.setString(1, testPlan);
 		ps.setString(2, responseTime);
+
+		ResultSet rs = ps.executeQuery();
+
+		while (rs.next()) {
+			Q q=new Q();
+			
+			double qvalue = rs.getDouble(1);
+			
+			String state = rs.getString(2);
+			
+			q.setQ(qvalue);
+			q.setState(state);
+			
+			
+			list.add(q);
+		}
+		return list;
+
+	}
+	
+	
+	public static List<Q> selectListQZero(String testPlan, int responseTime) throws ClassNotFoundException, SQLException {
+
+		List<Q> list = new ArrayList<>();
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement("" + "select Qvalue,state  FROM  Q where testplan=? and QValue=0 and responsetime=?");
+		ps.setString(1, testPlan);
+		ps.setInt(2, responseTime);
+		
 
 		ResultSet rs = ps.executeQuery();
 
