@@ -1,12 +1,14 @@
 package br.unifor.iadapter.algorithm;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jorphan.collections.ListedHashTree;
 
+import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.neighborhood.NeighborhoodUtil;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
@@ -32,6 +34,7 @@ public class HillClimbingQ extends AbstractAlgorithm {
 		}
 		
 		
+		budget("HCQ",(int) this.currentWorkLoad.getFit());
 
 		List<WorkLoad> newList = new ArrayList<WorkLoad>();
 		newList.add(currentWorkLoad);
@@ -70,7 +73,20 @@ public class HillClimbingQ extends AbstractAlgorithm {
 	}
 
 	public HillClimbingQ() {
-		setMethodName("HC");
+		setMethodName("HCQ");
+	}
+
+	@Override
+	public void budget(String searchMethod, int maxFit) {
+		try {
+			MySQLDatabase.insertOBudget(searchMethod, maxFit);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

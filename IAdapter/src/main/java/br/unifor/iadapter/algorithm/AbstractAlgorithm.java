@@ -44,5 +44,7 @@ public abstract class AbstractAlgorithm implements IAlgorithm {
 	public abstract List<WorkLoad> strategy(List<WorkLoad> list, int populationSize, List<String> testCases, int generation,
 			int maxUsers, String testPlan, int mutantProbability, int bestIndividuals, boolean collaborative,
 			ListedHashTree script,int maxResponseTime) ;
+	
+	public abstract void  budget(String searchMethod,int maxFit);
 
 }

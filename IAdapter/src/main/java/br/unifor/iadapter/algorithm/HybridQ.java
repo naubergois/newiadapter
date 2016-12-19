@@ -30,7 +30,7 @@ public class HybridQ extends AbstractAlgorithm {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		budget("HybridQ",(int) list.get(0).getFit());
 		HillClimbingQ hill = new HillClimbingQ();
 
 		List<WorkLoad> workloads = hill.strategy(list, populationSize, testCases, generation, maxUsers, testPlan,
@@ -117,6 +117,20 @@ public class HybridQ extends AbstractAlgorithm {
 
 	public HybridQ() {
 		setMethodName("HybridQ");
+	}
+
+	@Override
+	public void budget(String searchMethod, int maxFit) {
+		try {
+			MySQLDatabase.insertOBudget(searchMethod, maxFit);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

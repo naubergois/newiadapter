@@ -19,6 +19,8 @@ public class Hybrid extends AbstractAlgorithm {
 	public List<WorkLoad> strategy(List<WorkLoad> list, int populationSize, List<String> testCases, int generation,
 			int maxUsers, String testPlan, int mutantProbability, int bestIndividuals, boolean collaborative,
 			ListedHashTree script, int maxResponseTime) {
+		
+		
 
 		try {
 			list = MySQLDatabase.listWorkLoadsForNewGenerationByMethodAllGenerations(testPlan, this, populationSize);
@@ -29,6 +31,8 @@ public class Hybrid extends AbstractAlgorithm {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		budget("Hybrid",(int) list.get(0).getFit());
 
 		HillClimbing hill = new HillClimbing();
 
@@ -123,6 +127,20 @@ public class Hybrid extends AbstractAlgorithm {
 
 	public Hybrid() {
 		setMethodName("Hybrid");
+	}
+
+	@Override
+	public void budget(String searchMethod, int maxFit) {
+		try {
+			MySQLDatabase.insertOBudget(searchMethod, maxFit);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

@@ -14,6 +14,7 @@ limitations under the License.*/
 
 package br.unifor.iadapter.genetic;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
@@ -70,7 +71,17 @@ public class GeneticAlgorithm {
 					System.out.println("WorkLoad size " + workLoads.size());
 				}
 			}
-
+			
+			try {
+				MySQLDatabase.insertOBudget("GA",(int) workLoads.get(0).getFit());
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+				
 			System.out.println("Best:" + workLoads);
 
 			List<Chromosome> bestP = GeneWorkLoad.getChromossomes(workLoads, threadGroupTree, gui);

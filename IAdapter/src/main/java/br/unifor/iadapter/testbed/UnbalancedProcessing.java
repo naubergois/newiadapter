@@ -43,7 +43,7 @@ public class UnbalancedProcessing extends AbstractJavaSamplerClient {
 			sampleResult.setSuccessful(true);
 			if (scenario.equals("A")) {
 				try {				
-					Thread.sleep(90*numberOfThreads);
+					Thread.sleep(9*numberOfThreads);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -52,7 +52,7 @@ public class UnbalancedProcessing extends AbstractJavaSamplerClient {
 			}
 			if (scenario.equals("B")) {
 				try {				
-					Thread.sleep(50*numberOfThreads);
+					Thread.sleep(5*numberOfThreads);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -65,7 +65,7 @@ public class UnbalancedProcessing extends AbstractJavaSamplerClient {
 				while(WorkLoadThreadGroup.getScenariosSimulation().contains(a) && WorkLoadThreadGroup.getScenariosSimulation().contains(b) ){
 					try {
 						//System.out.println("Waiting for a and b "+count);
-						Thread.sleep(1000);
+						Thread.sleep(10);
 						count++;
 						if (count>100){
 							break;

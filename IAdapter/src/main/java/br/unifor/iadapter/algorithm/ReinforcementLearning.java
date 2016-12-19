@@ -40,24 +40,13 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 		}
 	}
 
-	static class Operation {
-		WorkLoad old;
-		WorkLoad newW;
-		int func;
-		int newFunc;
-		boolean calculated;
-		int oldFit;
-		int newFit;
-		int responseTime;
-	}
-
 	public static int trainingTimes;
 
 	public static List<WorkLoad> oldWorkLoad = new ArrayList<WorkLoad>();
 
 	public static List<WorkLoad> newWorkLoad = new ArrayList<WorkLoad>();
 
-	public static HashMap<String, Operation> operations = new HashMap<String, Operation>();
+	
 
 	public static void reward() {
 
@@ -65,7 +54,7 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 
 	public static HashMap<String, HashMap<String, Double>> Q = new HashMap<String, HashMap<String, Double>>();
 
-	public WorkLoad neighbor(WorkLoad owkr, List<String> testCases, int maxUsers, int generation) {
+	public WorkLoad neighbor(WorkLoad owkr, List<String> testCases, int maxUsers, int generation,String testPlan) {
 		int func = WorkLoadUtil.randInt(0, 9);
 		int newFunc = WorkLoadUtil.randInt(0, testCases.size() - 1);
 		WorkLoad newW = null;
@@ -97,12 +86,18 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 		newWorkLoad.add(newW);
 		// newW.setGeneration(newW.getGeneration()+1);
 		System.out.println("Generation " + newW.getGeneration());
-		Operation op = new Operation();
-		op.func = func;
-		op.newFunc = newFunc;
-		op.old = owkr;
-		op.newW = newW;
-		operations.put(newW.getName(), op);
+		
+		
+		try {
+			int id=MySQLDatabase.getWorkLoadID(owkr.getName(), testPlan);
+			MySQLDatabase.insertOperation(newW.getName(), testPlan, func, newFunc,id );
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return newW;
 	}
 
@@ -140,12 +135,16 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 		System.out.println("NEW WOrkload " + newW);
 		System.out.println("Generation " + newW.getGeneration());
 		newWorkLoad.add(newW);
-		Operation op = new Operation();
-		op.func = func;
-		op.newFunc = newFunc;
-		op.old = owkr;
-		op.newW = newW;
-		operations.put(newW.getName(), op);
+		try {
+			int id=MySQLDatabase.getWorkLoadID(owkr.getName(), testPlan);
+			MySQLDatabase.insertOperation(newW.getName(), testPlan, func, newFunc,id );
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return newW;
 	}
 
@@ -183,17 +182,21 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 		System.out.println("NEW WOrkload " + newW);
 		System.out.println("Generation " + newW.getGeneration());
 		newWorkLoad.add(newW);
-		Operation op = new Operation();
-		op.func = func;
-		op.newFunc = newFunc;
-		op.old = owkr;
-		op.newW = newW;
-		operations.put(newW.getName(), op);
+		try {
+			int id=MySQLDatabase.getWorkLoadID(owkr.getName(), testPlan);
+			MySQLDatabase.insertOperation(newW.getName(), testPlan, func, newFunc,id );
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return newW;
 	}
 
 	public static WorkLoad neighborSame(WorkLoad owkr, List<String> testCases, int maxUsers, int generation,
-			int newFunc, AbstractAlgorithm algorithm) {
+			int newFunc, AbstractAlgorithm algorithm,String testPlan) {
 		int func = WorkLoadUtil.randInt(0, 9);
 
 		WorkLoad newW = null;
@@ -226,19 +229,34 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 		System.out.println("NEW WOrkload " + newW);
 		System.out.println("Generation " + newW.getGeneration());
 		newWorkLoad.add(newW);
-		Operation op = new Operation();
-		op.func = func;
-		op.newFunc = newFunc;
-		op.old = owkr;
-		op.newW = newW;
-		operations.put(newW.getName(), op);
+		try {
+			int id=MySQLDatabase.getWorkLoadID(owkr.getName(), testPlan);
+			MySQLDatabase.insertOperation(newW.getName(), testPlan, func, newFunc,id );
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return newW;
 	}
 
 	public static void learn(WorkLoad owkr, String testPlan, int range) {
+		
+		Operation op=null;
+		try {
+			op = MySQLDatabase.selectOperation(owkr.getName(), testPlan);
+		} catch (ClassNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (SQLException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
-		if (operations.containsKey(owkr.getName())) {
-			Operation op = operations.get(owkr.getName());
+		if (op!=null) {
+			
 			WorkLoad owkrOld = op.old;
 
 			int newfunc = op.newFunc;
@@ -364,8 +382,8 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 
 		try {
 			epsilon = MySQLDatabase.selectEpsilonQ(testPlan);
-			
-			System.out.println("Epsilon "+epsilon);
+
+			System.out.println("Epsilon " + epsilon);
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -373,10 +391,10 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		List<Q> list = new ArrayList<>();
 		try {
-			list = MySQLDatabase.selectListQZero(testPlan,range);
+			list = MySQLDatabase.selectListQZero(testPlan, range);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -385,12 +403,10 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 			e.printStackTrace();
 		}
 
-
 		WorkLoad newW = null;
 
-		if ((epsilon > 0) && (list.size()>0) ) {
+		if ((epsilon > 0) && (list.size() > 0)) {
 
-			
 			Q q = list.get(0);
 
 			newW = getQ(q, workLoad, testCases, maxUsers, generation, algorithm, testPlan);
@@ -442,19 +458,15 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 
 		}
 		if (actions[0].equals("same")) {
-			newW = neighborSame(workLoad, testCases, maxUsers, generation, newFunc, algorithm);
+			newW = neighborSame(workLoad, testCases, maxUsers, generation, newFunc, algorithm,testPlan);
 
 		}
 
 		System.out.println("New Workload  " + newWorkLoad);
 		return newW;
 	}
-
-	@Override
-	public List<WorkLoad> strategy(List<WorkLoad> list, int populationSize, List<String> testCases, int generation,
-			int maxUsers, String testPlan, int mutantProbability, int bestIndividuals, boolean collaborative,
-			ListedHashTree script, int maxResponseTime) {
-
+	
+	public void initQ(String testPlan,List<String> testCases){
 		for (int i = 1; i < 4; i = i + 1) {
 			for (int j = 0; j < testCases.size(); j++) {
 				for (int m = 0; m < 3; m++) {
@@ -513,6 +525,16 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 				}
 			}
 		}
+	}
+
+	@Override
+	public List<WorkLoad> strategy(List<WorkLoad> list, int populationSize, List<String> testCases, int generation,
+			int maxUsers, String testPlan, int mutantProbability, int bestIndividuals, boolean collaborative,
+			ListedHashTree script, int maxResponseTime) {
+		
+		budget("Reinf", (int) list.get(0).getFit());
+
+	
 		int epsilon = 0;
 
 		try {
@@ -528,11 +550,12 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 		if ((oldWorkLoad.size() == 0) || (oldWorkLoad == null)) {
 			oldWorkLoad = list;
 
-			operations = new HashMap<>();
+			initQ(testPlan, testCases);
+			
 
 			for (WorkLoad owkr : oldWorkLoad) {
 
-				neighbor(owkr, testCases, maxUsers, generation);
+				neighbor(owkr, testCases, maxUsers, generation,testPlan);
 
 			}
 
@@ -568,6 +591,20 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 
 		// TODO Auto-generated method stub
 		return newWorkLoad;
+	}
+
+	@Override
+	public void budget(String searchMethod, int maxFit) {
+		try {
+			MySQLDatabase.insertOBudget(searchMethod, maxFit);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

@@ -1,9 +1,11 @@
 package br.unifor.iadapter.algorithm;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.jorphan.collections.ListedHashTree;
 
+import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.genetic.GeneticAlgorithm;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
@@ -25,6 +27,20 @@ public class GeneticAlgorithmImplementation extends AbstractAlgorithm {
 
 	public GeneticAlgorithmImplementation() {
 		this.setMethodName("GA");
+	}
+
+	@Override
+	public void budget(String searchMethod, int maxFit) {
+		try {
+			MySQLDatabase.insertOBudget(searchMethod, maxFit);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

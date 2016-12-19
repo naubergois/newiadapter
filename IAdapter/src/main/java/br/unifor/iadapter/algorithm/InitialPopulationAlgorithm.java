@@ -25,4 +25,10 @@ public class InitialPopulationAlgorithm extends AbstractAlgorithm {
 		setMethodName("Initial");
 	}
 
+	@Override
+	public void budget(String searchMethod, int maxFit) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

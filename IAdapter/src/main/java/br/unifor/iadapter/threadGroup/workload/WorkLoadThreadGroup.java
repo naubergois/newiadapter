@@ -68,6 +68,8 @@ import br.unifor.iadapter.util.WorkLoadUtil;
 public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		implements Serializable, TestStateListener, SampleListener, LoopIterationListener {
 
+	private static int numberOFExecutions;
+	
 	private static HashMap<String, String> globalVariables = new HashMap<String, String>();
 
 	public static HashMap<String, String> getGlobalVariables() {
@@ -448,6 +450,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			if (this.getCurrentTest() < size) {
 
 				WorkLoadThreadGroup.finishTest(agent, this, String.valueOf(generation));
+				
+				WorkLoadThreadGroup.numberOFExecutions=0;
 
 				Agent.sinchronizeFinal();
 
@@ -460,6 +464,11 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 				agent.runningFinal();
 
 				createNextGenerationElementsWithNoGui(this);
+				
+				
+				
+				
+				
 
 				System.out.println("Add generation " + generation);
 

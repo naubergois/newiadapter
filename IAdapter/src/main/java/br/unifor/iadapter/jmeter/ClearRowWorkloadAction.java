@@ -43,7 +43,7 @@ public class ClearRowWorkloadAction implements ActionListener {
 		
 		try {
 			MySQLDatabase.deleteTestPlan(sender.getName());
-			MySQLDatabase.deleteQ(sender.getName());
+			//MySQLDatabase.deleteQ(sender.getName());
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

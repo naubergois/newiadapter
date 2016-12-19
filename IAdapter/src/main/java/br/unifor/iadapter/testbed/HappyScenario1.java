@@ -24,7 +24,7 @@ public class HappyScenario1 extends AbstractJavaSamplerClient {
 		
 		if (numberOfThreads < 10){
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -34,7 +34,7 @@ public class HappyScenario1 extends AbstractJavaSamplerClient {
 		if (numberOfThreads >= 10 && numberOfThreads < 20) {
 
 			try {
-				Thread.sleep(10*numberOfThreads);
+				Thread.sleep(1*numberOfThreads);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 		
@@ -49,7 +49,7 @@ public class HappyScenario1 extends AbstractJavaSamplerClient {
 		if (numberOfThreads >= 20 && numberOfThreads < 30) {
 
 			try {
-				Thread.sleep(20*numberOfThreads);
+				Thread.sleep(2*numberOfThreads);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 		
@@ -63,7 +63,7 @@ public class HappyScenario1 extends AbstractJavaSamplerClient {
 		if (numberOfThreads >= 30 && numberOfThreads < 40) {
 
 			try {
-				Thread.sleep(30*numberOfThreads);
+				Thread.sleep(3*numberOfThreads);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 		
@@ -77,7 +77,7 @@ public class HappyScenario1 extends AbstractJavaSamplerClient {
 		if (numberOfThreads >= 30 && numberOfThreads < 40) {
 
 			try {
-				Thread.sleep(30*numberOfThreads);
+				Thread.sleep(3*numberOfThreads);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 		
@@ -91,7 +91,7 @@ public class HappyScenario1 extends AbstractJavaSamplerClient {
 		if (numberOfThreads >= 40 && numberOfThreads < 50) {
 
 			try {
-				Thread.sleep(40*numberOfThreads);
+				Thread.sleep(4*numberOfThreads);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 		
@@ -105,7 +105,7 @@ public class HappyScenario1 extends AbstractJavaSamplerClient {
 		if (numberOfThreads >= 50 && numberOfThreads < 60) {
 
 			try {
-				Thread.sleep(50*numberOfThreads);
+				Thread.sleep(5*numberOfThreads);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 		
@@ -119,7 +119,7 @@ public class HappyScenario1 extends AbstractJavaSamplerClient {
 		if (numberOfThreads >= 60 && numberOfThreads < 70) {
 
 			try {
-				Thread.sleep(60*numberOfThreads);
+				Thread.sleep(6*numberOfThreads);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 		
@@ -133,7 +133,7 @@ public class HappyScenario1 extends AbstractJavaSamplerClient {
 		if (numberOfThreads >= 70 && numberOfThreads < 80) {
 
 			try {
-				Thread.sleep(70*numberOfThreads);
+				Thread.sleep(7*numberOfThreads);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 		
@@ -147,7 +147,7 @@ public class HappyScenario1 extends AbstractJavaSamplerClient {
 		if (numberOfThreads >= 80 && numberOfThreads < 90) {
 
 			try {
-				Thread.sleep(80*numberOfThreads);
+				Thread.sleep(8*numberOfThreads);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 		
@@ -161,7 +161,7 @@ public class HappyScenario1 extends AbstractJavaSamplerClient {
 		if (numberOfThreads >= 90) {
 
 			try {
-				Thread.sleep(90*numberOfThreads);
+				Thread.sleep(9*numberOfThreads);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 		

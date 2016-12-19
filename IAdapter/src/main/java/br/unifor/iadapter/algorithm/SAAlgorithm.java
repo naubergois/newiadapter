@@ -86,8 +86,24 @@ public class SAAlgorithm extends AbstractAlgorithm {
 		
 		List<WorkLoad> returnWorkload=new ArrayList<WorkLoad>();
 		
+		List<WorkLoad> listBest=null;
+		try {
+			listBest=MySQLDatabase.listWorkLoadsForNewGenerationByMethodAllGenerations(testPlan, this, populationSize);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+				
+		currentWorkLoad=listBest.get(0);
 				
 		returnWorkload.add(currentWorkLoad);
+		
+		budget("SA",(int) currentWorkLoad.getFit());
+		
+		
 		returnWorkload.addAll(neighborhoods);
 
 		return returnWorkload;
@@ -95,6 +111,20 @@ public class SAAlgorithm extends AbstractAlgorithm {
 
 	public SAAlgorithm() {
 		this.setMethodName("SA");
+	}
+
+	@Override
+	public void budget(String searchMethod, int maxFit) {
+		try {
+			MySQLDatabase.insertOBudget(searchMethod, maxFit);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

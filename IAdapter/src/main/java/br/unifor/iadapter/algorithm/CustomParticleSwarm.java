@@ -71,4 +71,10 @@ public class CustomParticleSwarm extends AbstractAlgorithm{
 		setMethodName("CPS");
 	}
 
+	@Override
+	public void budget(String searchMethod, int maxFit) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
