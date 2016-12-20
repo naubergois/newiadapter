@@ -835,6 +835,9 @@ public class MySQLDatabase {
 	public static void insertOBudget(String searchmethod, int maxfit) throws ClassNotFoundException, SQLException {
 
 		Connection con = singleton();
+		
+		
+		
 
 		PreparedStatement ps = con.prepareStatement("" + "SELECT count(*) FROM budget WHERE searchmethod=? ");
 		ps.setString(1, searchmethod);
@@ -1406,6 +1409,29 @@ public class MySQLDatabase {
 		}
 
 		return workload;
+
+	}
+
+	public static int listWorkLoadMaxFit(String searchMethod, String testPlan)
+			throws ClassNotFoundException, SQLException {
+
+		Connection con = singleton();
+
+		PreparedStatement ps = con.prepareStatement(
+				"" + "SELECT max(fit)  FROM  workload WHERE TESTPLAN=? and SearchMethod=?  " + "  ORDER BY FIT*1 ");
+		ps.setString(1, testPlan);
+		ps.setString(2, searchMethod);
+
+		ResultSet rs = ps.executeQuery();
+
+		int max = 0;
+
+		while (rs.next()) {
+			max = rs.getInt(1);
+
+		}
+
+		return max;
 
 	}
 

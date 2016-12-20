@@ -79,10 +79,6 @@ public class CustomAlgorithm extends AbstractAlgorithm {
 		setMethodName("Grered");
 	}
 
-	@Override
-	public void budget(String searchMethod, int maxFit) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 }

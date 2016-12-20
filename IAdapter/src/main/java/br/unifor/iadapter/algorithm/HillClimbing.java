@@ -33,7 +33,6 @@ public class HillClimbing extends AbstractAlgorithm {
 			}
 		}
 
-		budget("Hill", (int) currentWorkLoad.getFit());
 
 		List<WorkLoad> newList = new ArrayList<WorkLoad>();
 		newList.add(currentWorkLoad);
@@ -73,18 +72,6 @@ public class HillClimbing extends AbstractAlgorithm {
 		setMethodName("HC");
 	}
 
-	@Override
-	public void budget(String searchMethod, int maxFit) {
-		try {
-			MySQLDatabase.insertOBudget(searchMethod, maxFit);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
+	
 
 }

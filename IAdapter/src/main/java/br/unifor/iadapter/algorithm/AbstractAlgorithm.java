@@ -45,6 +45,6 @@ public abstract class AbstractAlgorithm implements IAlgorithm {
 			int maxUsers, String testPlan, int mutantProbability, int bestIndividuals, boolean collaborative,
 			ListedHashTree script,int maxResponseTime) ;
 	
-	public abstract void  budget(String searchMethod,int maxFit);
+
 
 }

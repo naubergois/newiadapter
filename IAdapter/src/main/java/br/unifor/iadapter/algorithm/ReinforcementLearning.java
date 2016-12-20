@@ -532,7 +532,7 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 			int maxUsers, String testPlan, int mutantProbability, int bestIndividuals, boolean collaborative,
 			ListedHashTree script, int maxResponseTime) {
 		
-		budget("Reinf", (int) list.get(0).getFit());
+		
 
 	
 		int epsilon = 0;
@@ -593,18 +593,6 @@ public class ReinforcementLearning extends AbstractAlgorithm {
 		return newWorkLoad;
 	}
 
-	@Override
-	public void budget(String searchMethod, int maxFit) {
-		try {
-			MySQLDatabase.insertOBudget(searchMethod, maxFit);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
+	
 
 }

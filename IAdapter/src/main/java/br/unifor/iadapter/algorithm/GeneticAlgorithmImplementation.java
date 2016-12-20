@@ -29,18 +29,6 @@ public class GeneticAlgorithmImplementation extends AbstractAlgorithm {
 		this.setMethodName("GA");
 	}
 
-	@Override
-	public void budget(String searchMethod, int maxFit) {
-		try {
-			MySQLDatabase.insertOBudget(searchMethod, maxFit);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
+	
 
 }

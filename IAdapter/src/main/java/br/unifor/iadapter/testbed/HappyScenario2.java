@@ -5,7 +5,7 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.threads.JMeterContextService;
 
-public class HappyScenario1 extends AbstractJavaSamplerClient {
+public class HappyScenario2 extends AbstractJavaSamplerClient {
 
 	@Override
 	public SampleResult runTest(JavaSamplerContext arg0) {
@@ -42,7 +42,7 @@ public class HappyScenario1 extends AbstractJavaSamplerClient {
 		if (numberOfThreads >= 20) {
 
 			try {
-				Thread.sleep((long) 0.2 * numberOfThreads);
+				Thread.sleep((long) 0.3 * numberOfThreads);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 

@@ -33,7 +33,7 @@ public class TabuAlgorithmQ extends AbstractAlgorithm {
 			}
 		}
 		
-		budget("TabuQ",(int) list.get(0).getFit());
+		
 
 		if (list.size() == 0) {
 			list = oldList;
@@ -74,18 +74,6 @@ public class TabuAlgorithmQ extends AbstractAlgorithm {
 		this.setMethodName("TS");
 	}
 
-	@Override
-	public void budget(String searchMethod, int maxFit) {
-		try {
-			MySQLDatabase.insertOBudget(searchMethod, maxFit);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
+	
 
 }

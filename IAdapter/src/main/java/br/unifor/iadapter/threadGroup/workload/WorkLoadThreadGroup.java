@@ -69,7 +69,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		implements Serializable, TestStateListener, SampleListener, LoopIterationListener {
 
 	private static int numberOFExecutions;
-	
+
 	private static HashMap<String, String> globalVariables = new HashMap<String, String>();
 
 	public static HashMap<String, String> getGlobalVariables() {
@@ -98,8 +98,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	private int generation = 0;
 	public int temperature = 0;
 	private int generationTrack = 0;
-	
-	
 
 	public int getGeneration() {
 		return generation;
@@ -255,7 +253,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			AbstractAlgorithm algorithm, int limit) {
 		try {
 			return MySQLDatabase.listWorkLoadsForNewGenerationByMethod(tg.getName(),
-					String.valueOf((tg.getGeneration())), algorithm,limit);
+					String.valueOf((tg.getGeneration())), algorithm, limit);
 		} catch (ClassNotFoundException e1) {
 
 			e1.printStackTrace();
@@ -365,7 +363,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 				} else {
 
-					iAlgorithm.setListWorkLoads(returnListWorkLoadsForNewGenerationByMethod(tg, iAlgorithm,tg.getPopulationSize()));
+					iAlgorithm.setListWorkLoads(
+							returnListWorkLoadsForNewGenerationByMethod(tg, iAlgorithm, tg.getPopulationSize()));
 
 					System.out.println("No Colab Name " + iAlgorithm.getMethodName());
 					if (iAlgorithm.getListWorkLoads() != null) {
@@ -421,10 +420,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			List<WorkLoad> workLoads = null;
 
 			Agent agent = new Agent(this);
-			agent.delete();
-
-			Agent.sinchronize();
-
+			
 			try {
 				workLoads = MySQLDatabase.listWorkLoadsByGeneration(this.getName(),
 						String.valueOf(this.getGeneration()));
@@ -435,7 +431,34 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 				log.error(e2.getMessage());
 			}
+			
+			for (WorkLoad workload : workLoads) {
 
+				try {
+					int max=MySQLDatabase.listWorkLoadMaxFit(workload.getSearchMethod(), this.getName());
+					if (workload.getFit()>=max){
+						max=(int) workload.getFit();
+					}
+					
+					MySQLDatabase.insertOBudget(workload.getSearchMethod(), max);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+
+			
+			agent.delete();
+			
+			
+
+			Agent.sinchronize();
+
+			
 			int size = workLoads.size();
 
 			this.setCurrentTest(this.getCurrentTest() + 1);
@@ -444,14 +467,13 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			System.out.println(" workload size" + size);
 			System.out.println(" Current test" + this.getCurrentTest());
 
+		
 			setScenariosSimulation(new ArrayList());
 			setGlobalVariables(new HashMap<String, String>());
 
 			if (this.getCurrentTest() < size) {
 
 				WorkLoadThreadGroup.finishTest(agent, this, String.valueOf(generation));
-				
-				WorkLoadThreadGroup.numberOFExecutions=0;
 
 				Agent.sinchronizeFinal();
 
@@ -464,11 +486,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 				agent.runningFinal();
 
 				createNextGenerationElementsWithNoGui(this);
-				
-				
-				
-				
-				
 
 				System.out.println("Add generation " + generation);
 
@@ -480,7 +497,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 				agent.delete();
 
 				Agent.sinchronizeFinal();
-				if ((getGeneration() <= generations) ) {
+				if ((getGeneration() <= generations)) {
 					this.currentTest = 0;
 
 					try {
@@ -500,6 +517,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 					startEngine();
 
 				} else {
+					WorkLoadThreadGroup.numberOFExecutions = 0;
 					File file = new File("tempResults.csv");
 					file.delete();
 					this.generation = 1;
@@ -513,6 +531,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 				}
 
 			}
+
 		}
 
 	}

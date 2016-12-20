@@ -34,10 +34,11 @@ public class TowerBabel extends AbstractJavaSamplerClient {
 		sampleResult.sampleStart();
 		sampleResult.setSuccessful(true);
 
-		for (int i = 0; i <= 1000; i++) {
+		for (int i = 0; i <= 300; i++) {
 			try {
 				JSONObject xmlJSONObj = XML.toJSONObject(TEST_XML_STRING);
 				String jsonPrettyPrintString = xmlJSONObj.toString(PRETTY_PRINT_INDENT_FACTOR);
+				
 				//System.out.println(jsonPrettyPrintString);
 			} catch (JSONException je) {
 				System.out.println(je.toString());

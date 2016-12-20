@@ -32,7 +32,7 @@ public class Hybrid extends AbstractAlgorithm {
 			e.printStackTrace();
 		}
 		
-		budget("Hybrid",(int) list.get(0).getFit());
+	
 
 		HillClimbing hill = new HillClimbing();
 
@@ -129,18 +129,5 @@ public class Hybrid extends AbstractAlgorithm {
 		setMethodName("Hybrid");
 	}
 
-	@Override
-	public void budget(String searchMethod, int maxFit) {
-		try {
-			MySQLDatabase.insertOBudget(searchMethod, maxFit);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-
+	
 }

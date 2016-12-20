@@ -31,7 +31,7 @@ public class UnbalancedProcessing extends AbstractJavaSamplerClient {
 			WorkLoadThreadGroup.getScenariosSimulation().add(scenario);
 
 			//System.out.println(scenario);
-			//System.out.println(WorkLoadThreadGroup.getScenariosSimulation());
+			System.out.println(WorkLoadThreadGroup.getScenariosSimulation());
 			String a = "A";
 			String b = "B";
 			String c = "C";
@@ -43,7 +43,7 @@ public class UnbalancedProcessing extends AbstractJavaSamplerClient {
 			sampleResult.setSuccessful(true);
 			if (scenario.equals("A")) {
 				try {				
-					Thread.sleep(9*numberOfThreads);
+					Thread.sleep((long) 0.9*numberOfThreads);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -64,10 +64,10 @@ public class UnbalancedProcessing extends AbstractJavaSamplerClient {
 				int count=0;
 				while(WorkLoadThreadGroup.getScenariosSimulation().contains(a) && WorkLoadThreadGroup.getScenariosSimulation().contains(b) ){
 					try {
-						//System.out.println("Waiting for a and b "+count);
-						Thread.sleep(10);
+						System.out.println("Waiting for a and b "+count);
+						Thread.sleep(1);
 						count++;
-						if (count>100){
+						if (count>20){
 							break;
 						}
 					} catch (InterruptedException e) {
@@ -75,6 +75,15 @@ public class UnbalancedProcessing extends AbstractJavaSamplerClient {
 						e.printStackTrace();
 					}
 				}
+				
+				WorkLoadThreadGroup.getScenariosSimulation().remove(scenario);
+
+			}	
+			
+			if (scenario.equals("D")) {
+				
+				WorkLoadThreadGroup.getScenariosSimulation().remove("A");
+				WorkLoadThreadGroup.getScenariosSimulation().remove("B");
 
 			}	
 			
@@ -83,7 +92,7 @@ public class UnbalancedProcessing extends AbstractJavaSamplerClient {
 			sampleResult.setSuccessful(true);			
 			
 			
-			WorkLoadThreadGroup.getScenariosSimulation().remove(scenario);
+			
 			
 
 			sampleResult.sampleEnd();	
