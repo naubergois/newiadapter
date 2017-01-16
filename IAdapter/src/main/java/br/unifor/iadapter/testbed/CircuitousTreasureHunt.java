@@ -19,7 +19,7 @@ public class CircuitousTreasureHunt {
 	public static Answer<Boolean> timer() {
 		Answer<Boolean> answer = new Answer<Boolean>() {
 			public Boolean answer(InvocationOnMock invocation) throws Throwable {
-				Thread.sleep(200);
+				Thread.sleep(2);
 				return true;
 			}
 		};
@@ -30,7 +30,7 @@ public class CircuitousTreasureHunt {
 	public static Answer<PreparedStatement> timer1() {
 		Answer<PreparedStatement> answer = new Answer<PreparedStatement>() {
 			public PreparedStatement answer(InvocationOnMock invocation) throws Throwable {
-				Thread.sleep(200);
+				Thread.sleep(20);
 				PreparedStatement stmt = Mockito.mock(PreparedStatement.class);
 				Mockito.when(stmt.execute("100")).thenAnswer(timer()).thenReturn(true);
 

@@ -103,6 +103,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 	private JTextField destPortDocker;
 	private JTextField dockerCommandLine;
 	private JTextArea algorithmList;
+	private JTextField numberOfScenariosWeight;
 	/**
 	 *
 	 */
@@ -254,60 +255,50 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 
 		JLabel icon = new JLabel(iadapter);
 
-		
-		
-		JTextArea area=new JTextArea(10,10);
+		JTextArea area = new JTextArea(10, 10);
 
 		List<String> classes = SearchClass.getClasses();
 
 		String classesString = "";
-		classesString+="Algorithms found: "+"\n";
+		classesString += "Algorithms found: " + "\n";
 		for (String string : classes) {
 			classesString += string + "\n";
 		}
 		classesString += "";
 
 		area.setText(classesString);
-		
-		JScrollPane scroller = new JScrollPane(area, 
-			      JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-			      JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
+		JScrollPane scroller = new JScrollPane(area, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 		panel.add(BorderLayout.NORTH, icon);
 		panel.add(BorderLayout.CENTER, scroller);
 		return panel;
 	}
-	
+
 	private JPanel createAlgorithmsPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 
 		panel.setPreferredSize(new Dimension(200, 200));
 
-				
-		
-		algorithmList=new JTextArea(10,10);
-		
-		
+		algorithmList = new JTextArea(10, 10);
 
 		List<String> classes = SearchClass.getClasses();
 
 		String classesString = "";
-		
+
 		for (String string : classes) {
 			classesString += string + ",";
 		}
 		classesString += "";
 
 		algorithmList.setText(classesString);
-		JLabel label=new JLabel(classesString);
-		
-		JScrollPane scroller = new JScrollPane(algorithmList, 
-			      JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-			      JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		JLabel label = new JLabel(classesString);
 
+		JScrollPane scroller = new JScrollPane(algorithmList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-		//panel.add(BorderLayout.SOUTH, label);
+		// panel.add(BorderLayout.SOUTH, label);
 		panel.add(BorderLayout.CENTER, scroller);
 		return panel;
 	}
@@ -487,6 +478,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 			utg.setResponseTimeMaxPenalty(responseTimeMaxPenalty.getText());
 			utg.setMutantProbabilty(mutantProbability.getText());
 			utg.setAlgorithmList(algorithmList.getText());
+			utg.setNumberOfScenariosWeight(numberOfScenariosWeight.getText());
 			// utg.setMaxMemory(maxMemory.getText());
 			// utg.setMaxCpuShare(maxCpuShare.getText());
 			// utg.setDockerImage(dockerImage.getText());
@@ -540,21 +532,23 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		responseTimeMaxPenalty.setText(utg.getResponseTimeMaxPenalty());
 		mutantProbability.setText(utg.getMutantProbability());
 		algorithmList.setColumns(100);
-		if(utg.getAlgorithmList().length()==0){
+		if (utg.getAlgorithmList().length() == 0) {
 			List<String> classes = SearchClass.getClasses();
 
 			String classesString = "";
-			
+
 			for (String string : classes) {
 				classesString += string + ",";
 			}
 			classesString += "";
-			classesString=classesString.substring(0,classesString.length()-2);
-			System.out.println("Algorithms found: "+classesString);
+			classesString = classesString.substring(0, classesString.length() - 2);
+			System.out.println("Algorithms found: " + classesString);
 			utg.setAlgorithmList(classesString);
-			
-			
+
 		}
+		
+
+		numberOfScenariosWeight.setText(utg.getNumberOfScenariosWeight());
 		algorithmList.setText(utg.getAlgorithmList());
 		// maxCpuShare.setText(utg.getMaxCpuShare());
 		// maxMemory.setText(utg.getMaxMemory());
@@ -776,6 +770,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 
 		JPanel param = new JPanel();
 		param.setLayout(new GridLayout(0, 2));
+		numberOfScenariosWeight = new JTextField("1", 5);
 		percentile90FitWeight = new JTextField("90", 5);
 		percentile80FitWeight = new JTextField("20", 5);
 		percentile70FitWeight = new JTextField("10", 5);
@@ -799,7 +794,8 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		param.add(userFitWeight);
 		param.add(new JLabel("Response Time Max Across Penalty"));
 		param.add(responseTimeMaxPenalty);
-
+		param.add(new JLabel("Number of Scenarios Weight"));
+		param.add(numberOfScenariosWeight);
 		panel.add(param, BorderLayout.CENTER);
 
 		tab1.addTab("FIT", panel);

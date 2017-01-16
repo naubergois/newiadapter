@@ -21,6 +21,54 @@ import br.unifor.iadapter.jmeter.GraphRowSumValues;
 import br.unifor.iadapter.searchclass.SearchClassWorkLoad;
 
 public class WorkLoad {
+	
+	private double crowdingDistance;
+	
+	public double getCrowdingDistance() {
+		return crowdingDistance;
+	}
+
+	public void setCrowdingDistance(double crowdingDistance) {
+		this.crowdingDistance = crowdingDistance;
+	}
+
+
+
+	private int[][] objective=new int[5][5];
+	
+	private int rank;
+	
+	public int[][] getObjective() {
+		return objective;
+	}
+
+	public void setObjective(int[][] objective) {
+		this.objective = objective;
+	}
+
+	public int getRank() {
+		return rank;
+	}
+
+	public void setRank(int rank) {
+		this.rank = rank;
+	}
+
+	public double getObjectiveValue(int i){
+		return objective[i][0]*getNumThreads()+objective[i][1]*getPercentile90()+objective[i][2]*getPercentile80()+objective[i][3]*getPercentile70()+objective[i][4]*worstResponseTime;
+	}
+	
+	
+	
+	int numberOfObjectives;
+
+	public int getNumberOfObjectives() {
+		return numberOfObjectives;
+	}
+
+	public void setNumberOfObjectives(int numberOfObjectives) {
+		this.numberOfObjectives = numberOfObjectives;
+	}
 
 	public void calcUsers() {
 

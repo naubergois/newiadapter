@@ -144,11 +144,11 @@
 			<artifactId>json</artifactId>
 			<version>20140107</version>
 		</dependency>
-	    <dependency>
-    	    <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>20.0</version>
-        </dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>20.0</version>
+		</dependency>
 		<dependency>
 			<groupId>com.googlecode.gendevcode</groupId>
 			<artifactId>gen-code</artifactId>

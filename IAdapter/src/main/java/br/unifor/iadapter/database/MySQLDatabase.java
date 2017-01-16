@@ -616,6 +616,17 @@ public class MySQLDatabase {
 		ps.setString(1, workload);
 		ps.setString(2, testPlan);
 		ps.setString(3, generation);
+		
+		int scenariosWeight=1;
+		
+		if (tg.getNumberOfScenariosWeight().length()>0){
+			String[] scenarios=tg.getNumberOfScenariosWeight().split(",");
+			for (String string : scenarios) {
+				if(workload.contains(string)){
+					scenariosWeight++;
+				}
+			}
+		}
 
 		ResultSet rs = ps.executeQuery();
 
@@ -651,6 +662,10 @@ public class MySQLDatabase {
 						+ responseTime * Double.valueOf(tg.getResponseMaxFitWeight())
 						+ totalError * Double.valueOf(tg.getTotalErrorFitWeight())
 						+ users * Double.valueOf(tg.getUserFitWeight()) + penalty;
+				
+				if(scenariosWeight>1){
+					fit=fit*scenariosWeight;
+				}
 
 				if ((fitDatabase >= 0) && (fitDatabase != 0.5)) {
 					if ((fit < 0) || (fit > fitDatabase) || (fit == 0.5)) {

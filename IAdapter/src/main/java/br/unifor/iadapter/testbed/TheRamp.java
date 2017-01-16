@@ -52,8 +52,8 @@ public class TheRamp extends AbstractJavaSamplerClient {
 			
 			
 			try {
-				Thread.sleep(numberOfThreads*100);
-				Thread.sleep(number*100);
+				Thread.sleep(numberOfThreads*10);
+				Thread.sleep(number*10);
 				System.out.println("Number is "+number);
 				System.out.println("increment is "+number);
 			} catch (InterruptedException e) {

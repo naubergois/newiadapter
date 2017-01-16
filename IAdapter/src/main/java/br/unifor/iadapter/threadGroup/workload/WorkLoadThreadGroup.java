@@ -591,6 +591,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	private static final String MIN_TEMP = "workloadthreadgroup.mintemp";
 
 	private static final String ALGORITHM_LIST = "algorithm_list";
+	
+	private static final String NUMBER_OF_SCENARIOS = "number_of_scnarios";
 
 	private static final String INITIAL_GENERATION = "workloadthreadgroup.initialgeneration";;
 
@@ -941,6 +943,15 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 	public void setAlgorithmList(String list) {
 		setProperty(ALGORITHM_LIST, list);
+	}
+	
+	
+	public void setNumberOfScenariosWeight(String list) {
+		setProperty(NUMBER_OF_SCENARIOS, list);
+	}
+	
+	public String getNumberOfScenariosWeight() {
+		return getPropertyAsString(NUMBER_OF_SCENARIOS);
 	}
 
 	public String getAlgorithmList() {
