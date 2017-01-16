@@ -23,7 +23,7 @@ package br.unifor.iadapter.algorithm;
 
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import jmetal.util.JMException;
-import jmetal.util.comparators.ObjectiveComparator;
+
 
 /**
  * This class implements some utilities for calculating distances

@@ -103,6 +103,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 	private JTextField destPortDocker;
 	private JTextField dockerCommandLine;
 	private JTextArea algorithmList;
+	private JTextArea multiObjective;
 	private JTextField numberOfScenariosWeight;
 	/**
 	 *
@@ -174,6 +175,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		tabbedPane.addTab("Main", containerPanel);
 		tabbedPane.addTab("WorkLoad", createWorkloadPanel());
 		tabbedPane.addTab("Algorithms", createAlgorithmsPanel());
+		tabbedPane.addTab("MultiObjective", createMultiObjectivePanel());
 		tabbedPane.addTab("Graph", createGraphPanel());
 		// createTabDocker(tabbedPane);
 		createTabAgent(tabbedPane);
@@ -296,6 +298,22 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		JLabel label = new JLabel(classesString);
 
 		JScrollPane scroller = new JScrollPane(algorithmList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+		// panel.add(BorderLayout.SOUTH, label);
+		panel.add(BorderLayout.CENTER, scroller);
+		return panel;
+	}
+	
+	
+	private JPanel createMultiObjectivePanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+
+		panel.setPreferredSize(new Dimension(200, 200));
+
+		multiObjective = new JTextArea(10, 10);		
+		
+		JScrollPane scroller = new JScrollPane(multiObjective, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		// panel.add(BorderLayout.SOUTH, label);
@@ -478,6 +496,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 			utg.setResponseTimeMaxPenalty(responseTimeMaxPenalty.getText());
 			utg.setMutantProbabilty(mutantProbability.getText());
 			utg.setAlgorithmList(algorithmList.getText());
+			utg.setMultiObjective(multiObjective.getText());
 			utg.setNumberOfScenariosWeight(numberOfScenariosWeight.getText());
 			// utg.setMaxMemory(maxMemory.getText());
 			// utg.setMaxCpuShare(maxCpuShare.getText());
@@ -532,6 +551,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		responseTimeMaxPenalty.setText(utg.getResponseTimeMaxPenalty());
 		mutantProbability.setText(utg.getMutantProbability());
 		algorithmList.setColumns(100);
+		multiObjective.setColumns(100);
 		if (utg.getAlgorithmList().length() == 0) {
 			List<String> classes = SearchClass.getClasses();
 
@@ -549,6 +569,7 @@ public class WorkLoadThreadGroupGUI extends AbstractThreadGroupGui implements Ta
 		
 
 		numberOfScenariosWeight.setText(utg.getNumberOfScenariosWeight());
+		multiObjective.setText(utg.getMultiObjective());
 		algorithmList.setText(utg.getAlgorithmList());
 		// maxCpuShare.setText(utg.getMaxCpuShare());
 		// maxMemory.setText(utg.getMaxMemory());

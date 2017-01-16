@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -420,7 +421,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			List<WorkLoad> workLoads = null;
 
 			Agent agent = new Agent(this);
-			
+
 			try {
 				workLoads = MySQLDatabase.listWorkLoadsByGeneration(this.getName(),
 						String.valueOf(this.getGeneration()));
@@ -431,15 +432,15 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 
 				log.error(e2.getMessage());
 			}
-			
+
 			for (WorkLoad workload : workLoads) {
 
 				try {
-					int max=MySQLDatabase.listWorkLoadMaxFit(workload.getSearchMethod(), this.getName());
-					if (workload.getFit()>=max){
-						max=(int) workload.getFit();
+					int max = MySQLDatabase.listWorkLoadMaxFit(workload.getSearchMethod(), this.getName());
+					if (workload.getFit() >= max) {
+						max = (int) workload.getFit();
 					}
-					
+
 					MySQLDatabase.insertOBudget(workload.getSearchMethod(), max);
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
@@ -450,15 +451,10 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 				}
 			}
 
-
-			
 			agent.delete();
-			
-			
 
 			Agent.sinchronize();
 
-			
 			int size = workLoads.size();
 
 			this.setCurrentTest(this.getCurrentTest() + 1);
@@ -467,7 +463,6 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 			System.out.println(" workload size" + size);
 			System.out.println(" Current test" + this.getCurrentTest());
 
-		
 			setScenariosSimulation(new ArrayList());
 			setGlobalVariables(new HashMap<String, String>());
 
@@ -542,6 +537,22 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		return super.verifyThreadsStopped();
 	}
 
+	public static boolean isNumeric(String str) {
+		try {
+			double d = Double.parseDouble(str);
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+		return true;
+	}
+
+	static List<int[]> listWeights;
+
+	public static List<int[]> getWeights() {
+
+		return listWeights;
+	}
+
 	private static final Logger log = LoggingManager.getLoggerForClass();
 	public static final String DATA_PROPERTY = "workloadthreadgroupdata";
 
@@ -549,6 +560,8 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	private static final String THREAD_NUMBER_MAX = "threadnumbermax";
 
 	private static final String MUTANT_PROBABILTY = "mutantprobablity";
+
+	private static final String MULTIOBJECTIVE = "multiobjective";
 
 	private static final String RESPONSE_TIME_MAX_PENALTY = "responsetimemaxpenalty";
 
@@ -591,7 +604,7 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	private static final String MIN_TEMP = "workloadthreadgroup.mintemp";
 
 	private static final String ALGORITHM_LIST = "algorithm_list";
-	
+
 	private static final String NUMBER_OF_SCENARIOS = "number_of_scnarios";
 
 	private static final String INITIAL_GENERATION = "workloadthreadgroup.initialgeneration";;
@@ -599,6 +612,23 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	@Override
 	public void start(int groupCount, ListenerNotifier notifier, ListedHashTree threadGroupTree,
 			StandardJMeterEngine engine) {
+
+		listWeights = new ArrayList<>();
+		String[] lines = getMultiObjective().split("[\\r\\n]+");
+		for (String string : lines) {
+			List<String> weights = Arrays.asList(string.split(","));
+			int i = 0;
+			int[] weightReturn = new int[7];
+			for (String weight : weights) {
+				System.out.println("Weight :" + weight);
+				if (isNumeric(weight)) {
+
+					weightReturn[i] = Integer.valueOf(weight);
+					i++;
+				}
+			}
+			listWeights.add(weightReturn);
+		}
 
 		while (!(this.verifyThreadsStopped()))
 			;
@@ -933,6 +963,14 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 		return getPropertyAsString(RESPONSEMAX_FIT_WEIGHT);
 	}
 
+	public String getMultiObjective() {
+		return getPropertyAsString(MULTIOBJECTIVE);
+	}
+
+	public void setMultiObjective(String delay) {
+		setProperty(MULTIOBJECTIVE, delay);
+	}
+
 	public void setResponseMaxFitWeight(String delay) {
 		setProperty(RESPONSEMAX_FIT_WEIGHT, delay);
 	}
@@ -944,12 +982,11 @@ public class WorkLoadThreadGroup extends AbstractSimpleThreadGroup
 	public void setAlgorithmList(String list) {
 		setProperty(ALGORITHM_LIST, list);
 	}
-	
-	
+
 	public void setNumberOfScenariosWeight(String list) {
 		setProperty(NUMBER_OF_SCENARIOS, list);
 	}
-	
+
 	public String getNumberOfScenariosWeight() {
 		return getPropertyAsString(NUMBER_OF_SCENARIOS);
 	}

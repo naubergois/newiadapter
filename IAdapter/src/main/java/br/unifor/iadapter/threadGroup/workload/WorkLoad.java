@@ -14,6 +14,8 @@ limitations under the License.*/
 
 package br.unifor.iadapter.threadGroup.workload;
 
+import java.util.List;
+
 import org.apache.jmeter.threads.JMeterThread;
 import org.apache.log.Logger;
 
@@ -34,17 +36,10 @@ public class WorkLoad {
 
 
 
-	private int[][] objective=new int[5][5];
+
 	
 	private int rank;
 	
-	public int[][] getObjective() {
-		return objective;
-	}
-
-	public void setObjective(int[][] objective) {
-		this.objective = objective;
-	}
 
 	public int getRank() {
 		return rank;
@@ -55,21 +50,25 @@ public class WorkLoad {
 	}
 
 	public double getObjectiveValue(int i){
-		return objective[i][0]*getNumThreads()+objective[i][1]*getPercentile90()+objective[i][2]*getPercentile80()+objective[i][3]*getPercentile70()+objective[i][4]*worstResponseTime;
+		List<int[]> weights=WorkLoadThreadGroup.getWeights();
+		int[] objective=weights.get(i);		
+		double fitness= objective[0]*getNumThreads()+objective[1]*getPercentile90()+objective[2]*getPercentile80()+objective[3]*getPercentile70()+objective[4]*worstResponseTime;
+		if (getPercentile90()>objective[6]){
+			long delta=getPercentile90()-objective[6];
+			fitness=fitness-delta*objective[5];
+		}
+		return fitness;
 	}
 	
 	
 	
-	int numberOfObjectives;
+	
 
 	public int getNumberOfObjectives() {
-		return numberOfObjectives;
+		return WorkLoadThreadGroup.getWeights().size();
 	}
 
-	public void setNumberOfObjectives(int numberOfObjectives) {
-		this.numberOfObjectives = numberOfObjectives;
-	}
-
+	
 	public void calcUsers() {
 
 		Integer[] arrays = new Integer[10];

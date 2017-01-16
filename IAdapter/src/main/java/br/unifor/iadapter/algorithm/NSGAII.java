@@ -21,15 +21,20 @@
 
 package br.unifor.iadapter.algorithm;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jorphan.collections.ListedHashTree;
+import org.jgap.Chromosome;
+import org.jgap.IChromosome;
+import org.jgap.Population;
 
-import br.unifor.iadapter.genetic.GeneticAlgorithm;
+import br.unifor.iadapter.database.MySQLDatabase;
+import br.unifor.iadapter.genetic.GeneWorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
-import jmetal.util.Distance;
 
 public class NSGAII extends AbstractAlgorithm {
 
@@ -38,19 +43,38 @@ public class NSGAII extends AbstractAlgorithm {
 			int maxUsers, String testPlan, int mutantProbability, int bestIndividuals, boolean collaborative,
 			ListedHashTree script, int maxResponseTime) {
 
+		System.out.println("NSGAII start");
+
 		Distance distance = new Distance();
 
-		List<WorkLoad> listBest = GeneticAlgorithm.newGeneration(this, generation, list, testCases, true, maxUsers,
-				mutantProbability, populationSize, bestIndividuals, collaborative, testPlan, script);
+		List<WorkLoad> parentsList = new ArrayList<WorkLoad>();
 
-		JMeterPluginsUtils.listWorkLoadToCollectionProperty(listBest, WorkLoadThreadGroup.DATA_PROPERTY);
+		try {
+			parentsList = MySQLDatabase.listWorkLoadsForNewGenerationByMethodAllGenerations(testPlan, this,
+					populationSize);
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		SolutionSet population = new SolutionSet();
+		population.setCapacity(populationSize);
 
-		for (int i = 0; i < populationSize; i++) {
+		if (populationSize > list.size()) {
+			populationSize = list.size();
+		}
 
-			population.add(listBest.get(i));
-		} // for
+		for (int i = 0; i <= populationSize - 1; i++) {
+
+			population.add(list.get(i));
+		}
+
+		population.solutionsList_.addAll(parentsList);
+
+		// for
 
 		// Ranking the union
 		Ranking ranking = new Ranking(population);
@@ -63,7 +87,67 @@ public class NSGAII extends AbstractAlgorithm {
 		// Obtain the next front
 		front = ranking.getSubfront(index);
 
-		return listBest;
+		System.out.println("NSGAII test remain");
+
+		while ((remain > 0) && (remain >= front.size())) {
+			// Assign crowding distance to individuals
+			distance.crowdingDistanceAssignment(front, WorkLoadThreadGroup.getWeights().size());
+			// Add the individuals of this front
+			for (int k = 0; k < front.size(); k++) {
+				population.add(front.get(k));
+			} // for
+
+			// Decrement remain
+			remain = remain - front.size();
+
+			// Obtain the next front
+			index++;
+			if (remain > 0) {
+				front = ranking.getSubfront(index);
+			} // if
+		} // while
+
+		if (remain > 0) { // front contains individuals to insert
+			distance.crowdingDistanceAssignment(front, WorkLoadThreadGroup.getWeights().size());
+			front.sort(new CrowdingComparator());
+			for (int k = 0; k < remain; k++) {
+				population.add(front.get(k));
+			} // for
+
+			remain = 0;
+		} // if
+
+		Ranking ranking1 = new Ranking(population);
+
+		SolutionSet set = ranking1.getSubfront(0);
+
+		try {
+
+			//Population populationC = GeneWorkLoad.population(set.solutionsList_, script, false);
+
+			List<Chromosome> bestI = GeneWorkLoad.getChromossomes(set.solutionsList_, script, false);
+
+			List<Chromosome> bestP = GeneWorkLoad.getChromossomes(list, script, false);
+
+			List<IChromosome> newList = null;
+
+			newList = GeneWorkLoad.crossOverPopulation(bestP, bestI);
+
+			List<WorkLoad> listWorkloads = JMeterPluginsUtils.getListWorkLoadFromPopulationTestPlan(this, script,
+					newList, false, generation);
+
+			List<WorkLoad> mutations = GeneWorkLoad.mutationPopulation(this, listWorkloads, testCases,
+					mutantProbability, populationSize, generation, maxUsers);
+
+			System.out.println("Set " + mutations);
+
+			return mutations;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return list;
 
 	}
 } // NSGA-II
