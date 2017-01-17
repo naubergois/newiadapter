@@ -32,15 +32,18 @@ import org.jgap.Population;
 
 import br.unifor.iadapter.database.MySQLDatabase;
 import br.unifor.iadapter.genetic.GeneWorkLoad;
+import br.unifor.iadapter.neighborhood.NeighborhoodUtil;
 import br.unifor.iadapter.threadGroup.workload.WorkLoad;
 import br.unifor.iadapter.threadGroup.workload.WorkLoadThreadGroup;
 import br.unifor.iadapter.util.JMeterPluginsUtils;
 
-public class NSGAII extends AbstractAlgorithm {
-
-	public NSGAII() {
+public class NSGAIINeighborhood extends AbstractAlgorithm {
+	
+	
+	 public NSGAIINeighborhood() {
 		super();
-		setMethodName("NSGAII");
+		setMethodName("NSGAIINEIGH");
+
 	}
 
 	@Override
@@ -127,27 +130,12 @@ public class NSGAII extends AbstractAlgorithm {
 		SolutionSet set = ranking1.getSubfront(0);
 
 		try {
+			
+			
+			List<WorkLoad> returnList=NeighborhoodUtil.getNeighBorHoodsAllList(this,set.solutionsList_, populationSize, testCases, generation, maxUsers, testPlan);
 
-			// Population populationC =
-			// GeneWorkLoad.population(set.solutionsList_, script, false);
-
-			List<Chromosome> bestI = GeneWorkLoad.getChromossomes(set.solutionsList_, script, false);
-
-			List<Chromosome> bestP = GeneWorkLoad.getChromossomes(list, script, false);
-
-			List<IChromosome> newList = null;
-
-			newList = GeneWorkLoad.crossOverPopulation(bestP, bestI);
-
-			List<WorkLoad> listWorkloads = JMeterPluginsUtils.getListWorkLoadFromPopulationTestPlan(this, script,
-					newList, false, generation);
-
-			List<WorkLoad> mutations = GeneWorkLoad.mutationPopulation(this, listWorkloads, testCases,
-					mutantProbability, populationSize, generation, maxUsers);
-
-			System.out.println("Set " + mutations);
-
-			return mutations;
+			
+			return returnList;
 
 		} catch (Exception e) {
 			e.printStackTrace();
