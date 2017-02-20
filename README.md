@@ -2,4 +2,88 @@
 
 IAdapter is a JMeter plugin designed to perform search-based stress tests.
 
-[![IMAGE ALT TEXT](video1.png)](http://www.youtube.com/watch?v=Imdls1V1Wac "How IAdapter Works")
+Bellow, a video showing how the iadapter works
+
+[![IMAGE ALT TEXT](video1.png)](http://www.youtube.com/watch?v=CneugJQT_3w "How IAdapter Works")
+
+
+Bellow, it is the sql to install the database
+
+```
+CREATE TABLE `agent` (
+  `name` varchar(45) DEFAULT NULL,
+  `running` varchar(45) DEFAULT NULL,
+  `ip` varchar(145) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4414 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `log` (
+  `log` varchar(200) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=886 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `Q` (
+  `responsetime` varchar(245) DEFAULT NULL,
+  `testplan` varchar(245) DEFAULT NULL,
+  `Qvalue` float DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `state` varchar(300) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33730 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `samples` (
+  `LABEL` varchar(100) DEFAULT NULL,
+  `RESPONSETIME` varchar(45) DEFAULT NULL,
+  `MESSAGE` varchar(300) DEFAULT NULL,
+  `INDIVIDUAL` varchar(345) DEFAULT NULL,
+  `GENERATION` varchar(45) DEFAULT NULL,
+  `TESTPLAN` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `workload` (
+  `NAME` varchar(330) DEFAULT NULL,
+  `RESPONSETIME` varchar(30) DEFAULT NULL,
+  `TYPE` varchar(300) DEFAULT NULL,
+  `USERS` varchar(30) DEFAULT NULL,
+  `ERROR` varchar(30) DEFAULT NULL,
+  `FIT` varchar(400) DEFAULT NULL,
+  `FUNCTION1` varchar(30) DEFAULT NULL,
+  `FUNCTION2` varchar(30) DEFAULT NULL,
+  `FUNCTION3` varchar(30) DEFAULT NULL,
+  `FUNCTION4` varchar(30) DEFAULT NULL,
+  `FUNCTION5` varchar(30) DEFAULT NULL,
+  `FUNCTION6` varchar(30) DEFAULT NULL,
+  `FUNCTION7` varchar(30) DEFAULT NULL,
+  `FUNCTION8` varchar(30) DEFAULT NULL,
+  `FUNCTION9` varchar(30) DEFAULT NULL,
+  `FUNCTION10` varchar(30) DEFAULT NULL,
+  `TESTPLAN` varchar(40) DEFAULT NULL,
+  `GENERATION` varchar(45) DEFAULT NULL,
+  `ACTIVE` varchar(45) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `PERCENT90` varchar(45) DEFAULT NULL,
+  `PERCENT80` varchar(45) DEFAULT NULL,
+  `PERCENT70` varchar(45) DEFAULT NULL,
+  `TOTALERROR` varchar(45) DEFAULT NULL,
+  `SEARCHMETHOD` varchar(345) DEFAULT NULL,
+  `USER1` varchar(45) DEFAULT NULL,
+  `USER2` varchar(45) DEFAULT NULL,
+  `USER3` varchar(45) DEFAULT NULL,
+  `USER4` varchar(45) DEFAULT NULL,
+  `USER5` varchar(45) DEFAULT NULL,
+  `USER6` varchar(45) DEFAULT NULL,
+  `USER7` varchar(45) DEFAULT NULL,
+  `USER8` varchar(45) DEFAULT NULL,
+  `USER9` varchar(45) DEFAULT NULL,
+  `USER10` varchar(45) DEFAULT NULL,
+  `MEMORY` varchar(45) DEFAULT NULL,
+  `CPUSHARE` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33730 DEFAULT CHARSET=latin1;
+
+
+```
+
