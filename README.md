@@ -4,13 +4,15 @@ IAdapter is a JMeter plugin designed to perform search-based stress tests.
 
 Bellow, a video showing how the iadapter works
 
-[![IMAGE ALT TEXT](video1.png)](http://www.youtube.com/watch?v=CneugJQT_3w "How IAdapter Works")
+[![IMAGE ALT TEXT](video11.png)](http://www.youtube.com/watch?v=CneugJQT_3w "How IAdapter Works")
 
 Bellow, a video showing how the install iadapter
 
 [![IMAGE ALT TEXT](video2.png)](http://www.youtube.com/watch?v=HsyTf5pVfwA "How install IAdapter")
 
+Download the IAdapter file in the link bellow
 
+[IAdapter Download](https://drive.google.com/file/d/0B6ynMokoY-JzWWlDcnQ3UVRQaHM/view?usp=sharing)
 
 Bellow, it is the sql to install the database
 
