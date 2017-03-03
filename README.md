@@ -1,5 +1,30 @@
+---
+references:
+- id: fenner2012a
+  title: Improving stress search based testing using a hybrid metaheuristic approach
+  author: Francisco Nauber Bernardo Gois ;  Pedro Porfírio Muniz de Farias ;  André L. V. Coelho ;  Thiago Monteiro Barbosa
+  URL: 'http://dx.doi.org/10.1038/nmat3283'
+  DOI: 10.1109/CLEI.2016.7833374
+  issue: 4
+  publisher: Computing Conference (CLEI), 2016 XLII Latin American  page: 261-263
+  issued:
+    year: 2016
+    month: 10
+---
 #IAdapter
 
+***
+
+This tool is the result of the doctoral research of Francisco Nauber Bernardo Gois in the doctoral program in applied informatics of the university of fortaleza (UNIFOR)
+
+[Doutorado em Informática Aplicada](http://www.unifor.br/index.php?option=com_content&view=article&id=481&Itemid=879)
+
+***
+
+
+
+
+***
 IAdapter is a JMeter plugin designed to perform search-based stress tests.
 
 Bellow, a video showing how the iadapter works
